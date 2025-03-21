@@ -1,17 +1,32 @@
 
-import { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
-import Navbar from '@/components/layout/Navbar';
+import { Link } from 'react-router-dom';
 import { BookOpen, CalendarCheck, Users, ArrowRight } from 'lucide-react';
 
 const Index = () => {
-  const { user, loading } = useAuth();
-  const navigate = useNavigate();
-
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <Navbar />
+      <nav className="w-full h-16 px-6 sm:px-8 flex items-center justify-between border-b border-border bg-white/80 backdrop-blur-md z-50 fixed top-0 left-0 right-0">
+        <div className="flex items-center">
+          <Link to="/" className="flex items-center space-x-2">
+            <img 
+              src="/lovable-uploads/e4e6b3ba-28db-4d0e-8e71-2e507a625add.png" 
+              alt="UniBuddy Logo" 
+              className="h-8" 
+            />
+          </Link>
+        </div>
+
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4">
+            <Link to="/login" className="nav-link">
+              Log in
+            </Link>
+            <Link to="/signup" className="btn-primary text-sm">
+              Sign up
+            </Link>
+          </div>
+        </div>
+      </nav>
       
       <main className="flex-1 pt-24 pb-12">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 animate-fade-in">
@@ -27,17 +42,17 @@ const Index = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-5xl mx-auto">
             {/* Attendance Tracker */}
             <Link 
-              to="/attendance" 
+              to="/login" 
               className="square-button group"
             >
-              <div className="mb-4 p-4 w-16 h-16 rounded-full bg-apple-blue/10 flex items-center justify-center text-apple-blue">
+              <div className="mb-4 p-4 w-16 h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600">
                 <BookOpen size={30} />
               </div>
               <h2 className="text-xl font-medium text-apple-text mb-2">Attendance Tracker</h2>
               <p className="text-muted-foreground text-sm text-center mb-4">
                 Track your class attendance and stay on top of requirements
               </p>
-              <div className="mt-auto flex items-center justify-center text-apple-blue font-medium text-sm">
+              <div className="mt-auto flex items-center justify-center text-indigo-600 font-medium text-sm">
                 <span>Get Started</span>
                 <ArrowRight size={16} className="ml-1 transition-transform group-hover:translate-x-1" />
               </div>
@@ -81,7 +96,7 @@ const Index = () => {
       <footer className="py-6 border-t border-border">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6">
           <p className="text-center text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Student Attendance Tracker. All rights reserved.
+            &copy; {new Date().getFullYear()} UniBuddy. All rights reserved.
           </p>
         </div>
       </footer>
