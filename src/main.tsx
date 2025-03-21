@@ -4,7 +4,7 @@ import { StrictMode } from 'react';
 import App from './App.tsx'
 import './index.css'
 
-console.log("Application starting...");
+console.log("Application starting with Supabase integration...");
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
