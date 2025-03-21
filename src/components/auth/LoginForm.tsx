@@ -29,8 +29,13 @@ const LoginForm = () => {
     
     try {
       await signIn(formData.email, formData.password);
-    } catch (error) {
-      // Error is already handled in the auth context
+    } catch (error: any) {
+      // Handle email not confirmed error specifically
+      if (error?.code === 'email_not_confirmed') {
+        setError('Please verify your email before signing in. Check your inbox for a confirmation link.');
+      } else {
+        setError(error?.message || 'Failed to sign in');
+      }
     }
   };
 

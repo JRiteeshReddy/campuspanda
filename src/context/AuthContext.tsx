@@ -62,8 +62,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       toast.success('Signed in successfully');
       navigate('/');
-    } catch (error) {
-      handleError(error);
+    } catch (error: any) {
+      const errorMessage = handleError(error);
+      // Pass the original error with code to the caller
       throw error;
     } finally {
       setLoading(false);
