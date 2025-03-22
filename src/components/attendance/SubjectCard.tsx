@@ -8,7 +8,10 @@ import {
   AlertTriangle, 
   Check, 
   Info, 
-  Loader2 
+  Loader2,
+  Trash2,
+  Edit,
+  X
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -25,6 +28,17 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+  DialogClose,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface SubjectCardProps {
   subject: Subject;
@@ -34,6 +48,12 @@ interface SubjectCardProps {
 const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [actionType, setActionType] = useState<string | null>(null);
+  const [editValues, setEditValues] = useState({
+    name: subject.name,
+    classes_attended: subject.classes_attended,
+    classes_conducted: subject.classes_conducted,
+    required_percentage: subject.required_percentage
+  });
   
   const attendancePercentage = subject.classes_conducted > 0
     ? Math.round((subject.classes_attended / subject.classes_conducted) * 100)
@@ -136,6 +156,75 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
       setActionType(null);
     }
   };
+
+  const handleDelete = async () => {
+    try {
+      setLoading(true);
+      setActionType('delete');
+      
+      const { error } = await supabase
+        .from('subjects')
+        .delete()
+        .eq('id', subject.id);
+      
+      if (error) throw error;
+      
+      toast.success(`Deleted ${subject.name}`);
+      onUpdate();
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setLoading(false);
+      setActionType(null);
+    }
+  };
+
+  const handleEdit = async () => {
+    try {
+      setLoading(true);
+      setActionType('edit');
+
+      // Validate the inputs
+      if (
+        editValues.classes_attended > editValues.classes_conducted ||
+        editValues.classes_attended < 0 ||
+        editValues.classes_conducted < 0 ||
+        editValues.required_percentage < 0 ||
+        editValues.required_percentage > 100 ||
+        !editValues.name.trim()
+      ) {
+        throw new Error('Please enter valid values');
+      }
+      
+      const { error } = await supabase
+        .from('subjects')
+        .update({
+          name: editValues.name,
+          classes_attended: editValues.classes_attended,
+          classes_conducted: editValues.classes_conducted,
+          required_percentage: editValues.required_percentage
+        })
+        .eq('id', subject.id);
+      
+      if (error) throw error;
+      
+      toast.success(`Updated ${editValues.name}`);
+      onUpdate();
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setLoading(false);
+      setActionType(null);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEditValues(prev => ({
+      ...prev,
+      [name]: name === 'name' ? value : parseInt(value) || 0
+    }));
+  };
   
   return (
     <Card className="card-hover border h-full overflow-hidden">
@@ -182,50 +271,166 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
         </div>
       </CardContent>
       
-      <CardFooter className="flex justify-between">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
+      <CardFooter className="flex justify-between flex-wrap gap-2">
+        <div className="flex gap-2 w-full">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  onClick={markPresent}
+                  disabled={loading}
+                  variant="outline" 
+                  className="flex-1 border-apple-green hover:bg-apple-green/10 text-apple-green hover:text-apple-green"
+                >
+                  {loading && actionType === 'present' ? (
+                    <Loader2 size={18} className="animate-spin" />
+                  ) : (
+                    <PlusCircle size={18} />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Mark as Present</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  onClick={markAbsent}
+                  disabled={loading}
+                  variant="outline" 
+                  className="flex-1 border-apple-red hover:bg-apple-red/10 text-apple-red hover:text-apple-red"
+                >
+                  {loading && actionType === 'absent' ? (
+                    <Loader2 size={18} className="animate-spin" />
+                  ) : (
+                    <MinusCircle size={18} />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Mark as Absent</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+
+        <div className="flex gap-2 w-full">
+          {/* Edit Dialog */}
+          <Dialog>
+            <DialogTrigger asChild>
               <Button 
-                onClick={markPresent}
-                disabled={loading}
-                variant="outline" 
-                className="w-1/2 mr-2 border-apple-green hover:bg-apple-green/10 text-apple-green hover:text-apple-green"
+                variant="outline"
+                className="flex-1 border-apple-blue hover:bg-apple-blue/10 text-apple-blue hover:text-apple-blue"
               >
-                {loading && actionType === 'present' ? (
-                  <Loader2 size={18} className="animate-spin" />
-                ) : (
-                  <PlusCircle size={18} />
-                )}
+                <Edit size={18} />
               </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Mark as Present</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit Subject</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Subject Name</Label>
+                  <Input 
+                    id="name" 
+                    name="name"
+                    value={editValues.name} 
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="classes_attended">Classes Attended</Label>
+                  <Input 
+                    id="classes_attended" 
+                    name="classes_attended"
+                    type="number"
+                    min="0"
+                    max={editValues.classes_conducted}
+                    value={editValues.classes_attended} 
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="classes_conducted">Classes Conducted</Label>
+                  <Input 
+                    id="classes_conducted" 
+                    name="classes_conducted"
+                    type="number"
+                    min={editValues.classes_attended}
+                    value={editValues.classes_conducted} 
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="required_percentage">Required Percentage</Label>
+                  <Input 
+                    id="required_percentage" 
+                    name="required_percentage"
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={editValues.required_percentage} 
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">Cancel</Button>
+                </DialogClose>
+                <Button 
+                  onClick={handleEdit} 
+                  disabled={loading && actionType === 'edit'}
+                >
+                  {loading && actionType === 'edit' ? (
+                    <Loader2 size={18} className="animate-spin mr-2" />
+                  ) : null}
+                  Save Changes
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          {/* Delete Dialog */}
+          <Dialog>
+            <DialogTrigger asChild>
               <Button 
-                onClick={markAbsent}
-                disabled={loading}
-                variant="outline" 
-                className="w-1/2 border-apple-red hover:bg-apple-red/10 text-apple-red hover:text-apple-red"
+                variant="outline"
+                className="flex-1 border-apple-red hover:bg-apple-red/10 text-apple-red hover:text-apple-red"
               >
-                {loading && actionType === 'absent' ? (
-                  <Loader2 size={18} className="animate-spin" />
-                ) : (
-                  <MinusCircle size={18} />
-                )}
+                <Trash2 size={18} />
               </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Mark as Absent</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Delete Subject</DialogTitle>
+              </DialogHeader>
+              <div className="py-4">
+                <p>Are you sure you want to delete <span className="font-medium">{subject.name}</span>? This action cannot be undone.</p>
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">Cancel</Button>
+                </DialogClose>
+                <Button 
+                  onClick={handleDelete} 
+                  disabled={loading && actionType === 'delete'}
+                  variant="destructive"
+                >
+                  {loading && actionType === 'delete' ? (
+                    <Loader2 size={18} className="animate-spin mr-2" />
+                  ) : null}
+                  Delete
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </CardFooter>
     </Card>
   );

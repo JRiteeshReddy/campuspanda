@@ -1,32 +1,20 @@
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { BookOpen, CalendarCheck, Users, ArrowRight } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import Navbar from '@/components/layout/Navbar';
 
 const Index = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleGetStarted = () => {
+    navigate('/attendance');
+  };
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <nav className="w-full h-16 px-6 sm:px-8 flex items-center justify-between border-b border-border bg-white/80 backdrop-blur-md z-50 fixed top-0 left-0 right-0">
-        <div className="flex items-center">
-          <Link to="/" className="flex items-center space-x-2">
-            <img 
-              src="/lovable-uploads/e4e6b3ba-28db-4d0e-8e71-2e507a625add.png" 
-              alt="UniBuddy Logo" 
-              className="h-8" 
-            />
-          </Link>
-        </div>
-
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-4">
-            <Link to="/login" className="nav-link">
-              Log in
-            </Link>
-            <Link to="/signup" className="btn-primary text-sm">
-              Sign up
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
       
       <main className="flex-1 pt-24 pb-12">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 animate-fade-in">
@@ -41,8 +29,8 @@ const Index = () => {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-5xl mx-auto">
             {/* Attendance Tracker */}
-            <Link 
-              to="/login" 
+            <button 
+              onClick={handleGetStarted}
               className="square-button group"
             >
               <div className="mb-4 p-4 w-16 h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600">
@@ -56,7 +44,7 @@ const Index = () => {
                 <span>Get Started</span>
                 <ArrowRight size={16} className="ml-1 transition-transform group-hover:translate-x-1" />
               </div>
-            </Link>
+            </button>
             
             {/* Coming Soon - Option 1 */}
             <div className="square-button bg-muted/50 border-dashed cursor-default">
