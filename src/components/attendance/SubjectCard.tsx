@@ -7,9 +7,11 @@ import {
   MinusCircle, 
   AlertTriangle, 
   Check, 
+  Info, 
+  Loader2,
   Trash2,
   Edit,
-  Loader2
+  X
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -225,12 +227,12 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
   };
   
   return (
-    <Card className="card-hover border overflow-hidden" style={{ aspectRatio: "1027/361" }}>
-      <CardHeader className="pb-2 pt-3 px-4">
-        <CardTitle className="font-medium flex justify-between items-start gap-2 text-lg">
+    <Card className="card-hover border h-full overflow-hidden">
+      <CardHeader className="pb-2">
+        <CardTitle className="font-medium flex justify-between items-start gap-2 text-xl">
           <span className="truncate">{subject.name}</span>
           <span 
-            className={`text-sm rounded-full px-2 py-0.5 ${
+            className={`text-base rounded-full px-3 py-1 ${
               getAttendanceColor(attendancePercentage, subject.required_percentage)
             } bg-opacity-10 font-medium`}
           >
@@ -239,38 +241,38 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
         </CardTitle>
       </CardHeader>
       
-      <CardContent className="pb-2 px-4">
-        <div className="flex justify-between text-xs mb-1">
+      <CardContent className="pb-3">
+        <div className="flex justify-between text-sm mb-2">
           <span className="text-muted-foreground">Attended:</span>
           <span className="font-medium">{subject.classes_attended}/{subject.classes_conducted}</span>
         </div>
         
-        <div className="flex justify-between text-xs mb-3">
+        <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">Required:</span>
           <span className="font-medium">{subject.required_percentage}%</span>
         </div>
         
-        <div className="mb-2 p-2 rounded-lg bg-muted text-xs flex items-start gap-2">
+        <div className="mt-4 p-3 rounded-lg bg-muted text-sm flex items-start gap-2">
           {suggestion.type === 'bunk' ? (
             <>
-              <Check size={14} className="text-apple-green shrink-0 mt-0.5" />
+              <Check size={18} className="text-apple-green shrink-0 mt-0.5" />
               <span>
-                May miss: <span className="font-medium">{suggestion.count}</span>
+                You can <span className="font-medium">miss {suggestion.count}</span> more {suggestion.count === 1 ? 'class' : 'classes'} and still meet the required attendance.
               </span>
             </>
           ) : (
             <>
-              <AlertTriangle size={14} className="text-apple-yellow shrink-0 mt-0.5" />
+              <AlertTriangle size={18} className="text-apple-yellow shrink-0 mt-0.5" />
               <span>
-                Classes needed to attend: <span className="font-medium">{suggestion.count}</span>
+                You need to attend <span className="font-medium">at least {suggestion.count}</span> more consecutive {suggestion.count === 1 ? 'class' : 'classes'} to meet the requirement.
               </span>
             </>
           )}
         </div>
       </CardContent>
       
-      <CardFooter className="flex justify-between flex-wrap gap-1 px-4 pt-0 pb-3">
-        <div className="flex gap-1 w-full">
+      <CardFooter className="flex justify-between flex-wrap gap-2">
+        <div className="flex gap-2 w-full">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -278,13 +280,12 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
                   onClick={markPresent}
                   disabled={loading}
                   variant="outline" 
-                  size="sm"
-                  className="border-apple-green hover:bg-apple-green/10 text-apple-green hover:text-apple-green h-7 px-2"
+                  className="flex-1 border-apple-green hover:bg-apple-green/10 text-apple-green hover:text-apple-green"
                 >
                   {loading && actionType === 'present' ? (
-                    <Loader2 size={12} className="animate-spin" />
+                    <Loader2 size={18} className="animate-spin" />
                   ) : (
-                    <PlusCircle size={12} />
+                    <PlusCircle size={18} />
                   )}
                 </Button>
               </TooltipTrigger>
@@ -301,13 +302,12 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
                   onClick={markAbsent}
                   disabled={loading}
                   variant="outline" 
-                  size="sm"
-                  className="border-apple-red hover:bg-apple-red/10 text-apple-red hover:text-apple-red h-7 px-2"
+                  className="flex-1 border-apple-red hover:bg-apple-red/10 text-apple-red hover:text-apple-red"
                 >
                   {loading && actionType === 'absent' ? (
-                    <Loader2 size={12} className="animate-spin" />
+                    <Loader2 size={18} className="animate-spin" />
                   ) : (
-                    <MinusCircle size={12} />
+                    <MinusCircle size={18} />
                   )}
                 </Button>
               </TooltipTrigger>
@@ -316,16 +316,17 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        
+        </div>
+
+        <div className="flex gap-2 w-full">
           {/* Edit Dialog */}
           <Dialog>
             <DialogTrigger asChild>
               <Button 
                 variant="outline"
-                size="sm"
-                className="border-apple-blue hover:bg-apple-blue/10 text-apple-blue hover:text-apple-blue h-7 px-2 ml-auto"
+                className="flex-1 border-apple-blue hover:bg-apple-blue/10 text-apple-blue hover:text-apple-blue"
               >
-                <Edit size={12} />
+                <Edit size={18} />
               </Button>
             </DialogTrigger>
             <DialogContent>
@@ -400,10 +401,9 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
             <DialogTrigger asChild>
               <Button 
                 variant="outline"
-                size="sm"
-                className="border-apple-red hover:bg-apple-red/10 text-apple-red hover:text-apple-red h-7 px-2"
+                className="flex-1 border-apple-red hover:bg-apple-red/10 text-apple-red hover:text-apple-red"
               >
-                <Trash2 size={12} />
+                <Trash2 size={18} />
               </Button>
             </DialogTrigger>
             <DialogContent>

@@ -95,7 +95,7 @@ const AttendanceTracker = () => {
             </p>
           </header>
           
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
             <div className="lg:col-span-2">
               <NewSubjectForm onSuccess={fetchSubjects} />
             </div>
@@ -151,11 +151,11 @@ const AttendanceTracker = () => {
           </div>
           
           {loading ? (
-            <div className="flex items-center justify-center py-8">
+            <div className="flex items-center justify-center py-12">
               <Loader2 size={30} className="animate-spin text-muted-foreground" />
             </div>
           ) : subjects.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {subjects.map((subject) => (
                 <SubjectCard
                   key={subject.id}
@@ -165,7 +165,7 @@ const AttendanceTracker = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-10 border border-dashed border-muted rounded-lg">
+            <div className="text-center py-12 border border-dashed border-muted rounded-lg">
               <h3 className="text-xl font-medium mb-2 text-foreground">No subjects yet</h3>
               <p className="text-muted-foreground mb-6">
                 Add your first subject to start tracking attendance
