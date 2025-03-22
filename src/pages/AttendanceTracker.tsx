@@ -74,20 +74,20 @@ const AttendanceTracker = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background transition-colors duration-300">
         <Loader2 size={30} className="animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col transition-colors duration-300">
       <Navbar />
       
       <main className="flex-1 pt-24 pb-12">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 animate-fade-in">
           <header className="mb-8">
-            <h1 className="text-3xl font-bold tracking-tight text-apple-text mb-4">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground mb-4">
               Attendance Tracker
             </h1>
             <p className="text-muted-foreground max-w-3xl">
@@ -101,7 +101,7 @@ const AttendanceTracker = () => {
             </div>
             
             <div className="lg:col-span-1">
-              <Card className="h-full">
+              <Card className="h-full bg-card">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-xl">Overall Attendance</CardTitle>
                 </CardHeader>
@@ -110,9 +110,9 @@ const AttendanceTracker = () => {
                     <>
                       <div className="flex justify-center items-center mb-4">
                         <div className={`text-3xl font-bold ${
-                          overallAttendance >= 75 ? 'text-apple-green' : 
-                          overallAttendance >= 65 ? 'text-apple-yellow' : 
-                          'text-apple-red'
+                          overallAttendance >= 75 ? 'text-green-500 dark:text-green-400' : 
+                          overallAttendance >= 65 ? 'text-yellow-500 dark:text-yellow-400' : 
+                          'text-red-500 dark:text-red-400'
                         }`}>
                           {overallAttendance}%
                         </div>
@@ -166,7 +166,7 @@ const AttendanceTracker = () => {
             </div>
           ) : (
             <div className="text-center py-12 border border-dashed border-muted rounded-lg">
-              <h3 className="text-xl font-medium mb-2">No subjects yet</h3>
+              <h3 className="text-xl font-medium mb-2 text-foreground">No subjects yet</h3>
               <p className="text-muted-foreground mb-6">
                 Add your first subject to start tracking attendance
               </p>

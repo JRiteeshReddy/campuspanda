@@ -12,6 +12,8 @@ import {
 import { ChevronDown, LogOut, User } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Subject } from '@/types';
+import ThemeToggle from './ThemeToggle';
+import { PieChart, Pie, Cell } from 'recharts';
 
 const ProfileMenu = () => {
   const { user, signOut } = useAuth();
@@ -60,6 +62,14 @@ const ProfileMenu = () => {
     }
   };
 
+  // Prepare data for mini pie chart
+  const chartData = totalAttendance !== null ? [
+    { name: 'Attended', value: totalAttendance },
+    { name: 'Missed', value: 100 - totalAttendance },
+  ] : [];
+  
+  const COLORS = ['#4ade80', '#f87171'];
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center space-x-1 outline-none">
@@ -69,7 +79,7 @@ const ProfileMenu = () => {
         <ChevronDown size={16} className="text-muted-foreground" />
       </DropdownMenuTrigger>
       
-      <DropdownMenuContent align="end" className="w-56 animate-scale-in">
+      <DropdownMenuContent align="end" className="w-64 animate-scale-in">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         
         <DropdownMenuSeparator />
@@ -80,20 +90,38 @@ const ProfileMenu = () => {
           </div>
           
           {totalAttendance !== null ? (
-            <div className="mt-1 flex items-center">
+            <div className="mt-2 flex items-center justify-between">
               <div className="text-sm font-medium">
                 Overall Attendance: 
                 <span 
                   className={`ml-1 font-semibold ${
                     totalAttendance >= 75 
-                      ? 'text-apple-green' 
+                      ? 'text-green-500 dark:text-green-400' 
                       : totalAttendance >= 60 
-                        ? 'text-apple-yellow' 
-                        : 'text-apple-red'
+                        ? 'text-yellow-500 dark:text-yellow-400' 
+                        : 'text-red-500 dark:text-red-400'
                   }`}
                 >
                   {totalAttendance}%
                 </span>
+              </div>
+              
+              <div className="h-10 w-10">
+                <PieChart width={40} height={40}>
+                  <Pie
+                    data={chartData}
+                    cx={20}
+                    cy={20}
+                    innerRadius={8}
+                    outerRadius={16}
+                    paddingAngle={2}
+                    dataKey="value"
+                  >
+                    {chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                </PieChart>
               </div>
             </div>
           ) : (
@@ -101,6 +129,15 @@ const ProfileMenu = () => {
               No attendance data
             </div>
           )}
+        </div>
+        
+        <DropdownMenuSeparator />
+        
+        <div className="px-2 py-1.5">
+          <div className="flex items-center justify-between">
+            <span className="text-sm">Theme</span>
+            <ThemeToggle />
+          </div>
         </div>
         
         <DropdownMenuSeparator />

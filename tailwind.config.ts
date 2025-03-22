@@ -55,7 +55,7 @@ export default {
 				},
         apple: {
           gray: '#f5f5f7',
-          blue: '#0071e3',
+          blue: '#1EAEDB',
           red: '#a51d2d',
           green: '#4d8e3d',
           yellow: '#f4d03f',
@@ -120,6 +120,9 @@ export default {
         'elevation': '0 4px 20px rgba(0, 0, 0, 0.08)',
         'glass': '0 8px 32px rgba(0, 0, 0, 0.06)',
       },
+      backgroundImage: {
+        'gradient-dark': 'linear-gradient(to bottom, #121212, #1e1e1e)',
+      }
 		}
 	},
 	plugins: [require("tailwindcss-animate")],

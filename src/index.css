@@ -16,11 +16,11 @@
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
 
-    --primary: 211 100% 45%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 211 100% 53%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 240 5.9% 10%;
+    --secondary: 211 100% 53%;
+    --secondary-foreground: 0 0% 100%;
 
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
@@ -33,26 +33,26 @@
 
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 211 100% 45%;
+    --ring: 211 100% 53%;
 
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 240 10% 4%;
     --foreground: 0 0% 98%;
 
-    --card: 240 10% 3.9%;
+    --card: 240 10% 6%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 240 10% 3.9%;
+    --popover: 240 10% 6%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 211 100% 45%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 211 100% 53%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 211 100% 53%;
+    --secondary-foreground: 0 0% 100%;
 
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
@@ -65,7 +65,7 @@
 
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 211 100% 45%;
+    --ring: 211 100% 53%;
   }
 }
 
@@ -80,7 +80,11 @@
   }
   
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-300;
+  }
+  
+  .dark body {
+    @apply bg-gradient-dark;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -90,7 +94,7 @@
 
 @layer components {
   .glass-panel {
-    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-glass;
+    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-glass dark:bg-white/5 dark:border-white/10;
   }
   
   .page-container {
@@ -98,8 +102,8 @@
   }
   
   .btn-primary {
-    @apply bg-apple-blue text-white rounded-full px-6 py-2 font-medium transition-all 
-    hover:shadow-md active:scale-[0.98];
+    @apply bg-primary text-white rounded-full px-6 py-2 font-medium transition-all 
+    hover:shadow-md active:scale-[0.98] dark:hover:bg-primary/90;
   }
   
   .btn-secondary {
@@ -112,12 +116,12 @@
   }
   
   .nav-link {
-    @apply text-sm font-medium text-apple-text/70 hover:text-apple-text transition-colors;
+    @apply text-sm font-medium text-foreground/70 hover:text-foreground transition-colors;
   }
   
   .square-button {
     @apply flex flex-col items-center justify-center aspect-square w-full max-w-xs 
-    rounded-2xl shadow-subtle bg-white border border-gray-100
+    rounded-2xl shadow-subtle bg-card border border-border
     p-4 transition-all duration-300 hover:shadow-elevation hover:-translate-y-1;
   }
   
@@ -172,10 +176,10 @@ button:active {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
+  @apply bg-black/20 dark:bg-white/20;
   border-radius: 20px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.3);
+  @apply bg-black/30 dark:bg-white/30;
 }
