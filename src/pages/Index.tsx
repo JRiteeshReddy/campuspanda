@@ -13,7 +13,7 @@ const Index = () => {
   return <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
       
-      <main className="flex-1 pt-24 pb-12">
+      <main className="flex-1 pt-24 pb-12 text-apple-blue font-extrabold text-6xl">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 animate-fade-in">
           <div className="text-center mb-12 sm:mb-16">
             <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-apple-text mb-4">CampusBuddy</h1>
