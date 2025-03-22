@@ -178,7 +178,7 @@ const AttendanceTracker = () => {
       <footer className="py-6 border-t border-border">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6">
           <p className="text-center text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Student Attendance Tracker. All rights reserved.
+            Developed By J Riteesh Reddy
           </p>
         </div>
       </footer>
