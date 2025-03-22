@@ -9,9 +9,7 @@ const Navbar = () => {
       <div className="flex items-center">
         <Link to="/" className="flex items-center space-x-2">
           <img src="/lovable-uploads/e4e6b3ba-28db-4d0e-8e71-2e507a625add.png" alt="UniBuddy Logo" className="h-24 w-auto object-fill" />
-          <span className="text-lg font-semibold text-apple-text hidden sm:inline-block">
-            Student Tracker
-          </span>
+          <span className="text-lg font-semibold text-apple-text hidden sm:inline-block"></span>
         </Link>
       </div>
 
