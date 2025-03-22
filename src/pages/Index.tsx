@@ -13,11 +13,15 @@ const Index = () => {
   return <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
       
-      <main className="flex-1 pt-24 pb-12 text-apple-blue font-extrabold text-6xl">
+      <main className="flex-1 pt-24 pb-12 text-apple-blue">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 animate-fade-in">
           <div className="text-center mb-12 sm:mb-16">
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-apple-text mb-4">CampusBuddy</h1>
-            <p className="text-muted-foreground max-w-2xl mx-[240px] my-0 text-2xl text-center">Track. Manage. Succeed</p>
+            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-apple-text mb-4">
+              Student Attendance Tracker
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Track your attendance, plan your classes, and achieve your academic goals.
+            </p>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-5xl mx-auto">
