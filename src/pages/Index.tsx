@@ -1,72 +1,76 @@
+
 import { Link, useNavigate } from 'react-router-dom';
 import { BookOpen, CalendarCheck, Users, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import Navbar from '@/components/layout/Navbar';
+
 const Index = () => {
   const navigate = useNavigate();
   const {
     user
   } = useAuth();
+  
   const handleGetStarted = () => {
     navigate('/attendance');
   };
-  return <div className="min-h-screen bg-white flex flex-col">
+  
+  return <div className="min-h-screen bg-white dark:bg-gradient-dark flex flex-col">
       <Navbar />
       
-      <main className="flex-1 pt-24 pb-12 text-apple-blue">
+      <main className="flex-1 pt-24 pb-12">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 animate-fade-in">
           <div className="text-center mb-12 sm:mb-16">
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-apple-text mb-4">
-              Student Attendance Tracker
+            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-apple-blue dark:text-white mb-4">
+              CampusBuddy
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Track your attendance, plan your classes, and achieve your academic goals.
+            <p className="text-xl text-muted-foreground dark:text-white/80 max-w-2xl mx-auto">
+              Track. Manage. Succeed.
             </p>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-5xl mx-auto">
             {/* Attendance Tracker */}
-            <button onClick={handleGetStarted} className="square-button group">
-              <div className="mb-4 p-4 w-16 h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600">
+            <button onClick={handleGetStarted} className="square-button group dark:bg-white/5 dark:border-white/10 dark:text-white">
+              <div className="mb-4 p-4 w-16 h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
                 <BookOpen size={30} />
               </div>
-              <h2 className="text-xl font-medium text-apple-text mb-2">Attendance Tracker</h2>
-              <p className="text-muted-foreground text-sm text-center mb-4">
+              <h2 className="text-xl font-medium text-apple-text dark:text-white mb-2">Attendance Tracker</h2>
+              <p className="text-muted-foreground dark:text-white/70 text-sm text-center mb-4">
                 Track your class attendance and stay on top of requirements
               </p>
-              <div className="mt-auto flex items-center justify-center text-indigo-600 font-medium text-sm">
+              <div className="mt-auto flex items-center justify-center text-indigo-600 dark:text-white font-medium text-sm">
                 <span>Get Started</span>
                 <ArrowRight size={16} className="ml-1 transition-transform group-hover:translate-x-1" />
               </div>
             </button>
             
             {/* Coming Soon - Option 1 */}
-            <div className="square-button bg-muted/50 border-dashed cursor-default">
-              <div className="mb-4 p-4 w-16 h-16 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+            <div className="square-button bg-muted/50 border-dashed cursor-default dark:bg-white/5 dark:border-white/10 dark:text-white">
+              <div className="mb-4 p-4 w-16 h-16 rounded-full bg-muted flex items-center justify-center text-muted-foreground dark:bg-white/10 dark:text-white/70">
                 <CalendarCheck size={30} />
               </div>
-              <h2 className="text-xl font-medium text-apple-text mb-2">Coming Soon</h2>
-              <p className="text-muted-foreground text-sm text-center">
+              <h2 className="text-xl font-medium text-apple-text dark:text-white mb-2">Coming Soon</h2>
+              <p className="text-muted-foreground dark:text-white/70 text-sm text-center">
                 New features are on the way
               </p>
               <div className="mt-auto">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground dark:bg-white/10 dark:text-white/70">
                   Coming Soon
                 </span>
               </div>
             </div>
             
             {/* Coming Soon - Option 2 */}
-            <div className="square-button bg-muted/50 border-dashed cursor-default">
-              <div className="mb-4 p-4 w-16 h-16 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+            <div className="square-button bg-muted/50 border-dashed cursor-default dark:bg-white/5 dark:border-white/10 dark:text-white">
+              <div className="mb-4 p-4 w-16 h-16 rounded-full bg-muted flex items-center justify-center text-muted-foreground dark:bg-white/10 dark:text-white/70">
                 <Users size={30} />
               </div>
-              <h2 className="text-xl font-medium text-apple-text mb-2">Coming Soon</h2>
-              <p className="text-muted-foreground text-sm text-center">
+              <h2 className="text-xl font-medium text-apple-text dark:text-white mb-2">Coming Soon</h2>
+              <p className="text-muted-foreground dark:text-white/70 text-sm text-center">
                 New features are on the way
               </p>
               <div className="mt-auto">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground dark:bg-white/10 dark:text-white/70">
                   Coming Soon
                 </span>
               </div>
@@ -75,13 +79,14 @@ const Index = () => {
         </div>
       </main>
       
-      <footer className="py-6 border-t border-border">
+      <footer className="py-6 border-t border-border dark:border-white/10">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6">
-          <p className="text-center text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} UniBuddy. All rights reserved.
+          <p className="text-center text-sm text-muted-foreground dark:text-white/60">
+            &copy; {new Date().getFullYear()} CampusBuddy. All rights reserved.
           </p>
         </div>
       </footer>
     </div>;
 };
+
 export default Index;
