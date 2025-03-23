@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import {
   Card,
@@ -7,13 +7,16 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import { format, addDays } from 'date-fns';
+import { format, addMonths, isSameDay } from 'date-fns';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import Navbar from '@/components/layout/Navbar';
 import AssignmentCard from '@/components/assignment/AssignmentCard';
 import NewAssignmentForm from '@/components/assignment/NewAssignmentForm';
 import { Assignment } from '@/types';
+import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 
 const AssignmentTracker = () => {
   const [date, setDate] = useState<Date>(new Date());
@@ -21,6 +24,43 @@ const AssignmentTracker = () => {
   const [isNewAssignmentDialogOpen, setIsNewAssignmentDialogOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      fetchAssignments();
+    } else {
+      setAssignments([]);
+      setIsLoading(false);
+    }
+  }, [user]);
+
+  const fetchAssignments = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('assignments')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('deadline', { ascending: true });
+
+      if (error) throw error;
+      
+      // Convert deadline strings to Date objects
+      const formattedAssignments = data.map(assignment => ({
+        ...assignment,
+        deadline: new Date(assignment.deadline)
+      }));
+      
+      setAssignments(formattedAssignments);
+    } catch (error) {
+      console.error('Error fetching assignments:', error);
+      toast.error('Failed to load assignments');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleDateSelect = (day: Date | undefined) => {
     if (day) {
@@ -31,24 +71,123 @@ const AssignmentTracker = () => {
 
   const handleMonthChange = (offset: number) => {
     setSelectedMonthOffset(offset);
-    const newDate = new Date();
-    newDate.setMonth(newDate.getMonth() + offset);
-    setDate(newDate);
+    setDate(addMonths(new Date(), offset));
   };
 
-  const handleAddAssignment = (newAssignment: Assignment) => {
-    setAssignments([...assignments, newAssignment]);
-    setIsNewAssignmentDialogOpen(false);
+  const handlePreviousMonth = () => {
+    const newOffset = selectedMonthOffset - 1;
+    handleMonthChange(newOffset);
   };
 
-  const handleUpdateAssignment = (updatedAssignment: Assignment) => {
-    setAssignments(assignments.map(assignment => 
-      assignment.id === updatedAssignment.id ? updatedAssignment : assignment
-    ));
+  const handleNextMonth = () => {
+    const newOffset = selectedMonthOffset + 1;
+    handleMonthChange(newOffset);
   };
 
-  const handleDeleteAssignment = (assignmentId: string) => {
-    setAssignments(assignments.filter(assignment => assignment.id !== assignmentId));
+  const handleAddAssignment = async (newAssignment: Omit<Assignment, 'id' | 'user_id' | 'created_at'>) => {
+    try {
+      const assignmentToAdd = {
+        user_id: user?.id,
+        subject: newAssignment.subject,
+        title: newAssignment.title,
+        deadline: newAssignment.deadline,
+        completed: false,
+        created_at: new Date().toISOString()
+      };
+
+      const { data, error } = await supabase
+        .from('assignments')
+        .insert(assignmentToAdd)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Convert deadline string to Date object
+      const formattedAssignment = {
+        ...data,
+        deadline: new Date(data.deadline)
+      };
+
+      setAssignments([...assignments, formattedAssignment].sort(
+        (a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
+      ));
+      
+      setIsNewAssignmentDialogOpen(false);
+      toast.success('Assignment added successfully');
+    } catch (error) {
+      console.error('Error adding assignment:', error);
+      toast.error('Failed to add assignment');
+    }
+  };
+
+  const handleUpdateAssignment = async (updatedAssignment: Assignment) => {
+    try {
+      const { error } = await supabase
+        .from('assignments')
+        .update({
+          subject: updatedAssignment.subject,
+          title: updatedAssignment.title,
+          deadline: updatedAssignment.deadline,
+          completed: updatedAssignment.completed
+        })
+        .eq('id', updatedAssignment.id);
+
+      if (error) throw error;
+
+      setAssignments(
+        assignments
+          .map(assignment => 
+            assignment.id === updatedAssignment.id ? updatedAssignment : assignment
+          )
+          .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
+      );
+      
+      toast.success('Assignment updated successfully');
+    } catch (error) {
+      console.error('Error updating assignment:', error);
+      toast.error('Failed to update assignment');
+    }
+  };
+
+  const handleDeleteAssignment = async (assignmentId: string) => {
+    try {
+      const { error } = await supabase
+        .from('assignments')
+        .delete()
+        .eq('id', assignmentId);
+
+      if (error) throw error;
+
+      setAssignments(assignments.filter(assignment => assignment.id !== assignmentId));
+      toast.success('Assignment deleted successfully');
+    } catch (error) {
+      console.error('Error deleting assignment:', error);
+      toast.error('Failed to delete assignment');
+    }
+  };
+
+  // Function to determine assignment dates for calendar highlighting
+  const getDayClassNames = (day: Date) => {
+    const assignment = assignments.find(a => isSameDay(new Date(a.deadline), day));
+    
+    if (!assignment) return undefined;
+    
+    if (assignment.completed) {
+      return "bg-green-500 text-white rounded-full";
+    }
+    
+    const daysUntilDeadline = Math.ceil(
+      (new Date(assignment.deadline).getTime() - new Date().setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24)
+    );
+    
+    if (daysUntilDeadline <= 0) {
+      return "bg-red-500 text-white rounded-full";
+    } else if (daysUntilDeadline <= 3) {
+      return "bg-yellow-500 text-white rounded-full";
+    } else {
+      return "bg-green-500 text-white rounded-full";
+    }
   };
 
   return (
@@ -77,16 +216,18 @@ const AssignmentTracker = () => {
               onSelect={handleDateSelect}
               month={date}
               className="rounded-md border pointer-events-auto mx-auto"
-              modifiersStyles={{
-                selected: {
-                  backgroundColor: 'hsl(var(--primary))',
-                  color: 'hsl(var(--primary-foreground))'
-                },
-                today: {
-                  backgroundColor: 'hsl(var(--accent))',
-                  color: 'hsl(var(--accent-foreground))'
-                }
+              modifiers={{
+                assignment: (day) => 
+                  assignments.some(assignment => 
+                    isSameDay(new Date(assignment.deadline), day)
+                  )
               }}
+              modifiersClassNames={{
+                assignment: (day) => getDayClassNames(day) || ""
+              }}
+              onMonthChange={setDate}
+              onPrevious={handlePreviousMonth}
+              onNext={handleNextMonth}
             />
           </CardContent>
         </Card>
@@ -100,7 +241,11 @@ const AssignmentTracker = () => {
         </div>
         
         <div className="space-y-3">
-          {assignments.length > 0 ? (
+          {isLoading ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <p>Loading assignments...</p>
+            </div>
+          ) : assignments.length > 0 ? (
             assignments.map((assignment) => (
               <AssignmentCard
                 key={assignment.id}
@@ -127,18 +272,7 @@ const AssignmentTracker = () => {
           </DialogHeader>
           <NewAssignmentForm 
             initialDate={selectedDate} 
-            onSubmit={(data) => {
-              const newAssignment: Assignment = {
-                id: Date.now().toString(),
-                user_id: '1',
-                subject: data.subject,
-                title: data.title,
-                deadline: data.deadline,
-                completed: false,
-                created_at: new Date().toISOString()
-              };
-              handleAddAssignment(newAssignment);
-            }}
+            onSubmit={handleAddAssignment}
             onCancel={() => setIsNewAssignmentDialogOpen(false)}
           />
         </DialogContent>
