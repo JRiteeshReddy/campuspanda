@@ -39,6 +39,8 @@ const AssignmentTracker = () => {
   const fetchAssignments = async () => {
     try {
       setIsLoading(true);
+      
+      // Fetch assignments from Supabase
       const { data, error } = await supabase
         .from('assignments')
         .select('*')
@@ -90,9 +92,8 @@ const AssignmentTracker = () => {
         user_id: user?.id,
         subject: newAssignment.subject,
         title: newAssignment.title,
-        deadline: newAssignment.deadline,
-        completed: false,
-        created_at: new Date().toISOString()
+        deadline: newAssignment.deadline.toISOString(),
+        completed: false
       };
 
       const { data, error } = await supabase
@@ -109,9 +110,12 @@ const AssignmentTracker = () => {
         deadline: new Date(data.deadline)
       };
 
-      setAssignments([...assignments, formattedAssignment].sort(
-        (a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
-      ));
+      // Add the new assignment and sort by deadline
+      setAssignments(prevAssignments => 
+        [...prevAssignments, formattedAssignment].sort(
+          (a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
+        )
+      );
       
       setIsNewAssignmentDialogOpen(false);
       toast.success('Assignment added successfully');
@@ -128,15 +132,18 @@ const AssignmentTracker = () => {
         .update({
           subject: updatedAssignment.subject,
           title: updatedAssignment.title,
-          deadline: updatedAssignment.deadline,
+          deadline: updatedAssignment.deadline instanceof Date 
+            ? updatedAssignment.deadline.toISOString() 
+            : updatedAssignment.deadline,
           completed: updatedAssignment.completed
         })
         .eq('id', updatedAssignment.id);
 
       if (error) throw error;
 
-      setAssignments(
-        assignments
+      // Update the assignment in the state and sort by deadline
+      setAssignments(prevAssignments => 
+        prevAssignments
           .map(assignment => 
             assignment.id === updatedAssignment.id ? updatedAssignment : assignment
           )
@@ -159,6 +166,7 @@ const AssignmentTracker = () => {
 
       if (error) throw error;
 
+      // Remove the assignment from the state
       setAssignments(assignments.filter(assignment => assignment.id !== assignmentId));
       toast.success('Assignment deleted successfully');
     } catch (error) {
@@ -181,7 +189,7 @@ const AssignmentTracker = () => {
       (new Date(assignment.deadline).getTime() - new Date().setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24)
     );
     
-    if (daysUntilDeadline <= 0) {
+    if (daysUntilDeadline <= 1) {
       return "bg-red-500 text-white rounded-full";
     } else if (daysUntilDeadline <= 3) {
       return "bg-yellow-500 text-white rounded-full";
