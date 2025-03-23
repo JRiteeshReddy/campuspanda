@@ -2,32 +2,9 @@
 import { useState } from 'react';
 import { Subject, AttendanceSuggestion } from '@/types';
 import { supabase, handleError } from '@/lib/supabase';
-import { 
-  PlusCircle, 
-  MinusCircle, 
-  AlertTriangle, 
-  Check, 
-  Info, 
-  Loader2,
-  Trash2,
-  Edit,
-  X
-} from 'lucide-react';
+import { Check, X, Loader2, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import {
   Dialog,
   DialogContent,
@@ -37,8 +14,10 @@ import {
   DialogTrigger,
   DialogClose,
 } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 
 interface SubjectCardProps {
   subject: Subject;
@@ -56,13 +35,17 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
   });
   
   const attendancePercentage = subject.classes_conducted > 0
-    ? Math.round((subject.classes_attended / subject.classes_conducted) * 100)
+    ? Math.round((subject.classes_attended / subject.classes_conducted) * 100 * 10) / 10
     : 0;
   
   const getAttendanceColor = (percentage: number, required: number) => {
-    if (percentage >= required) return 'text-apple-green';
-    if (percentage >= required - 10) return 'text-apple-yellow';
-    return 'text-apple-red';
+    if (percentage >= required) return 'text-green-500 dark:text-green-400';
+    return 'text-red-500 dark:text-red-400';
+  };
+
+  const getProgressColor = (percentage: number, required: number) => {
+    if (percentage >= required) return 'bg-green-500';
+    return 'bg-red-500';
   };
   
   const getSuggestion = (attended: number, conducted: number, required: number): AttendanceSuggestion => {
@@ -70,7 +53,6 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
     
     if (currentPercentage >= required) {
       // Can bunk classes
-      // Calculate how many consecutive classes can be bunked while maintaining req %
       let classesToBunk = 0;
       let simulatedAttended = attended;
       let simulatedConducted = conducted;
@@ -85,7 +67,6 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
       return { type: 'bunk', count: classesToBunk };
     } else {
       // Need to attend classes
-      // Calculate how many consecutive classes need to be attended to reach req %
       let classesToAttend = 0;
       let simulatedAttended = attended;
       let simulatedConducted = conducted;
@@ -227,183 +208,43 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
   };
   
   return (
-    <Card className="card-hover border h-full overflow-hidden">
-      <CardHeader className="pb-2">
-        <CardTitle className="font-medium flex justify-between items-start gap-2 text-xl">
-          <span className="truncate">{subject.name}</span>
-          <span 
-            className={`text-base rounded-full px-3 py-1 ${
-              getAttendanceColor(attendancePercentage, subject.required_percentage)
-            } bg-opacity-10 font-medium`}
-          >
-            {attendancePercentage}%
-          </span>
-        </CardTitle>
-      </CardHeader>
-      
-      <CardContent className="pb-3">
-        <div className="flex justify-between text-sm mb-2">
-          <span className="text-muted-foreground">Attended:</span>
-          <span className="font-medium">{subject.classes_attended}/{subject.classes_conducted}</span>
+    <div className="flex items-start justify-between p-4 bg-background hover:bg-muted/30 rounded-lg transition-colors">
+      {/* Left side content */}
+      <div className="flex flex-col">
+        <h3 className="text-xl font-bold text-foreground mb-1">
+          {subject.name.toLowerCase()}
+        </h3>
+        <div className="text-lg font-bold mb-1">
+          {subject.classes_attended}/{subject.classes_conducted}
         </div>
-        
-        <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">Required:</span>
-          <span className="font-medium">{subject.required_percentage}%</span>
-        </div>
-        
-        <div className="mt-4 p-3 rounded-lg bg-muted text-sm flex items-start gap-2">
+        <div className="text-sm text-muted-foreground">
           {suggestion.type === 'bunk' ? (
-            <>
-              <Check size={18} className="text-apple-green shrink-0 mt-0.5" />
-              <span>
-                You can <span className="font-medium">miss {suggestion.count}</span> more {suggestion.count === 1 ? 'class' : 'classes'} and still meet the required attendance.
-              </span>
-            </>
+            <span>On Track. May miss: {suggestion.count}</span>
           ) : (
-            <>
-              <AlertTriangle size={18} className="text-apple-yellow shrink-0 mt-0.5" />
-              <span>
-                You need to attend <span className="font-medium">at least {suggestion.count}</span> more consecutive {suggestion.count === 1 ? 'class' : 'classes'} to meet the requirement.
-              </span>
-            </>
+            <span>Classes needed to attend: {suggestion.count}</span>
           )}
         </div>
-      </CardContent>
-      
-      <CardFooter className="flex justify-between flex-wrap gap-2">
-        <div className="flex gap-2 w-full">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  onClick={markPresent}
-                  disabled={loading}
-                  variant="outline" 
-                  className="flex-1 border-apple-green hover:bg-apple-green/10 text-apple-green hover:text-apple-green"
-                >
-                  {loading && actionType === 'present' ? (
-                    <Loader2 size={18} className="animate-spin" />
-                  ) : (
-                    <PlusCircle size={18} />
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Mark as Present</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+        <div className="flex items-center gap-2 mt-3">
+          <DialogTrigger asChild>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="h-7 px-2 text-xs"
+            >
+              <Edit size={14} className="mr-1" />
+              Edit
+            </Button>
+          </DialogTrigger>
           
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  onClick={markAbsent}
-                  disabled={loading}
-                  variant="outline" 
-                  className="flex-1 border-apple-red hover:bg-apple-red/10 text-apple-red hover:text-apple-red"
-                >
-                  {loading && actionType === 'absent' ? (
-                    <Loader2 size={18} className="animate-spin" />
-                  ) : (
-                    <MinusCircle size={18} />
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Mark as Absent</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-
-        <div className="flex gap-2 w-full">
-          {/* Edit Dialog */}
           <Dialog>
             <DialogTrigger asChild>
               <Button 
-                variant="outline"
-                className="flex-1 border-apple-blue hover:bg-apple-blue/10 text-apple-blue hover:text-apple-blue"
+                variant="ghost" 
+                size="sm"
+                className="h-7 px-2 text-xs text-red-500 hover:text-red-600 hover:bg-red-100/10"
               >
-                <Edit size={18} />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Edit Subject</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Subject Name</Label>
-                  <Input 
-                    id="name" 
-                    name="name"
-                    value={editValues.name} 
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="classes_attended">Classes Attended</Label>
-                  <Input 
-                    id="classes_attended" 
-                    name="classes_attended"
-                    type="number"
-                    min="0"
-                    max={editValues.classes_conducted}
-                    value={editValues.classes_attended} 
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="classes_conducted">Classes Conducted</Label>
-                  <Input 
-                    id="classes_conducted" 
-                    name="classes_conducted"
-                    type="number"
-                    min={editValues.classes_attended}
-                    value={editValues.classes_conducted} 
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="required_percentage">Required Percentage</Label>
-                  <Input 
-                    id="required_percentage" 
-                    name="required_percentage"
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={editValues.required_percentage} 
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="outline">Cancel</Button>
-                </DialogClose>
-                <Button 
-                  onClick={handleEdit} 
-                  disabled={loading && actionType === 'edit'}
-                >
-                  {loading && actionType === 'edit' ? (
-                    <Loader2 size={18} className="animate-spin mr-2" />
-                  ) : null}
-                  Save Changes
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-
-          {/* Delete Dialog */}
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button 
-                variant="outline"
-                className="flex-1 border-apple-red hover:bg-apple-red/10 text-apple-red hover:text-apple-red"
-              >
-                <Trash2 size={18} />
+                <Trash2 size={14} className="mr-1" />
+                Delete
               </Button>
             </DialogTrigger>
             <DialogContent>
@@ -431,8 +272,129 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
             </DialogContent>
           </Dialog>
         </div>
-      </CardFooter>
-    </Card>
+      </div>
+      
+      {/* Right side - circular progress and action buttons */}
+      <div className="flex flex-col items-center">
+        {/* Circular progress indicator */}
+        <div className="relative h-24 w-24 mb-3">
+          <div 
+            className="absolute inset-0 rounded-full flex items-center justify-center border-4 border-muted"
+            style={{
+              background: `conic-gradient(
+                ${attendancePercentage >= subject.required_percentage ? '#22c55e' : '#ef4444'} 
+                ${attendancePercentage * 3.6}deg, 
+                rgba(255, 255, 255, 0.1) 0
+              )`
+            }}
+          >
+            <div className="bg-background h-[80%] w-[80%] rounded-full flex items-center justify-center">
+              <span className={cn("font-bold text-lg", getAttendanceColor(attendancePercentage, subject.required_percentage))}>
+                {attendancePercentage}%
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Attendance action buttons */}
+        <div className="flex gap-2">
+          <Button
+            onClick={markPresent}
+            disabled={loading}
+            size="icon"
+            className="h-9 w-9 bg-green-500 hover:bg-green-600"
+          >
+            {loading && actionType === 'present' ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Check size={16} />
+            )}
+          </Button>
+          
+          <Button
+            onClick={markAbsent}
+            disabled={loading}
+            size="icon"
+            className="h-9 w-9 bg-red-500 hover:bg-red-600"
+          >
+            {loading && actionType === 'absent' ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <X size={16} />
+            )}
+          </Button>
+        </div>
+      </div>
+      
+      {/* Edit Dialog */}
+      <Dialog>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Subject</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Subject Name</Label>
+              <Input 
+                id="name" 
+                name="name"
+                value={editValues.name} 
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="classes_attended">Classes Attended</Label>
+              <Input 
+                id="classes_attended" 
+                name="classes_attended"
+                type="number"
+                min="0"
+                max={editValues.classes_conducted}
+                value={editValues.classes_attended} 
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="classes_conducted">Classes Conducted</Label>
+              <Input 
+                id="classes_conducted" 
+                name="classes_conducted"
+                type="number"
+                min={editValues.classes_attended}
+                value={editValues.classes_conducted} 
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="required_percentage">Required Percentage</Label>
+              <Input 
+                id="required_percentage" 
+                name="required_percentage"
+                type="number"
+                min="0"
+                max="100"
+                value={editValues.required_percentage} 
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button 
+              onClick={handleEdit} 
+              disabled={loading && actionType === 'edit'}
+            >
+              {loading && actionType === 'edit' ? (
+                <Loader2 size={18} className="animate-spin mr-2" />
+              ) : null}
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 };
 
