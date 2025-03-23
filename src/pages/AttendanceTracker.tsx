@@ -52,6 +52,11 @@ const AttendanceTracker = () => {
     }
   };
 
+  // Handle subject deletion
+  const handleDeleteSubject = (id: string) => {
+    setSubjects(subjects.filter(subject => subject.id !== id));
+  };
+
   // Calculate overall attendance percentage
   const calculateOverallAttendance = () => {
     if (subjects.length === 0) return 0;
@@ -160,6 +165,7 @@ const AttendanceTracker = () => {
                 <SubjectCard
                   key={subject.id}
                   subject={subject}
+                  onDelete={handleDeleteSubject}
                   onUpdate={fetchSubjects}
                 />
               ))}
