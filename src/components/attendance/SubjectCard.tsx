@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Subject, AttendanceSuggestion } from '@/types';
 import { supabase, handleError } from '@/lib/supabase';
@@ -52,7 +51,6 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
     const currentPercentage = conducted > 0 ? (attended / conducted) * 100 : 0;
     
     if (currentPercentage >= required) {
-      // Can bunk classes
       let classesToBunk = 0;
       let simulatedAttended = attended;
       let simulatedConducted = conducted;
@@ -66,7 +64,6 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
       
       return { type: 'bunk', count: classesToBunk };
     } else {
-      // Need to attend classes
       let classesToAttend = 0;
       let simulatedAttended = attended;
       let simulatedConducted = conducted;
@@ -165,7 +162,6 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
       setLoading(true);
       setActionType('edit');
 
-      // Validate the inputs
       if (
         editValues.classes_attended > editValues.classes_conducted ||
         editValues.classes_attended < 0 ||
@@ -209,7 +205,6 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
   
   return (
     <div className="flex items-start justify-between p-4 bg-background hover:bg-muted/30 rounded-lg transition-colors">
-      {/* Left side content */}
       <div className="flex flex-col">
         <h3 className="text-xl font-bold text-foreground mb-1">
           {subject.name.toLowerCase()}
@@ -225,16 +220,83 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
           )}
         </div>
         <div className="flex items-center gap-2 mt-3">
-          <DialogTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="h-7 px-2 text-xs"
-            >
-              <Edit size={14} className="mr-1" />
-              Edit
-            </Button>
-          </DialogTrigger>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="h-7 px-2 text-xs"
+              >
+                <Edit size={14} className="mr-1" />
+                Edit
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit Subject</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Subject Name</Label>
+                  <Input 
+                    id="name" 
+                    name="name"
+                    value={editValues.name} 
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="classes_attended">Classes Attended</Label>
+                  <Input 
+                    id="classes_attended" 
+                    name="classes_attended"
+                    type="number"
+                    min="0"
+                    max={editValues.classes_conducted}
+                    value={editValues.classes_attended} 
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="classes_conducted">Classes Conducted</Label>
+                  <Input 
+                    id="classes_conducted" 
+                    name="classes_conducted"
+                    type="number"
+                    min={editValues.classes_attended}
+                    value={editValues.classes_conducted} 
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="required_percentage">Required Percentage</Label>
+                  <Input 
+                    id="required_percentage" 
+                    name="required_percentage"
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={editValues.required_percentage} 
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">Cancel</Button>
+                </DialogClose>
+                <Button 
+                  onClick={handleEdit} 
+                  disabled={loading && actionType === 'edit'}
+                >
+                  {loading && actionType === 'edit' ? (
+                    <Loader2 size={18} className="animate-spin mr-2" />
+                  ) : null}
+                  Save Changes
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
           
           <Dialog>
             <DialogTrigger asChild>
@@ -274,9 +336,7 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
         </div>
       </div>
       
-      {/* Right side - circular progress and action buttons */}
       <div className="flex flex-col items-center">
-        {/* Circular progress indicator */}
         <div className="relative h-24 w-24 mb-3">
           <div 
             className="absolute inset-0 rounded-full flex items-center justify-center border-4 border-muted"
@@ -296,7 +356,6 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
           </div>
         </div>
         
-        {/* Attendance action buttons */}
         <div className="flex gap-2">
           <Button
             onClick={markPresent}
@@ -325,75 +384,6 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
           </Button>
         </div>
       </div>
-      
-      {/* Edit Dialog */}
-      <Dialog>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Subject</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Subject Name</Label>
-              <Input 
-                id="name" 
-                name="name"
-                value={editValues.name} 
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="classes_attended">Classes Attended</Label>
-              <Input 
-                id="classes_attended" 
-                name="classes_attended"
-                type="number"
-                min="0"
-                max={editValues.classes_conducted}
-                value={editValues.classes_attended} 
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="classes_conducted">Classes Conducted</Label>
-              <Input 
-                id="classes_conducted" 
-                name="classes_conducted"
-                type="number"
-                min={editValues.classes_attended}
-                value={editValues.classes_conducted} 
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="required_percentage">Required Percentage</Label>
-              <Input 
-                id="required_percentage" 
-                name="required_percentage"
-                type="number"
-                min="0"
-                max="100"
-                value={editValues.required_percentage} 
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <Button 
-              onClick={handleEdit} 
-              disabled={loading && actionType === 'edit'}
-            >
-              {loading && actionType === 'edit' ? (
-                <Loader2 size={18} className="animate-spin mr-2" />
-              ) : null}
-              Save Changes
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
