@@ -34,3 +34,19 @@ export interface AttendanceSuggestion {
   type: 'attend' | 'bunk';
   count: number;
 }
+
+export interface Assignment {
+  id: string;
+  user_id: string;
+  subject: string;
+  title: string;
+  deadline: Date;
+  completed: boolean;
+  created_at: string;
+}
+
+export interface AssignmentForm {
+  subject: string;
+  title: string;
+  deadline: Date;
+}

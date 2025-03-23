@@ -1,388 +1,396 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Subject, AttendanceSuggestion } from '@/types';
-import { supabase, handleError } from '@/lib/supabase';
-import { Check, X, Loader2, Edit, Trash2 } from 'lucide-react';
-import { toast } from 'sonner';
-import { Progress } from '@/components/ui/progress';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogTrigger,
-  DialogClose,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { toast } from 'sonner';
+import { supabase, handleError } from '@/lib/supabase';
 
 interface SubjectCardProps {
   subject: Subject;
-  onUpdate: () => void;
+  onDelete: (id: string) => void;
+  onUpdate: (subject: Subject) => void;
 }
 
-const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [actionType, setActionType] = useState<string | null>(null);
-  const [editValues, setEditValues] = useState({
-    name: subject.name,
-    classes_attended: subject.classes_attended,
-    classes_conducted: subject.classes_conducted,
-    required_percentage: subject.required_percentage
+const SubjectCard = ({ subject, onDelete, onUpdate }: SubjectCardProps) => {
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  const formSchema = z.object({
+    name: z.string().min(1, {
+      message: "Subject name is required.",
+    }),
+    classes_attended: z.number().min(0, {
+      message: "Classes attended must be a non-negative number.",
+    }),
+    classes_conducted: z.number().min(1, {
+      message: "Classes conducted must be at least 1.",
+    }),
+    required_percentage: z.number().min(1, {
+      message: "Required percentage must be at least 1.",
+    }).max(100, {
+      message: "Required percentage cannot exceed 100.",
+    }),
   });
-  
-  const attendancePercentage = subject.classes_conducted > 0
-    ? Math.round((subject.classes_attended / subject.classes_conducted) * 100 * 10) / 10
-    : 0;
-  
-  const getAttendanceColor = (percentage: number, required: number) => {
-    if (percentage >= required) return 'text-green-500 dark:text-green-400';
-    return 'text-red-500 dark:text-red-400';
-  };
 
-  const getProgressColor = (percentage: number, required: number) => {
-    if (percentage >= required) return 'bg-green-500';
-    return 'bg-red-500';
-  };
-  
-  const getSuggestion = (attended: number, conducted: number, required: number): AttendanceSuggestion => {
-    const currentPercentage = conducted > 0 ? (attended / conducted) * 100 : 0;
-    
-    if (currentPercentage >= required) {
-      let classesToBunk = 0;
-      let simulatedAttended = attended;
-      let simulatedConducted = conducted;
-      
-      while (true) {
-        simulatedConducted += 1;
-        const newPercentage = (simulatedAttended / simulatedConducted) * 100;
-        if (newPercentage < required) break;
-        classesToBunk += 1;
-      }
-      
-      return { type: 'bunk', count: classesToBunk };
-    } else {
-      let classesToAttend = 0;
-      let simulatedAttended = attended;
-      let simulatedConducted = conducted;
-      
-      while (true) {
-        simulatedAttended += 1;
-        simulatedConducted += 1;
-        const newPercentage = (simulatedAttended / simulatedConducted) * 100;
-        classesToAttend += 1;
-        if (newPercentage >= required) break;
-      }
-      
-      return { type: 'attend', count: classesToAttend };
-    }
-  };
-  
-  const suggestion = getSuggestion(
-    subject.classes_attended, 
-    subject.classes_conducted, 
-    subject.required_percentage
-  );
-  
-  const markPresent = async () => {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: subject.name,
+      classes_attended: subject.classes_attended,
+      classes_conducted: subject.classes_conducted,
+      required_percentage: subject.required_percentage,
+    },
+    mode: "onChange",
+  });
+
+  async function editSubject(values: z.infer<typeof formSchema>) {
     try {
-      setLoading(true);
-      setActionType('present');
-      
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('subjects')
         .update({
-          classes_attended: subject.classes_attended + 1,
-          classes_conducted: subject.classes_conducted + 1,
+          name: values.name,
+          classes_attended: values.classes_attended,
+          classes_conducted: values.classes_conducted,
+          required_percentage: values.required_percentage,
         })
-        .eq('id', subject.id);
-      
-      if (error) throw error;
-      
-      toast.success(`Marked present for ${subject.name}`);
-      onUpdate();
+        .eq('id', subject.id)
+        .select();
+
+      if (error) {
+        handleError(error);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        onUpdate({
+          ...subject,
+          name: values.name,
+          classes_attended: values.classes_attended,
+          classes_conducted: values.classes_conducted,
+          required_percentage: values.required_percentage,
+        });
+        toast.success("Subject updated successfully!");
+      } else {
+        toast.error("Failed to update subject.");
+      }
     } catch (error) {
       handleError(error);
     } finally {
-      setLoading(false);
-      setActionType(null);
+      setIsEditDialogOpen(false);
     }
-  };
-  
-  const markAbsent = async () => {
-    try {
-      setLoading(true);
-      setActionType('absent');
-      
-      const { error } = await supabase
-        .from('subjects')
-        .update({
-          classes_conducted: subject.classes_conducted + 1,
-        })
-        .eq('id', subject.id);
-      
-      if (error) throw error;
-      
-      toast.success(`Marked absent for ${subject.name}`);
-      onUpdate();
-    } catch (error) {
-      handleError(error);
-    } finally {
-      setLoading(false);
-      setActionType(null);
-    }
+  }
+
+  const handleEditSubmit = (values: z.infer<typeof formSchema>) => {
+    editSubject(values);
   };
 
-  const handleDelete = async () => {
+  async function deleteSubject() {
     try {
-      setLoading(true);
-      setActionType('delete');
-      
       const { error } = await supabase
         .from('subjects')
         .delete()
         .eq('id', subject.id);
-      
-      if (error) throw error;
-      
-      toast.success(`Deleted ${subject.name}`);
-      onUpdate();
-    } catch (error) {
-      handleError(error);
-    } finally {
-      setLoading(false);
-      setActionType(null);
-    }
-  };
 
-  const handleEdit = async () => {
-    try {
-      setLoading(true);
-      setActionType('edit');
-
-      if (
-        editValues.classes_attended > editValues.classes_conducted ||
-        editValues.classes_attended < 0 ||
-        editValues.classes_conducted < 0 ||
-        editValues.required_percentage < 0 ||
-        editValues.required_percentage > 100 ||
-        !editValues.name.trim()
-      ) {
-        throw new Error('Please enter valid values');
+      if (error) {
+        handleError(error);
+        return;
       }
-      
-      const { error } = await supabase
-        .from('subjects')
-        .update({
-          name: editValues.name,
-          classes_attended: editValues.classes_attended,
-          classes_conducted: editValues.classes_conducted,
-          required_percentage: editValues.required_percentage
-        })
-        .eq('id', subject.id);
-      
-      if (error) throw error;
-      
-      toast.success(`Updated ${editValues.name}`);
-      onUpdate();
+
+      onDelete(subject.id);
+      toast.success("Subject deleted successfully!");
     } catch (error) {
       handleError(error);
     } finally {
-      setLoading(false);
-      setActionType(null);
+      setIsDeleteDialogOpen(false);
+    }
+  }
+
+  const handleDelete = () => {
+    deleteSubject();
+  };
+
+  async function markPresent() {
+    try {
+      const { data, error } = await supabase
+        .from('subjects')
+        .update({ classes_attended: subject.classes_attended + 1, classes_conducted: subject.classes_conducted + 1 })
+        .eq('id', subject.id)
+        .select();
+
+      if (error) {
+        handleError(error);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        onUpdate({
+          ...subject,
+          classes_attended: subject.classes_attended + 1,
+          classes_conducted: subject.classes_conducted + 1,
+        });
+        toast.success("Attendance marked successfully!");
+      } else {
+        toast.error("Failed to mark attendance.");
+      }
+    } catch (error) {
+      handleError(error);
+    }
+  }
+
+  async function markAbsent() {
+    try {
+      const { data, error } = await supabase
+        .from('subjects')
+        .update({ classes_conducted: subject.classes_conducted + 1 })
+        .eq('id', subject.id)
+        .select();
+
+      if (error) {
+        handleError(error);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        onUpdate({
+          ...subject,
+          classes_conducted: subject.classes_conducted + 1,
+        });
+        toast.success("Absence marked successfully!");
+      } else {
+        toast.error("Failed to mark absence.");
+      }
+    } catch (error) {
+      handleError(error);
+    }
+  }
+
+  const markAttendance = async (isPresent: boolean) => {
+    if (isPresent) {
+      await markPresent();
+    } else {
+      await markAbsent();
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setEditValues(prev => ({
-      ...prev,
-      [name]: name === 'name' ? value : parseInt(value) || 0
-    }));
-  };
-  
+  // Calculate attendance percentage
+  const attendancePercentage = subject.classes_attended > 0
+    ? (subject.classes_attended / subject.classes_conducted) * 100
+    : 0;
+
+  // Determine if the student meets the required percentage
+  const meetsRequirement = attendancePercentage >= subject.required_percentage;
+
+  // Determine suggestion message
+  let suggestionType: 'attend' | 'bunk' = 'attend';
+  let suggestionCount = 0;
+
+  if (meetsRequirement) {
+    // Calculate how many more classes can be missed
+    suggestionType = 'bunk';
+    const currentAttendance = subject.classes_attended;
+    const currentTotal = subject.classes_conducted;
+    
+    let counter = 0;
+    let tempTotal = currentTotal;
+    let tempAttendance = currentAttendance;
+    
+    while ((tempAttendance / tempTotal) * 100 >= subject.required_percentage) {
+      tempTotal += 1;
+      counter += 1;
+    }
+    
+    suggestionCount = counter - 1 >= 0 ? counter - 1 : 0;
+  } else {
+    // Calculate how many consecutive classes need to be attended
+    suggestionType = 'attend';
+    const currentAttendance = subject.classes_attended;
+    const currentTotal = subject.classes_conducted;
+    const requiredPercentage = subject.required_percentage;
+    
+    let counter = 0;
+    let tempTotal = currentTotal;
+    let tempAttendance = currentAttendance;
+    
+    while ((tempAttendance / tempTotal) * 100 < requiredPercentage) {
+      tempTotal += 1;
+      tempAttendance += 1;
+      counter += 1;
+    }
+    
+    suggestionCount = counter;
+  }
+
   return (
-    <div className="flex items-start justify-between p-4 bg-background hover:bg-muted/30 rounded-lg transition-colors">
-      <div className="flex flex-col">
-        <h3 className="text-xl font-bold text-foreground mb-1">
-          {subject.name.toLowerCase()}
-        </h3>
-        <div className="text-lg font-bold mb-1">
-          {subject.classes_attended}/{subject.classes_conducted}
+    <div className="group relative flex flex-row justify-between items-start p-4 rounded-lg border border-border/50 dark:border-white/10 bg-background/50 hover:bg-background/80 transition-colors mb-3">
+      <div className="flex flex-col max-w-[65%]">
+        <h3 className="text-base sm:text-lg font-bold text-foreground mb-1">{subject.name.toLowerCase()}</h3>
+        <p className="text-base font-bold text-foreground/90">{subject.classes_attended}/{subject.classes_conducted}</p>
+        <p className="text-xs text-muted-foreground mt-1">
+          {meetsRequirement 
+            ? `On Track, May miss: ${suggestionCount}` 
+            : `Need to attend: ${suggestionCount}`}
+        </p>
+      </div>
+      
+      <div className="flex flex-col items-end">
+        <div className="relative w-16 h-16">
+          <svg className="w-16 h-16" viewBox="0 0 36 36">
+            <path
+              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+              fill="none"
+              stroke={meetsRequirement ? "#22c55e" : "#ef4444"}
+              strokeWidth="3"
+              strokeDasharray={`${attendancePercentage}, 100`}
+            />
+            <text x="18" y="20.35" textAnchor="middle" className="text-xs font-medium fill-foreground">
+              {attendancePercentage.toFixed(1)}%
+            </text>
+          </svg>
         </div>
-        <div className="text-sm text-muted-foreground">
-          {suggestion.type === 'bunk' ? (
-            <span>On Track. May miss: {suggestion.count}</span>
-          ) : (
-            <span>Classes needed to attend: {suggestion.count}</span>
-          )}
-        </div>
-        <div className="flex items-center gap-2 mt-3">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                className="h-7 px-2 text-xs"
-              >
-                <Edit size={14} className="mr-1" />
-                Edit
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Edit Subject</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Subject Name</Label>
-                  <Input 
-                    id="name" 
-                    name="name"
-                    value={editValues.name} 
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="classes_attended">Classes Attended</Label>
-                  <Input 
-                    id="classes_attended" 
-                    name="classes_attended"
-                    type="number"
-                    min="0"
-                    max={editValues.classes_conducted}
-                    value={editValues.classes_attended} 
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="classes_conducted">Classes Conducted</Label>
-                  <Input 
-                    id="classes_conducted" 
-                    name="classes_conducted"
-                    type="number"
-                    min={editValues.classes_attended}
-                    value={editValues.classes_conducted} 
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="required_percentage">Required Percentage</Label>
-                  <Input 
-                    id="required_percentage" 
-                    name="required_percentage"
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={editValues.required_percentage} 
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="outline">Cancel</Button>
-                </DialogClose>
-                <Button 
-                  onClick={handleEdit} 
-                  disabled={loading && actionType === 'edit'}
-                >
-                  {loading && actionType === 'edit' ? (
-                    <Loader2 size={18} className="animate-spin mr-2" />
-                  ) : null}
-                  Save Changes
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+        
+        <div className="flex space-x-2 mt-2">
+          <button
+            onClick={() => markAttendance(true)}
+            className="p-1 rounded-full bg-green-500/10 text-green-500 hover:bg-green-500/20 transition-colors"
+            aria-label="Mark present"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </button>
           
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                className="h-7 px-2 text-xs text-red-500 hover:text-red-600 hover:bg-red-100/10"
-              >
-                <Trash2 size={14} className="mr-1" />
-                Delete
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Delete Subject</DialogTitle>
-              </DialogHeader>
-              <div className="py-4">
-                <p>Are you sure you want to delete <span className="font-medium">{subject.name}</span>? This action cannot be undone.</p>
-              </div>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="outline">Cancel</Button>
-                </DialogClose>
-                <Button 
-                  onClick={handleDelete} 
-                  disabled={loading && actionType === 'delete'}
-                  variant="destructive"
-                >
-                  {loading && actionType === 'delete' ? (
-                    <Loader2 size={18} className="animate-spin mr-2" />
-                  ) : null}
-                  Delete
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <button
+            onClick={() => markAttendance(false)}
+            className="p-1 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
+            aria-label="Mark absent"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
       </div>
       
-      <div className="flex flex-col items-center">
-        <div className="relative h-24 w-24 mb-3">
-          <div 
-            className="absolute inset-0 rounded-full flex items-center justify-center border-4 border-muted"
-            style={{
-              background: `conic-gradient(
-                ${attendancePercentage >= subject.required_percentage ? '#22c55e' : '#ef4444'} 
-                ${attendancePercentage * 3.6}deg, 
-                rgba(255, 255, 255, 0.1) 0
-              )`
-            }}
-          >
-            <div className="bg-background h-[80%] w-[80%] rounded-full flex items-center justify-center">
-              <span className={cn("font-bold text-lg", getAttendanceColor(attendancePercentage, subject.required_percentage))}>
-                {attendancePercentage}%
-              </span>
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex gap-2">
-          <Button
-            onClick={markPresent}
-            disabled={loading}
-            size="icon"
-            className="h-9 w-9 bg-green-500 hover:bg-green-600"
-          >
-            {loading && actionType === 'present' ? (
-              <Loader2 size={16} className="animate-spin" />
-            ) : (
-              <Check size={16} />
-            )}
-          </Button>
-          
-          <Button
-            onClick={markAbsent}
-            disabled={loading}
-            size="icon"
-            className="h-9 w-9 bg-red-500 hover:bg-red-600"
-          >
-            {loading && actionType === 'absent' ? (
-              <Loader2 size={16} className="animate-spin" />
-            ) : (
-              <X size={16} />
-            )}
-          </Button>
-        </div>
+      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
+        <Dialog>
+          <DialogTrigger asChild>
+            <button
+              onClick={() => setIsEditDialogOpen(true)}
+              className="p-1 text-xs text-muted-foreground hover:text-foreground"
+              aria-label="Edit subject"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+            </button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Subject</DialogTitle>
+              <DialogDescription>
+                Update the subject details below.
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleEditSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Subject Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Subject name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="classes_attended"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Classes Attended</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="Classes attended" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="classes_conducted"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Classes Conducted</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="Classes conducted" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="required_percentage"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Required Percentage</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="Required percentage"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <DialogFooter>
+                  <Button type="submit" disabled={!form.formState.isValid}>Save changes</Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog>
+          <DialogTrigger asChild>
+            <button
+              onClick={() => setIsDeleteDialogOpen(true)}
+              className="p-1 text-xs text-muted-foreground hover:text-destructive"
+              aria-label="Delete subject"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Subject</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete this subject? This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={handleDelete}>
+                Delete
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
