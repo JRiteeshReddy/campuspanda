@@ -6,18 +6,10 @@ import {
   CardContent,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, X } from 'lucide-react';
-import { format, isSameDay, addDays, differenceInDays } from 'date-fns';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Plus } from 'lucide-react';
+import { format, addDays } from 'date-fns';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import Navbar from '@/components/layout/Navbar';
 import AssignmentCard from '@/components/assignment/AssignmentCard';
 import NewAssignmentForm from '@/components/assignment/NewAssignmentForm';
@@ -28,35 +20,7 @@ const AssignmentTracker = () => {
   const [selectedMonthOffset, setSelectedMonthOffset] = useState(0);
   const [isNewAssignmentDialogOpen, setIsNewAssignmentDialogOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [assignments, setAssignments] = useState<Assignment[]>([
-    {
-      id: '1',
-      user_id: '1',
-      subject: 'os',
-      title: 'Process Scheduling Assignment',
-      deadline: addDays(new Date(), 5),
-      completed: false,
-      created_at: new Date().toISOString()
-    },
-    {
-      id: '2',
-      user_id: '1',
-      subject: 'dbms',
-      title: 'ER Diagram Project',
-      deadline: addDays(new Date(), 2),
-      completed: false,
-      created_at: new Date().toISOString()
-    },
-    {
-      id: '3',
-      user_id: '1',
-      subject: 'networks',
-      title: 'TCP/IP Implementation',
-      deadline: addDays(new Date(), 0),
-      completed: false,
-      created_at: new Date().toISOString()
-    }
-  ]);
+  const [assignments, setAssignments] = useState<Assignment[]>([]);
 
   const handleDateSelect = (day: Date | undefined) => {
     if (day) {
@@ -87,11 +51,6 @@ const AssignmentTracker = () => {
     setAssignments(assignments.filter(assignment => assignment.id !== assignmentId));
   };
 
-  // Function to get assignment dates for calendar highlighting
-  const getAssignmentDates = () => {
-    return assignments.map(assignment => new Date(assignment.deadline));
-  };
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
@@ -103,12 +62,11 @@ const AssignmentTracker = () => {
           <CardContent className="p-4 sm:p-6">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-medium">Calendar</h2>
-              <Tabs defaultValue="0" className="w-auto">
+              <Tabs value={selectedMonthOffset.toString()} className="w-auto">
                 <TabsList>
                   <TabsTrigger value="0" onClick={() => handleMonthChange(0)}>Current</TabsTrigger>
                   <TabsTrigger value="1" onClick={() => handleMonthChange(1)}>Next</TabsTrigger>
                   <TabsTrigger value="2" onClick={() => handleMonthChange(2)}>+2</TabsTrigger>
-                  <TabsTrigger value="3" onClick={() => handleMonthChange(3)}>+3</TabsTrigger>
                 </TabsList>
               </Tabs>
             </div>

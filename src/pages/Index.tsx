@@ -45,7 +45,7 @@ const Index = () => {
             </button>
             
             {/* Assignment Tracker */}
-            <button onClick={() => handleGetStarted('/attendance')} className="square-button group dark:bg-white/5 dark:border-white/10 dark:text-white">
+            <button onClick={() => handleGetStarted('/assignments')} className="square-button group dark:bg-white/5 dark:border-white/10 dark:text-white">
               <div className="mb-4 p-4 w-16 h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
                 <CalendarCheck size={30} />
               </div>
