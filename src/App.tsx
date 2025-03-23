@@ -2,11 +2,11 @@
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 // Pages
 import Index from "./pages/Index";
@@ -34,17 +34,18 @@ const App = () => {
   return (
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <BrowserRouter>
-            <ThemeProvider>
-              <AuthProvider>
+        <BrowserRouter>
+          <ThemeProvider>
+            <AuthProvider>
+              {/* Move TooltipProvider inside here after BrowserRouter */}
+              <TooltipProvider>
                 <AppRoutes />
                 <Toaster />
                 <Sonner position="top-right" closeButton />
-              </AuthProvider>
-            </ThemeProvider>
-          </BrowserRouter>
-        </TooltipProvider>
+              </TooltipProvider>
+            </AuthProvider>
+          </ThemeProvider>
+        </BrowserRouter>
       </QueryClientProvider>
     </React.StrictMode>
   );

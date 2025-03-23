@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Subject, AttendanceSuggestion } from '@/types';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -177,20 +177,16 @@ const SubjectCard = ({ subject, onDelete, onUpdate }: SubjectCardProps) => {
     }
   };
 
-  // Calculate attendance percentage
   const attendancePercentage = subject.classes_attended > 0
     ? (subject.classes_attended / subject.classes_conducted) * 100
     : 0;
 
-  // Determine if the student meets the required percentage
   const meetsRequirement = attendancePercentage >= subject.required_percentage;
 
-  // Determine suggestion message
   let suggestionType: 'attend' | 'bunk' = 'attend';
   let suggestionCount = 0;
 
   if (meetsRequirement) {
-    // Calculate how many more classes can be missed
     suggestionType = 'bunk';
     const currentAttendance = subject.classes_attended;
     const currentTotal = subject.classes_conducted;
@@ -206,7 +202,6 @@ const SubjectCard = ({ subject, onDelete, onUpdate }: SubjectCardProps) => {
     
     suggestionCount = counter - 1 >= 0 ? counter - 1 : 0;
   } else {
-    // Calculate how many consecutive classes need to be attended
     suggestionType = 'attend';
     const currentAttendance = subject.classes_attended;
     const currentTotal = subject.classes_conducted;
@@ -226,7 +221,7 @@ const SubjectCard = ({ subject, onDelete, onUpdate }: SubjectCardProps) => {
   }
 
   return (
-    <div className="group relative flex flex-row justify-between items-start p-4 rounded-lg border border-border/50 dark:border-white/10 bg-background/50 hover:bg-background/80 transition-colors mb-3">
+    <div className="group relative flex flex-row justify-between items-start p-4 rounded-lg border border-border bg-background/50 hover:bg-background/80 transition-colors mb-3">
       <div className="flex flex-col max-w-[65%]">
         <h3 className="text-base sm:text-lg font-bold text-foreground mb-1">{subject.name.toLowerCase()}</h3>
         <p className="text-base font-bold text-foreground/90">{subject.classes_attended}/{subject.classes_conducted}</p>
@@ -397,3 +392,4 @@ const SubjectCard = ({ subject, onDelete, onUpdate }: SubjectCardProps) => {
 };
 
 export default SubjectCard;
+
