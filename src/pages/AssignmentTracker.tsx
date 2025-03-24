@@ -197,27 +197,25 @@ const AssignmentTracker = () => {
       )
   };
 
-  const modifiersClassNames = {
-    assignment: (day: Date) => {
-      const assignment = assignments.find(a => isSameDay(new Date(a.deadline), day));
-      
-      if (!assignment) return "";
-      
-      if (assignment.completed) {
-        return "bg-green-500 text-white rounded-full";
-      }
-      
-      const daysUntilDeadline = Math.ceil(
-        (new Date(assignment.deadline).getTime() - new Date().setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24)
-      );
-      
-      if (daysUntilDeadline <= 1) {
-        return "bg-red-500 text-white rounded-full";
-      } else if (daysUntilDeadline <= 3) {
-        return "bg-yellow-500 text-white rounded-full";
-      } else {
-        return "bg-green-500 text-white rounded-full";
-      }
+  const getAssignmentStyles = (day: Date) => {
+    const assignment = assignments.find(a => isSameDay(new Date(a.deadline), day));
+    
+    if (!assignment) return undefined;
+    
+    if (assignment.completed) {
+      return { backgroundColor: '#22c55e', color: 'white', borderRadius: '9999px' };
+    }
+    
+    const daysUntilDeadline = Math.ceil(
+      (new Date(assignment.deadline).getTime() - new Date().setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24)
+    );
+    
+    if (daysUntilDeadline <= 1) {
+      return { backgroundColor: '#ef4444', color: 'white', borderRadius: '9999px' };
+    } else if (daysUntilDeadline <= 3) {
+      return { backgroundColor: '#eab308', color: 'white', borderRadius: '9999px' };
+    } else {
+      return { backgroundColor: '#22c55e', color: 'white', borderRadius: '9999px' };
     }
   };
 
@@ -248,25 +246,13 @@ const AssignmentTracker = () => {
               month={date}
               className="rounded-md border pointer-events-auto mx-auto"
               modifiers={{
-                assignment: (day) => 
+                assignment: (day: Date) => 
                   assignments.some(assignment => 
                     isSameDay(new Date(assignment.deadline), day)
                   )
               }}
               modifiersStyles={{
-                assignment: (day) => {
-                  const className = getDayClassNames(day);
-                  if (className) {
-                    if (className.includes('bg-red-500')) {
-                      return { backgroundColor: '#ef4444', color: 'white', borderRadius: '9999px' };
-                    } else if (className.includes('bg-yellow-500')) {
-                      return { backgroundColor: '#eab308', color: 'white', borderRadius: '9999px' };
-                    } else if (className.includes('bg-green-500')) {
-                      return { backgroundColor: '#22c55e', color: 'white', borderRadius: '9999px' };
-                    }
-                  }
-                  return {};
-                }
+                assignment: getAssignmentStyles
               }}
               onMonthChange={setDate}
               onPrevious={handlePreviousMonth}
