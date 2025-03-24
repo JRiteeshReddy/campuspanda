@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -190,33 +191,19 @@ const AssignmentTracker = () => {
     }
   };
 
+  // Remove the getAssignmentStyles function and replace with this:
+  // Instead of having a function that returns style objects, define the styles directly
+  const assignmentStyles = {
+    backgroundColor: "transparent", // Default styles that will be overridden by inline styles
+    color: "inherit",
+    borderRadius: "0"
+  };
+
   const modifiers = {
     assignment: (day: Date) => 
       assignments.some(assignment => 
         isSameDay(new Date(assignment.deadline), day)
       )
-  };
-
-  const getAssignmentStyles = (day: Date) => {
-    const assignment = assignments.find(a => isSameDay(new Date(a.deadline), day));
-    
-    if (!assignment) return undefined;
-    
-    if (assignment.completed) {
-      return { backgroundColor: '#22c55e', color: 'white', borderRadius: '9999px' };
-    }
-    
-    const daysUntilDeadline = Math.ceil(
-      (new Date(assignment.deadline).getTime() - new Date().setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24)
-    );
-    
-    if (daysUntilDeadline <= 1) {
-      return { backgroundColor: '#ef4444', color: 'white', borderRadius: '9999px' };
-    } else if (daysUntilDeadline <= 3) {
-      return { backgroundColor: '#eab308', color: 'white', borderRadius: '9999px' };
-    } else {
-      return { backgroundColor: '#22c55e', color: 'white', borderRadius: '9999px' };
-    }
   };
 
   return (
@@ -245,18 +232,47 @@ const AssignmentTracker = () => {
               onSelect={handleDateSelect}
               month={date}
               className="rounded-md border pointer-events-auto mx-auto"
-              modifiers={{
-                assignment: (day: Date) => 
-                  assignments.some(assignment => 
-                    isSameDay(new Date(assignment.deadline), day)
-                  )
-              }}
+              modifiers={modifiers}
               modifiersStyles={{
-                assignment: getAssignmentStyles
+                assignment: assignmentStyles
               }}
               onMonthChange={setDate}
               onPrevious={handlePreviousMonth}
               onNext={handleNextMonth}
+              components={{
+                DayContent: (props) => {
+                  const day = props.date;
+                  const assignment = assignments.find(a => isSameDay(new Date(a.deadline), day));
+                  
+                  if (!assignment) {
+                    return <div>{props.date.getDate()}</div>;
+                  }
+                  
+                  let style = {};
+                  
+                  if (assignment.completed) {
+                    style = { backgroundColor: '#22c55e', color: 'white', borderRadius: '9999px' };
+                  } else {
+                    const daysUntilDeadline = Math.ceil(
+                      (new Date(assignment.deadline).getTime() - new Date().setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24)
+                    );
+                    
+                    if (daysUntilDeadline <= 1) {
+                      style = { backgroundColor: '#ef4444', color: 'white', borderRadius: '9999px' };
+                    } else if (daysUntilDeadline <= 3) {
+                      style = { backgroundColor: '#eab308', color: 'white', borderRadius: '9999px' };
+                    } else {
+                      style = { backgroundColor: '#22c55e', color: 'white', borderRadius: '9999px' };
+                    }
+                  }
+                  
+                  return (
+                    <div style={style} className="flex items-center justify-center w-full h-full">
+                      {props.date.getDate()}
+                    </div>
+                  );
+                }
+              }}
             />
           </CardContent>
         </Card>
