@@ -34,19 +34,21 @@ const AppRoutes = () => (
 
 const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <ThemeProvider>
-          <AuthProvider>
-            <TooltipProvider>
-              <AppRoutes />
-              <Toaster />
-              <Sonner position="top-right" closeButton />
-            </TooltipProvider>
-          </AuthProvider>
-        </ThemeProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <React.StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <ThemeProvider>
+            <AuthProvider>
+              <TooltipProvider>
+                <AppRoutes />
+                <Toaster />
+                <Sonner position="top-right" closeButton />
+              </TooltipProvider>
+            </AuthProvider>
+          </ThemeProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </React.StrictMode>
   );
 };
 
