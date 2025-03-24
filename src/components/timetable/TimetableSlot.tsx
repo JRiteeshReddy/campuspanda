@@ -27,13 +27,13 @@ const TimetableSlot: React.FC<TimetableSlotProps> = ({
     ? 'bg-green-500/20 dark:bg-green-500/30 hover:bg-green-500/30' 
     : attendanceStatus === 'bad'
     ? 'bg-red-500/20 dark:bg-red-500/30 hover:bg-red-500/30'
-    : 'bg-primary/10 dark:bg-primary/20 hover:bg-primary/5';
+    : 'bg-primary/10 dark:bg-primary/20 hover:bg-primary/20';
 
   const textColorClass = attendanceStatus === 'good'
     ? 'text-green-700 dark:text-green-400'
     : attendanceStatus === 'bad'
     ? 'text-red-700 dark:text-red-400'
-    : '';
+    : 'text-foreground';
 
   return (
     <div className={`w-full h-full flex flex-col p-1 cursor-pointer transition-colors ${bgColorClass}`}>
