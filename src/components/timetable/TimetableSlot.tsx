@@ -30,14 +30,14 @@ const TimetableSlot: React.FC<TimetableSlotProps> = ({
     : 'bg-primary/10 dark:bg-primary/20 hover:bg-primary/20';
 
   const textColorClass = attendanceStatus === 'good'
-    ? 'text-green-700 dark:text-green-400'
+    ? 'text-green-700 dark:text-green-400 font-medium'
     : attendanceStatus === 'bad'
-    ? 'text-red-700 dark:text-red-400'
-    : 'text-foreground';
+    ? 'text-red-700 dark:text-red-400 font-medium'
+    : 'text-foreground font-medium';
 
   return (
     <div className={`w-full h-full flex flex-col p-1 cursor-pointer transition-colors ${bgColorClass}`}>
-      <span className={`font-medium text-xs truncate ${textColorClass}`}>{subjectName}</span>
+      <span className={`text-xs truncate ${textColorClass}`}>{subjectName}</span>
       {location && <span className="text-[10px] text-muted-foreground truncate">{location}</span>}
     </div>
   );

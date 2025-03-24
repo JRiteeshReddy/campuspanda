@@ -119,7 +119,9 @@ const TimetableEntryDialog: React.FC<TimetableEntryDialogProps> = ({
             </div>
             
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="location">Classroom / Location</Label>
+              <Label htmlFor="location" className="flex items-center">
+                Classroom / Location <span className="text-xs text-muted-foreground ml-1">(optional)</span>
+              </Label>
               <Input
                 id="location"
                 value={location}
@@ -129,7 +131,9 @@ const TimetableEntryDialog: React.FC<TimetableEntryDialogProps> = ({
             </div>
             
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="notes">Notes</Label>
+              <Label htmlFor="notes" className="flex items-center">
+                Notes <span className="text-xs text-muted-foreground ml-1">(optional)</span>
+              </Label>
               <Textarea
                 id="notes"
                 value={notes}
