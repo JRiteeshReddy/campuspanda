@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase, handleError } from '@/lib/supabase';
@@ -35,15 +36,15 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
 
   const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const timeSlots = [
-    { start: '08:00', end: '09:00', label: '8 AM - 9 AM' },
-    { start: '09:00', end: '10:00', label: '9 AM - 10 AM' },
-    { start: '10:00', end: '11:00', label: '10 AM - 11 AM' },
-    { start: '11:00', end: '12:00', label: '11 AM - 12 PM' },
-    { start: '12:00', end: '13:00', label: '12 PM - 1 PM' },
-    { start: '13:00', end: '14:00', label: '1 PM - 2 PM' },
-    { start: '14:00', end: '15:00', label: '2 PM - 3 PM' },
-    { start: '15:00', end: '16:00', label: '3 PM - 4 PM' },
-    { start: '16:00', end: '17:00', label: '4 PM - 5 PM' },
+    { start: '08:00', end: '09:00', label: '8 AM' },
+    { start: '09:00', end: '10:00', label: '9 AM' },
+    { start: '10:00', end: '11:00', label: '10 AM' },
+    { start: '11:00', end: '12:00', label: '11 AM' },
+    { start: '12:00', end: '13:00', label: '12 PM' },
+    { start: '13:00', end: '14:00', label: '1 PM' },
+    { start: '14:00', end: '15:00', label: '2 PM' },
+    { start: '15:00', end: '16:00', label: '3 PM' },
+    { start: '16:00', end: '17:00', label: '4 PM' },
   ];
 
   useEffect(() => {
@@ -177,27 +178,27 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-muted/50 dark:bg-muted/20">
-                  <th className="border border-border p-3 text-left font-medium text-muted-foreground w-24">Time</th>
-                  {daysOfWeek.map(day => (
-                    <th key={day} className="border border-border p-3 text-center font-medium text-muted-foreground">
-                      {day}
+                  <th className="border border-border p-2 text-left font-medium text-muted-foreground w-20">Day</th>
+                  {timeSlots.map(slot => (
+                    <th key={slot.start} className="border border-border p-2 text-center font-medium text-muted-foreground w-16">
+                      {slot.label}
                     </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {timeSlots.map(slot => (
-                  <tr key={slot.start} className="hover:bg-muted/30 dark:hover:bg-muted/10">
-                    <td className="border border-border p-3 text-sm font-medium">
-                      {slot.label}
+                {daysOfWeek.map(day => (
+                  <tr key={day} className="hover:bg-muted/30 dark:hover:bg-muted/10">
+                    <td className="border border-border p-2 text-sm font-medium">
+                      {day}
                     </td>
-                    {daysOfWeek.map(day => {
+                    {timeSlots.map(slot => {
                       const entry = getSlotEntry(day, slot.start, slot.end);
                       
                       return (
                         <td 
                           key={`${day}-${slot.start}`} 
-                          className="border border-border p-0 h-20"
+                          className="border border-border p-0 h-16 w-16"
                           onClick={() => handleOpenDialog(day, slot.start, slot.end)}
                         >
                           <TimetableSlot
