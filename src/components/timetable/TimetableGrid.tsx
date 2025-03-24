@@ -6,7 +6,10 @@ import { Subject } from '@/types';
 import { toast } from 'sonner';
 import TimetableSlot from './TimetableSlot';
 import TimetableEntryDialog from './TimetableEntryDialog';
+import BunkTableDialog from './BunkTableDialog';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { CalendarDays } from 'lucide-react';
 
 interface TimetableEntry {
   id: string;
@@ -33,6 +36,7 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
     entry?: TimetableEntry;
   } | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [bunkTableOpen, setBunkTableOpen] = useState(false);
 
   const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const timeSlots = [
@@ -170,8 +174,121 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
     );
   };
 
+  // Function to calculate attendance status for color coding
+  const getAttendanceStatus = (subjectId: string): 'good' | 'bad' | 'unknown' => {
+    const subject = subjects.find(s => s.id === subjectId);
+    
+    if (!subject) return 'unknown';
+    
+    const attendancePercentage = subject.classes_conducted > 0 
+      ? (subject.classes_attended / subject.classes_conducted) * 100 
+      : 0;
+    
+    if (attendancePercentage >= subject.required_percentage) {
+      return 'good'; // Above required percentage
+    } else {
+      return 'bad'; // Below required percentage
+    }
+  };
+
+  // Calculate current day of the week
+  const getCurrentDay = (): string => {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const currentDayIndex = new Date().getDay();
+    
+    // If it's Sunday, return Monday as the default view
+    return currentDayIndex === 0 ? 'Monday' : days[currentDayIndex];
+  };
+
+  // Calculate how many classes can be safely skipped for a subject
+  const calculateBunkableClasses = (subject: Subject): number => {
+    if (subject.classes_conducted === 0) return 0;
+    
+    const currentAttendance = subject.classes_attended;
+    const currentTotal = subject.classes_conducted;
+    const requiredPercentage = subject.required_percentage;
+    
+    // Calculate how many classes can be missed while maintaining required percentage
+    let bunkableClasses = 0;
+    let tempTotal = currentTotal;
+    let tempAttendance = currentAttendance;
+    
+    while (true) {
+      const nextPercentage = (tempAttendance / (tempTotal + 1)) * 100;
+      if (nextPercentage < requiredPercentage) break;
+      
+      tempTotal += 1;
+      bunkableClasses += 1;
+    }
+    
+    return bunkableClasses;
+  };
+
+  // Get today's classes and their bunkable status
+  const getTodayClasses = () => {
+    const currentDay = getCurrentDay();
+    const todayEntries = timetableEntries.filter(entry => entry.day_of_week === currentDay);
+    
+    return todayEntries.map(entry => {
+      const subject = subjects.find(s => s.id === entry.subject_id);
+      if (!subject) return null;
+      
+      const formattedTime = `${formatTime(entry.start_time)} - ${formatTime(entry.end_time)}`;
+      const canBunk = getAttendanceStatus(entry.subject_id) === 'good';
+      
+      return {
+        subjectId: entry.subject_id,
+        name: getSubjectName(entry.subject_id),
+        time: formattedTime,
+        canBunk
+      };
+    }).filter(Boolean) as {
+      subjectId: string;
+      name: string;
+      time: string;
+      canBunk: boolean;
+    }[];
+  };
+
+  // Format time for display
+  const formatTime = (time: string): string => {
+    const [hour] = time.split(':');
+    const hourNum = parseInt(hour, 10);
+    return hourNum > 12 ? `${hourNum - 12} PM` : `${hourNum} ${hourNum === 12 ? 'PM' : 'AM'}`;
+  };
+
+  // Get bunkable subjects data
+  const getBunkableSubjectsData = () => {
+    return subjects.map(subject => {
+      const attendancePercentage = subject.classes_conducted > 0 
+        ? (subject.classes_attended / subject.classes_conducted) * 100 
+        : 0;
+      
+      return {
+        subjectId: subject.id,
+        name: subject.name,
+        bunkableClasses: calculateBunkableClasses(subject),
+        currentAttendance: attendancePercentage,
+        requiredAttendance: subject.required_percentage
+      };
+    });
+  };
+
   return (
     <div className="mb-6">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-medium">Weekly Schedule</h2>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="gap-2"
+          onClick={() => setBunkTableOpen(true)}
+        >
+          <CalendarDays className="h-4 w-4" />
+          Bunk Table
+        </Button>
+      </div>
+      
       <Card className="overflow-hidden">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
@@ -194,6 +311,9 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
                     </td>
                     {timeSlots.map(slot => {
                       const entry = getSlotEntry(day, slot.start, slot.end);
+                      const attendanceStatus = entry?.subject_id 
+                        ? getAttendanceStatus(entry.subject_id) 
+                        : 'unknown';
                       
                       return (
                         <td 
@@ -205,6 +325,7 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
                             entry={entry}
                             subjectName={entry ? getSubjectName(entry.subject_id) : ''}
                             location={entry?.location}
+                            attendanceStatus={attendanceStatus}
                           />
                         </td>
                       );
@@ -231,6 +352,14 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
           onDelete={selectedSlot.entry ? handleDeleteEntry : undefined}
         />
       )}
+
+      <BunkTableDialog
+        open={bunkTableOpen}
+        onOpenChange={setBunkTableOpen}
+        bunkableSubjects={getBunkableSubjectsData()}
+        todayClasses={getTodayClasses()}
+        currentDay={getCurrentDay()}
+      />
     </div>
   );
 };
