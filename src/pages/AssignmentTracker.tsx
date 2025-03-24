@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -40,7 +39,6 @@ const AssignmentTracker = () => {
     try {
       setIsLoading(true);
       
-      // Fetch assignments from Supabase
       const { data, error } = await supabase
         .from('assignments')
         .select('*')
@@ -49,7 +47,6 @@ const AssignmentTracker = () => {
 
       if (error) throw error;
       
-      // Convert deadline strings to Date objects
       const formattedAssignments = data.map(assignment => ({
         ...assignment,
         deadline: new Date(assignment.deadline)
@@ -104,13 +101,11 @@ const AssignmentTracker = () => {
 
       if (error) throw error;
 
-      // Convert deadline string to Date object
       const formattedAssignment = {
         ...data,
         deadline: new Date(data.deadline)
       };
 
-      // Add the new assignment and sort by deadline
       setAssignments(prevAssignments => 
         [...prevAssignments, formattedAssignment].sort(
           (a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
@@ -141,7 +136,6 @@ const AssignmentTracker = () => {
 
       if (error) throw error;
 
-      // Update the assignment in the state and sort by deadline
       setAssignments(prevAssignments => 
         prevAssignments
           .map(assignment => 
@@ -166,7 +160,6 @@ const AssignmentTracker = () => {
 
       if (error) throw error;
 
-      // Remove the assignment from the state
       setAssignments(assignments.filter(assignment => assignment.id !== assignmentId));
       toast.success('Assignment deleted successfully');
     } catch (error) {
@@ -175,7 +168,6 @@ const AssignmentTracker = () => {
     }
   };
 
-  // Function to determine assignment dates for calendar highlighting
   const getDayClassNames = (day: Date) => {
     const assignment = assignments.find(a => isSameDay(new Date(a.deadline), day));
     
@@ -195,6 +187,37 @@ const AssignmentTracker = () => {
       return "bg-yellow-500 text-white rounded-full";
     } else {
       return "bg-green-500 text-white rounded-full";
+    }
+  };
+
+  const modifiers = {
+    assignment: (day: Date) => 
+      assignments.some(assignment => 
+        isSameDay(new Date(assignment.deadline), day)
+      )
+  };
+
+  const modifiersClassNames = {
+    assignment: (day: Date) => {
+      const assignment = assignments.find(a => isSameDay(new Date(a.deadline), day));
+      
+      if (!assignment) return "";
+      
+      if (assignment.completed) {
+        return "bg-green-500 text-white rounded-full";
+      }
+      
+      const daysUntilDeadline = Math.ceil(
+        (new Date(assignment.deadline).getTime() - new Date().setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24)
+      );
+      
+      if (daysUntilDeadline <= 1) {
+        return "bg-red-500 text-white rounded-full";
+      } else if (daysUntilDeadline <= 3) {
+        return "bg-yellow-500 text-white rounded-full";
+      } else {
+        return "bg-green-500 text-white rounded-full";
+      }
     }
   };
 
@@ -230,8 +253,20 @@ const AssignmentTracker = () => {
                     isSameDay(new Date(assignment.deadline), day)
                   )
               }}
-              modifiersClassNames={{
-                assignment: (day) => getDayClassNames(day) || ""
+              modifiersStyles={{
+                assignment: (day) => {
+                  const className = getDayClassNames(day);
+                  if (className) {
+                    if (className.includes('bg-red-500')) {
+                      return { backgroundColor: '#ef4444', color: 'white', borderRadius: '9999px' };
+                    } else if (className.includes('bg-yellow-500')) {
+                      return { backgroundColor: '#eab308', color: 'white', borderRadius: '9999px' };
+                    } else if (className.includes('bg-green-500')) {
+                      return { backgroundColor: '#22c55e', color: 'white', borderRadius: '9999px' };
+                    }
+                  }
+                  return {};
+                }
               }}
               onMonthChange={setDate}
               onPrevious={handlePreviousMonth}
