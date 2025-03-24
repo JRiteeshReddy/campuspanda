@@ -50,3 +50,22 @@ export interface AssignmentForm {
   title: string;
   deadline: Date;
 }
+
+export interface TimetableEntry {
+  id: string;
+  user_id: string;
+  day_of_week: string;
+  start_time: string;
+  end_time: string;
+  subject_id: string;
+  location?: string;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TimetableEntryForm {
+  subject_id: string;
+  location?: string;
+  notes?: string;
+}

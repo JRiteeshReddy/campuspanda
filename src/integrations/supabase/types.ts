@@ -69,6 +69,53 @@ export type Database = {
         }
         Relationships: []
       }
+      timetable: {
+        Row: {
+          created_at: string
+          day_of_week: string
+          end_time: string
+          id: string
+          location: string | null
+          notes: string | null
+          start_time: string
+          subject_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          day_of_week: string
+          end_time: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          start_time: string
+          subject_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          day_of_week?: string
+          end_time?: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          start_time?: string
+          subject_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "timetable_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

@@ -1,6 +1,6 @@
 
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, CalendarCheck, Users, ArrowRight } from 'lucide-react';
+import { BookOpen, CalendarCheck, Users, ArrowRight, Calendar } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import Navbar from '@/components/layout/Navbar';
 
@@ -59,21 +59,20 @@ const Index = () => {
               </div>
             </button>
             
-            {/* Coming Soon - Option 2 */}
-            <div className="square-button bg-muted/50 border-dashed cursor-default dark:bg-white/5 dark:border-white/10 dark:text-white">
-              <div className="mb-4 p-4 w-16 h-16 rounded-full bg-muted flex items-center justify-center text-muted-foreground dark:bg-white/10 dark:text-white/70">
-                <Users size={30} />
+            {/* Timetable - Replaces the "Coming Soon" option */}
+            <button onClick={() => handleGetStarted('/timetable')} className="square-button group dark:bg-white/5 dark:border-white/10 dark:text-white">
+              <div className="mb-4 p-4 w-16 h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
+                <Calendar size={30} />
               </div>
-              <h2 className="text-xl font-medium text-apple-text dark:text-white mb-2">Coming Soon</h2>
-              <p className="text-muted-foreground dark:text-white/70 text-sm text-center">
-                New features are on the way
+              <h2 className="text-xl font-medium text-apple-text dark:text-white mb-2">Timetable</h2>
+              <p className="text-muted-foreground dark:text-white/70 text-sm text-center mb-4">
+                Create and manage your weekly class schedule
               </p>
-              <div className="mt-auto">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground dark:bg-white/10 dark:text-white/70">
-                  Coming Soon
-                </span>
+              <div className="mt-auto flex items-center justify-center text-indigo-600 dark:text-white font-medium text-sm">
+                <span>Get Started</span>
+                <ArrowRight size={16} className="ml-1 transition-transform group-hover:translate-x-1" />
               </div>
-            </div>
+            </button>
           </div>
         </div>
       </main>

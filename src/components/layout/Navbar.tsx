@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import ProfileMenu from '@/components/ui/ProfileMenu';
-import { Home, BookOpen, CalendarCheck } from 'lucide-react';
+import { Home, BookOpen, CalendarCheck, Calendar } from 'lucide-react';
 
 const Navbar = () => {
   const { user } = useAuth();
@@ -26,24 +26,31 @@ const Navbar = () => {
       <div className="flex items-center space-x-4">
         {user ? (
           <>
-            {(currentPath === '/attendance' || currentPath === '/assignments') && (
+            {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/timetable') && (
               <Link to="/" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
                 <Home size={20} />
                 <span className="ml-1 hidden sm:inline-block">Home</span>
               </Link>
             )}
             
-            {currentPath === '/assignments' && (
+            {(currentPath === '/assignments' || currentPath === '/timetable') && (
               <Link to="/attendance" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
                 <BookOpen size={20} />
                 <span className="ml-1 hidden sm:inline-block">Attendance</span>
               </Link>
             )}
             
-            {currentPath === '/attendance' && (
+            {(currentPath === '/attendance' || currentPath === '/timetable') && (
               <Link to="/assignments" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
                 <CalendarCheck size={20} />
                 <span className="ml-1 hidden sm:inline-block">Assignments</span>
+              </Link>
+            )}
+            
+            {(currentPath === '/attendance' || currentPath === '/assignments') && (
+              <Link to="/timetable" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
+                <Calendar size={20} />
+                <span className="ml-1 hidden sm:inline-block">Timetable</span>
               </Link>
             )}
             
