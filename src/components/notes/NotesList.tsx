@@ -1,6 +1,7 @@
+
 import { useState } from "react";
 import { Note, NoteWithSubject, Subject } from "@/types";
-import { FileText, Link, Presentation, File, Trash2, ExternalLink, Image, Calendar } from "lucide-react";
+import { FileText, Link, Presentation, File, Trash2, ExternalLink, Image, Calendar, Download } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import {
@@ -90,6 +91,43 @@ export const NotesList = ({ notes, refetchNotes }: NotesListProps) => {
     }
   };
 
+  const handleDownloadFile = async (note: Note, e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (!note.file_url) {
+      toast.error("No file available to download");
+      return;
+    }
+    
+    try {
+      // Get the file name from the URL
+      const fileName = note.file_url.split('/').pop() || note.title;
+      
+      // Fetch the file
+      const response = await fetch(note.file_url);
+      if (!response.ok) throw new Error('Failed to fetch file');
+      
+      const blob = await response.blob();
+      
+      // Create a download link and trigger the download
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Clean up
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+      
+      toast.success("Download started");
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      toast.error("Failed to download file");
+    }
+  };
+
   const confirmDelete = (note: Note) => {
     setDeleteNote(note);
     setIsAlertOpen(true);
@@ -128,15 +166,27 @@ export const NotesList = ({ notes, refetchNotes }: NotesListProps) => {
               <ExternalLink className="h-4 w-4 text-muted-foreground mr-4" />
             )}
           </div>
-          <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              confirmDelete(note);
-            }}
-            className="p-1 rounded-full hover:bg-red-100 dark:hover:bg-red-950 group"
-          >
-            <Trash2 className="h-4 w-4 text-muted-foreground group-hover:text-red-500" />
-          </button>
+          <div className="flex items-center">
+            {note.file_url && (
+              <button
+                onClick={(e) => handleDownloadFile(note, e)}
+                className="p-1 rounded-full hover:bg-blue-100 dark:hover:bg-blue-950 group mr-2"
+                title="Download file"
+              >
+                <Download className="h-4 w-4 text-muted-foreground group-hover:text-blue-500" />
+              </button>
+            )}
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                confirmDelete(note);
+              }}
+              className="p-1 rounded-full hover:bg-red-100 dark:hover:bg-red-950 group"
+              title="Delete note"
+            >
+              <Trash2 className="h-4 w-4 text-muted-foreground group-hover:text-red-500" />
+            </button>
+          </div>
         </div>
       ))}
 
