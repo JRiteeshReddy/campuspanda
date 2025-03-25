@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Subject } from '@/types';
 import {
   Dialog,
@@ -51,6 +51,15 @@ const TimetableEntryDialog: React.FC<TimetableEntryDialogProps> = ({
   const [location, setLocation] = useState(currentLocation || '');
   const [notes, setNotes] = useState(currentNotes || '');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+  // Reset form values when the dialog opens with new data
+  useEffect(() => {
+    if (open) {
+      setSubjectId(currentSubjectId || '');
+      setLocation(currentLocation || '');
+      setNotes(currentNotes || '');
+    }
+  }, [open, currentSubjectId, currentLocation, currentNotes]);
 
   const handleSave = () => {
     if (!subjectId) {

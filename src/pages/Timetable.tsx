@@ -40,6 +40,7 @@ const Timetable = () => {
       setSubjects(data || []);
     } catch (error) {
       handleError(error);
+      toast.error("Could not load your subjects. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -65,6 +66,11 @@ const Timetable = () => {
             </h1>
             <p className="text-muted-foreground max-w-3xl">
               Manage your weekly class schedule. Click on any time slot to add or edit a class.
+              {subjects.length === 0 && (
+                <span className="block mt-2 text-amber-500 dark:text-amber-400">
+                  Please add subjects in the Attendance Tracker first before creating your timetable.
+                </span>
+              )}
             </p>
           </header>
           
