@@ -1,7 +1,6 @@
-
 import { useState } from "react";
 import { Note, NoteWithSubject, Subject } from "@/types";
-import { FileText, Link, Presentation, File, Trash2, ExternalLink, Image } from "lucide-react";
+import { FileText, Link, Presentation, File, Trash2, ExternalLink, Image, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import {
@@ -14,6 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { format } from "date-fns";
 
 interface NotesListProps {
   notes: NoteWithSubject[];
@@ -41,11 +41,18 @@ export const NotesList = ({ notes, refetchNotes }: NotesListProps) => {
     }
   };
 
+  const formatDate = (dateString: string) => {
+    try {
+      return format(new Date(dateString), 'MMM d, yyyy');
+    } catch (error) {
+      return 'Unknown date';
+    }
+  };
+
   const handleDelete = async () => {
     if (!deleteNote) return;
     
     try {
-      // If it has a file, delete it from storage first
       if (deleteNote.file_url) {
         const filePath = deleteNote.file_url.split('/').pop();
         if (filePath) {
@@ -57,7 +64,6 @@ export const NotesList = ({ notes, refetchNotes }: NotesListProps) => {
         }
       }
       
-      // Delete the note record
       const { error } = await supabase
         .from('notes')
         .delete()
@@ -111,7 +117,12 @@ export const NotesList = ({ notes, refetchNotes }: NotesListProps) => {
             <div className="mr-3">{getNoteIcon(note.file_type)}</div>
             <div className="flex-1 min-w-0">
               <h4 className="font-medium text-sm truncate">{note.title}</h4>
-              <p className="text-xs text-muted-foreground">{note.subject.name}</p>
+              <div className="flex items-center text-xs text-muted-foreground">
+                <span>{note.subject.name}</span>
+                <span className="mx-1">•</span>
+                <Calendar className="h-3 w-3 mr-1" />
+                <span>{formatDate(note.created_at)}</span>
+              </div>
             </div>
             {(note.file_url || note.link_url) && (
               <ExternalLink className="h-4 w-4 text-muted-foreground mr-4" />
