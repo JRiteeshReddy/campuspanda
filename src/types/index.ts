@@ -51,21 +51,29 @@ export interface AssignmentForm {
   deadline: Date;
 }
 
-export interface TimetableEntry {
+export interface Note {
   id: string;
   user_id: string;
-  day_of_week: string;
-  start_time: string;
-  end_time: string;
   subject_id: string;
-  location?: string;
-  notes?: string;
+  title: string;
+  file_type: string;
+  file_url?: string;
+  link_url?: string;
   created_at: string;
-  updated_at: string;
 }
 
-export interface TimetableEntryForm {
+export interface NoteWithSubject extends Note {
+  subject: Subject;
+}
+
+export interface NoteForm {
   subject_id: string;
-  location?: string;
-  notes?: string;
+  title: string;
+  file_type: string;
+  file?: File;
+  link_url?: string;
+}
+
+export interface SubjectWithNotesCount extends Subject {
+  notesCount: number;
 }

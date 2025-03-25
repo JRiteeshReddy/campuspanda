@@ -39,6 +39,47 @@ export type Database = {
         }
         Relationships: []
       }
+      notes: {
+        Row: {
+          created_at: string
+          file_type: string
+          file_url: string | null
+          id: string
+          link_url: string | null
+          subject_id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_type: string
+          file_url?: string | null
+          id?: string
+          link_url?: string | null
+          subject_id: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          file_type?: string
+          file_url?: string | null
+          id?: string
+          link_url?: string | null
+          subject_id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notes_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subjects: {
         Row: {
           classes_attended: number

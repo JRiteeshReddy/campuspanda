@@ -59,7 +59,7 @@ const Index = () => {
               </div>
             </button>
             
-            {/* Notes Organizer - Replaces the Timetable option */}
+            {/* Notes Organizer */}
             <button onClick={() => handleGetStarted('/notes')} className="square-button group dark:bg-white/5 dark:border-white/10 dark:text-white">
               <div className="mb-4 p-4 w-16 h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
                 <FileText size={30} />
