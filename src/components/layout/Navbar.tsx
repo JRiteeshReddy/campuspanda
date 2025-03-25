@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import ProfileMenu from '@/components/ui/ProfileMenu';
-import { Home, BookOpen, CalendarCheck, Calendar } from 'lucide-react';
+import { Home, BookOpen, CalendarCheck, FileText } from 'lucide-react';
 
 const Navbar = () => {
   const { user } = useAuth();
@@ -26,21 +26,21 @@ const Navbar = () => {
       <div className="flex items-center space-x-4">
         {user ? (
           <>
-            {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/timetable') && (
+            {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/notes') && (
               <Link to="/" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
                 <Home size={20} />
                 <span className="ml-1 hidden sm:inline-block">Home</span>
               </Link>
             )}
             
-            {(currentPath === '/assignments' || currentPath === '/timetable') && (
+            {(currentPath === '/assignments' || currentPath === '/notes') && (
               <Link to="/attendance" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
                 <BookOpen size={20} />
                 <span className="ml-1 hidden sm:inline-block">Attendance</span>
               </Link>
             )}
             
-            {(currentPath === '/attendance' || currentPath === '/timetable') && (
+            {(currentPath === '/attendance' || currentPath === '/notes') && (
               <Link to="/assignments" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
                 <CalendarCheck size={20} />
                 <span className="ml-1 hidden sm:inline-block">Assignments</span>
@@ -48,9 +48,9 @@ const Navbar = () => {
             )}
             
             {(currentPath === '/attendance' || currentPath === '/assignments') && (
-              <Link to="/timetable" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
-                <Calendar size={20} />
-                <span className="ml-1 hidden sm:inline-block">Timetable</span>
+              <Link to="/notes" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
+                <FileText size={20} />
+                <span className="ml-1 hidden sm:inline-block">Notes</span>
               </Link>
             )}
             

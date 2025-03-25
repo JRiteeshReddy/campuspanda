@@ -14,7 +14,6 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AttendanceTracker from "./pages/AttendanceTracker";
 import AssignmentTracker from "./pages/AssignmentTracker";
-import Timetable from "./pages/Timetable";
 import NotFound from "./pages/NotFound";
 
 // Create a client for React Query
@@ -27,7 +26,6 @@ const AppRoutes = () => (
     <Route path="/signup" element={<Signup />} />
     <Route path="/attendance" element={<AttendanceTracker />} />
     <Route path="/assignments" element={<AssignmentTracker />} />
-    <Route path="/timetable" element={<Timetable />} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );

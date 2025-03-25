@@ -1,6 +1,6 @@
 
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, CalendarCheck, Users, ArrowRight, Calendar } from 'lucide-react';
+import { BookOpen, CalendarCheck, FileText, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import Navbar from '@/components/layout/Navbar';
 
@@ -59,14 +59,14 @@ const Index = () => {
               </div>
             </button>
             
-            {/* Timetable - Replaces the "Coming Soon" option */}
-            <button onClick={() => handleGetStarted('/timetable')} className="square-button group dark:bg-white/5 dark:border-white/10 dark:text-white">
+            {/* Notes Organizer - Replaces the Timetable option */}
+            <button onClick={() => handleGetStarted('/notes')} className="square-button group dark:bg-white/5 dark:border-white/10 dark:text-white">
               <div className="mb-4 p-4 w-16 h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
-                <Calendar size={30} />
+                <FileText size={30} />
               </div>
-              <h2 className="text-xl font-medium text-apple-text dark:text-white mb-2">Timetable</h2>
+              <h2 className="text-xl font-medium text-apple-text dark:text-white mb-2">Notes Organizer</h2>
               <p className="text-muted-foreground dark:text-white/70 text-sm text-center mb-4">
-                Create and manage your weekly class schedule
+                Create, organize, and manage your study notes
               </p>
               <div className="mt-auto flex items-center justify-center text-indigo-600 dark:text-white font-medium text-sm">
                 <span>Get Started</span>
