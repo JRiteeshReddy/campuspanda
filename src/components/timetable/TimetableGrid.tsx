@@ -135,7 +135,7 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
       }
       
       // Refresh timetable entries
-      fetchTimetableEntries();
+      await fetchTimetableEntries();
       setDialogOpen(false);
     } catch (error) {
       handleError(error);
@@ -154,7 +154,7 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
       if (error) throw error;
       
       toast.success('Timetable entry removed');
-      fetchTimetableEntries();
+      await fetchTimetableEntries();
       setDialogOpen(false);
     } catch (error) {
       handleError(error);
@@ -314,6 +314,9 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
                       const attendanceStatus = entry?.subject_id 
                         ? getAttendanceStatus(entry.subject_id) 
                         : 'unknown';
+                      const subjectName = entry?.subject_id 
+                        ? getSubjectName(entry.subject_id) 
+                        : '';
                       
                       return (
                         <td 
@@ -323,7 +326,7 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
                         >
                           <TimetableSlot
                             entry={entry}
-                            subjectName={entry ? getSubjectName(entry.subject_id) : ''}
+                            subjectName={subjectName}
                             location={entry?.location}
                             attendanceStatus={attendanceStatus}
                           />

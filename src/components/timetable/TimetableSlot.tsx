@@ -37,7 +37,9 @@ const TimetableSlot: React.FC<TimetableSlotProps> = ({
 
   return (
     <div className={`w-full h-full flex flex-col p-1 cursor-pointer transition-colors ${bgColorClass}`}>
-      <span className={`text-xs truncate ${textColorClass}`}>{subjectName}</span>
+      <span className={`text-xs truncate ${textColorClass}`}>
+        {subjectName || 'Unnamed Subject'}
+      </span>
       {location && <span className="text-[10px] text-muted-foreground truncate">{location}</span>}
     </div>
   );
