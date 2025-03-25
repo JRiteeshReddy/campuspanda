@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Note, NoteWithSubject, Subject } from "@/types";
-import { FileText, Link, FilePresentation, FilePdf, Image, File, Trash2, ExternalLink } from "lucide-react";
+import { FileText, Link, Presentation, File, Trash2, ExternalLink, Image } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import {
@@ -27,9 +27,9 @@ export const NotesList = ({ notes, refetchNotes }: NotesListProps) => {
   const getNoteIcon = (fileType: string) => {
     switch (fileType) {
       case "pdf":
-        return <FilePdf className="h-5 w-5 text-red-500" />;
+        return <FileText className="h-5 w-5 text-red-500" />;
       case "presentation":
-        return <FilePresentation className="h-5 w-5 text-orange-500" />;
+        return <Presentation className="h-5 w-5 text-orange-500" />;
       case "document":
         return <FileText className="h-5 w-5 text-blue-500" />;
       case "image":
