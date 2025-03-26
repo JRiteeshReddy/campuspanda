@@ -1,7 +1,6 @@
-
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { FileUp, Link as LinkIcon, Plus } from "lucide-react";
+import { FileUp, Link as LinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
@@ -10,6 +9,7 @@ import { SubjectSelector } from "./SubjectSelector";
 import { NoteForm, Subject } from "@/types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/context/AuthContext";
 import { 
   Dialog, 
   DialogContent, 
@@ -30,6 +30,7 @@ export const UploadArea = ({ onFileUpload, onLinkUpload, refetchNotes }: UploadA
   const [linkTitle, setLinkTitle] = useState("");
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
+  const { user } = useAuth();
 
   const { data: subjects = [] } = useQuery({
     queryKey: ["subjects"],
@@ -46,6 +47,11 @@ export const UploadArea = ({ onFileUpload, onLinkUpload, refetchNotes }: UploadA
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (!selectedSubjectId) {
       toast.error("Please select a subject first");
+      return;
+    }
+
+    if (!user) {
+      toast.error("You must be logged in to upload files");
       return;
     }
 
@@ -85,7 +91,7 @@ export const UploadArea = ({ onFileUpload, onLinkUpload, refetchNotes }: UploadA
     } finally {
       setIsUploading(false);
     }
-  }, [selectedSubjectId, onFileUpload, refetchNotes]);
+  }, [selectedSubjectId, onFileUpload, refetchNotes, user]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 

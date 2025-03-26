@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Note, NoteWithSubject, Subject } from "@/types";
+import { Note, NoteWithSubject } from "@/types";
 import { FileText, Link, Presentation, File, Trash2, ExternalLink, Image, Calendar, Download } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
@@ -55,13 +55,21 @@ export const NotesList = ({ notes, refetchNotes }: NotesListProps) => {
     
     try {
       if (deleteNote.file_url) {
-        const filePath = deleteNote.file_url.split('/').pop();
-        if (filePath) {
-          const { error: storageError } = await supabase.storage
-            .from('notes')
-            .remove([filePath]);
-            
-          if (storageError) throw storageError;
+        // Extract the path from the URL
+        // The URL format is like: https://<project>.supabase.co/storage/v1/object/public/notes/<user_id>/<file_id>.<ext>
+        const urlParts = deleteNote.file_url.split('/');
+        const bucketIndex = urlParts.indexOf('notes');
+        if (bucketIndex !== -1) {
+          // Get the path relative to the bucket (user_id/file_id.ext)
+          const filePath = urlParts.slice(bucketIndex + 1).join('/');
+          
+          if (filePath) {
+            const { error: storageError } = await supabase.storage
+              .from('notes')
+              .remove([filePath]);
+              
+            if (storageError) throw storageError;
+          }
         }
       }
       
@@ -101,7 +109,7 @@ export const NotesList = ({ notes, refetchNotes }: NotesListProps) => {
     
     try {
       // Get the file name from the URL
-      const fileName = note.file_url.split('/').pop() || note.title;
+      const fileName = note.title || note.file_url.split('/').pop() || 'download';
       
       // Fetch the file
       const response = await fetch(note.file_url);

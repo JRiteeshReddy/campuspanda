@@ -78,27 +78,35 @@ const NotesOrganizer = () => {
   });
 
   const handleFileUpload = async (noteData: NoteForm) => {
-    if (!user) return;
+    if (!user) {
+      toast.error("You must be logged in to upload files");
+      return;
+    }
 
     const file = noteData.file;
     if (!file) return;
 
-    // Create a unique file name
+    // Create a unique file name with user ID as folder
     const fileExt = file.name.split('.').pop();
-    const fileName = `${uuidv4()}.${fileExt}`;
-    const filePath = `${user.id}/${fileName}`;
+    const fileName = `${user.id}/${uuidv4()}.${fileExt}`;
 
     // Upload file to Supabase Storage
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('notes')
-      .upload(filePath, file);
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
 
-    if (uploadError) throw uploadError;
+    if (uploadError) {
+      console.error("Storage upload error:", uploadError);
+      throw uploadError;
+    }
 
     // Get the public URL for the file
     const { data: { publicUrl } } = supabase.storage
       .from('notes')
-      .getPublicUrl(filePath);
+      .getPublicUrl(fileName);
 
     // Create a note record in the database
     const { error: noteError } = await supabase
