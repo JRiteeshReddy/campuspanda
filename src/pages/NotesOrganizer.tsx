@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
@@ -8,7 +7,6 @@ import { UploadArea } from "@/components/notes/UploadArea";
 import { SubjectCard } from "@/components/notes/SubjectCard";
 import { NotesList } from "@/components/notes/NotesList";
 import Navbar from "@/components/layout/Navbar";
-import { v4 as uuidv4 } from 'uuid';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileQuestion } from "lucide-react";
 import { toast } from "sonner";
@@ -23,7 +21,6 @@ const NotesOrganizer = () => {
     queryFn: async () => {
       if (!user) return [];
 
-      // First get all subjects
       const { data: subjects, error: subjectsError } = await supabase
         .from("subjects")
         .select("*")
@@ -31,7 +28,6 @@ const NotesOrganizer = () => {
 
       if (subjectsError) throw subjectsError;
 
-      // Then count notes for each subject
       const subjectsWithCounts: SubjectWithNotesCount[] = await Promise.all(
         subjects.map(async (subject) => {
           const { count, error: countError } = await supabase
@@ -78,61 +74,12 @@ const NotesOrganizer = () => {
     enabled: !!user
   });
 
-  const handleFileUpload = async (noteData: NoteForm) => {
+  const handleLinkUpload = async (noteData: NoteForm) => {
     if (!user) {
-      toast.error("You must be logged in to upload files");
+      toast.error("You must be logged in to add links");
       return;
     }
 
-    const file = noteData.file;
-    if (!file) return;
-
-    // Create a unique file name with user ID as folder
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${user.id}/${uuidv4()}.${fileExt}`;
-
-    // Upload file to Supabase Storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('notes')
-      .upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: false
-      });
-
-    if (uploadError) {
-      console.error("Storage upload error:", uploadError);
-      throw uploadError;
-    }
-
-    // Get the public URL for the file
-    const { data: { publicUrl } } = supabase.storage
-      .from('notes')
-      .getPublicUrl(fileName);
-
-    // Create a note record in the database
-    const { error: noteError } = await supabase
-      .from('notes')
-      .insert([
-        {
-          user_id: user.id,
-          subject_id: noteData.subject_id,
-          title: noteData.title,
-          file_type: noteData.file_type,
-          file_url: publicUrl
-        }
-      ]);
-
-    if (noteError) throw noteError;
-
-    // Invalidate queries to refresh data
-    queryClient.invalidateQueries({ queryKey: ["notes"] });
-    queryClient.invalidateQueries({ queryKey: ["subjects-with-counts"] });
-  };
-
-  const handleLinkUpload = async (noteData: NoteForm) => {
-    if (!user) return;
-
-    // Create a note record in the database
     const { error: noteError } = await supabase
       .from('notes')
       .insert([
@@ -147,7 +94,6 @@ const NotesOrganizer = () => {
 
     if (noteError) throw noteError;
 
-    // Invalidate queries to refresh data
     queryClient.invalidateQueries({ queryKey: ["notes"] });
     queryClient.invalidateQueries({ queryKey: ["subjects-with-counts"] });
   };
@@ -162,7 +108,6 @@ const NotesOrganizer = () => {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-3">
             <UploadArea 
-              onFileUpload={handleFileUpload} 
               onLinkUpload={handleLinkUpload}
               refetchNotes={() => {
                 refetchNotes();
@@ -214,21 +159,11 @@ const NotesOrganizer = () => {
               <Tabs defaultValue="all" className="mb-4">
                 <TabsList>
                   <TabsTrigger value="all">All</TabsTrigger>
-                  <TabsTrigger value="files">Files</TabsTrigger>
                   <TabsTrigger value="links">Links</TabsTrigger>
                 </TabsList>
                 <TabsContent value="all">
                   <NotesList 
                     notes={notes} 
-                    refetchNotes={() => {
-                      refetchNotes();
-                      queryClient.invalidateQueries({ queryKey: ["subjects-with-counts"] });
-                    }}
-                  />
-                </TabsContent>
-                <TabsContent value="files">
-                  <NotesList 
-                    notes={notes.filter(note => note.file_type !== 'link')} 
                     refetchNotes={() => {
                       refetchNotes();
                       queryClient.invalidateQueries({ queryKey: ["subjects-with-counts"] });
