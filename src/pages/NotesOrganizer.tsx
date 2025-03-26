@@ -11,6 +11,7 @@ import Navbar from "@/components/layout/Navbar";
 import { v4 as uuidv4 } from 'uuid';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileQuestion } from "lucide-react";
+import { toast } from "sonner";
 
 const NotesOrganizer = () => {
   const { user } = useAuth();
