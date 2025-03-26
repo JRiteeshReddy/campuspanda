@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { 
   FileText, 
-  FilePresentation, 
+  Presentation, 
   File, 
   Image, 
   Link, 
@@ -71,7 +71,7 @@ export const NotesList: React.FC<NotesListProps> = ({ notes, refetchNotes }) => 
       case 'pdf':
         return <FileText className="h-8 w-8 text-red-500" />;
       case 'presentation':
-        return <FilePresentation className="h-8 w-8 text-orange-500" />;
+        return <Presentation className="h-8 w-8 text-orange-500" />;
       case 'document':
         return <FileText className="h-8 w-8 text-blue-500" />;
       case 'image':
