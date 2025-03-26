@@ -125,6 +125,12 @@
     p-4 transition-all duration-300 hover:shadow-elevation hover:-translate-y-1;
   }
   
+  .compact-button {
+    @apply flex flex-col items-center justify-center aspect-square w-full
+    rounded-lg sm:rounded-2xl shadow-subtle bg-card border border-border
+    p-2 sm:p-4 hover:shadow-elevation hover:-translate-y-1;
+  }
+  
   .form-input {
     @apply w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm 
     ring-offset-background placeholder:text-muted-foreground focus:outline-none 

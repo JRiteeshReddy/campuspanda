@@ -3,12 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { BookOpen, CalendarCheck, FileText, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import Navbar from '@/components/layout/Navbar';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Index = () => {
   const navigate = useNavigate();
-  const {
-    user
-  } = useAuth();
+  const { user } = useAuth();
+  const isMobile = useIsMobile();
   
   const handleGetStarted = (path: string) => {
     navigate(path);
@@ -19,7 +19,7 @@ const Index = () => {
       
       <main className="flex-1 pt-24 pb-12">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 animate-fade-in">
-          <div className="text-center mb-12 sm:mb-16">
+          <div className="text-center mb-8 sm:mb-16">
             <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-apple-blue dark:text-white mb-4">
               CampusBuddy
             </h1>
@@ -28,49 +28,52 @@ const Index = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-3 sm:gap-6 md:gap-8 max-w-5xl mx-auto">
             {/* Attendance Tracker */}
-            <button onClick={() => handleGetStarted('/attendance')} className="square-button group dark:bg-white/5 dark:border-white/10 dark:text-white">
-              <div className="mb-4 p-4 w-16 h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
-                <BookOpen size={30} />
+            <button onClick={() => handleGetStarted('/attendance')} 
+              className="compact-button group dark:bg-white/5 dark:border-white/10 dark:text-white transition-all duration-300">
+              <div className="mb-2 sm:mb-4 p-2 sm:p-4 w-10 h-10 sm:w-16 sm:h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
+                <BookOpen size={isMobile ? 20 : 30} />
               </div>
-              <h2 className="text-xl font-medium text-apple-text dark:text-white mb-2">Attendance Tracker</h2>
-              <p className="text-muted-foreground dark:text-white/70 text-sm text-center mb-4">
-                Track your class attendance and stay on top of requirements
+              <h2 className="text-sm sm:text-xl font-medium text-apple-text dark:text-white mb-1 sm:mb-2">Attendance Tracker</h2>
+              <p className="text-xs sm:text-sm text-muted-foreground dark:text-white/70 text-center mb-2 sm:mb-4 line-clamp-2 sm:line-clamp-none">
+                Track your class attendance
               </p>
-              <div className="mt-auto flex items-center justify-center text-indigo-600 dark:text-white font-medium text-sm">
+              <div className="mt-auto flex items-center justify-center text-indigo-600 dark:text-white font-medium text-xs sm:text-sm">
                 <span>Get Started</span>
-                <ArrowRight size={16} className="ml-1 transition-transform group-hover:translate-x-1" />
+                <ArrowRight size={isMobile ? 12 : 16} className="ml-1 transition-transform group-hover:translate-x-1" />
               </div>
             </button>
             
             {/* Assignment Tracker */}
-            <button onClick={() => handleGetStarted('/assignments')} className="square-button group dark:bg-white/5 dark:border-white/10 dark:text-white">
-              <div className="mb-4 p-4 w-16 h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
-                <CalendarCheck size={30} />
+            <button onClick={() => handleGetStarted('/assignments')} 
+              className="compact-button group dark:bg-white/5 dark:border-white/10 dark:text-white transition-all duration-300">
+              <div className="mb-2 sm:mb-4 p-2 sm:p-4 w-10 h-10 sm:w-16 sm:h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
+                <CalendarCheck size={isMobile ? 20 : 30} />
               </div>
-              <h2 className="text-xl font-medium text-apple-text dark:text-white mb-2">Assignment Tracker</h2>
-              <p className="text-muted-foreground dark:text-white/70 text-sm text-center mb-4">
-                Keep track of your assignments and deadlines
+              <h2 className="text-sm sm:text-xl font-medium text-apple-text dark:text-white mb-1 sm:mb-2">Assignment Tracker</h2>
+              <p className="text-xs sm:text-sm text-muted-foreground dark:text-white/70 text-center mb-2 sm:mb-4 line-clamp-2 sm:line-clamp-none">
+                Track assignments and deadlines
               </p>
-              <div className="mt-auto flex items-center justify-center text-indigo-600 dark:text-white font-medium text-sm">
+              <div className="mt-auto flex items-center justify-center text-indigo-600 dark:text-white font-medium text-xs sm:text-sm">
                 <span>Get Started</span>
-                <ArrowRight size={16} className="ml-1 transition-transform group-hover:translate-x-1" />
+                <ArrowRight size={isMobile ? 12 : 16} className="ml-1 transition-transform group-hover:translate-x-1" />
               </div>
             </button>
             
             {/* Notes Organizer */}
-            <button onClick={() => handleGetStarted('/notes')} className="square-button group dark:bg-white/5 dark:border-white/10 dark:text-white">
-              <div className="mb-4 p-4 w-16 h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
-                <FileText size={30} />
+            <button onClick={() => handleGetStarted('/notes')} 
+              className="compact-button group dark:bg-white/5 dark:border-white/10 dark:text-white transition-all duration-300">
+              <div className="mb-2 sm:mb-4 p-2 sm:p-4 w-10 h-10 sm:w-16 sm:h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
+                <FileText size={isMobile ? 20 : 30} />
               </div>
-              <h2 className="text-xl font-medium text-apple-text dark:text-white mb-2">Notes Organizer</h2>
-              <p className="text-muted-foreground dark:text-white/70 text-sm text-center mb-4">
-                Create, organize, and manage your study notes
+              <h2 className="text-sm sm:text-xl font-medium text-apple-text dark:text-white mb-1 sm:mb-2">Notes Organizer</h2>
+              <p className="text-xs sm:text-sm text-muted-foreground dark:text-white/70 text-center mb-2 sm:mb-4 line-clamp-2 sm:line-clamp-none">
+                Organize your study notes
               </p>
-              <div className="mt-auto flex items-center justify-center text-indigo-600 dark:text-white font-medium text-sm">
+              <div className="mt-auto flex items-center justify-center text-indigo-600 dark:text-white font-medium text-xs sm:text-sm">
                 <span>Get Started</span>
-                <ArrowRight size={16} className="ml-1 transition-transform group-hover:translate-x-1" />
+                <ArrowRight size={isMobile ? 12 : 16} className="ml-1 transition-transform group-hover:translate-x-1" />
               </div>
             </button>
           </div>
