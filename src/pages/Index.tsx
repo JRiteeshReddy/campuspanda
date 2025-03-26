@@ -28,52 +28,52 @@ const Index = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-3 gap-3 sm:grid-cols-3 sm:gap-6 md:gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-5xl mx-auto">
             {/* Attendance Tracker */}
             <button onClick={() => handleGetStarted('/attendance')} 
-              className="compact-button group dark:bg-white/5 dark:border-white/10 dark:text-white transition-all duration-300">
-              <div className="mb-2 sm:mb-4 p-2 sm:p-4 w-10 h-10 sm:w-16 sm:h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
-                <BookOpen size={isMobile ? 20 : 30} />
+              className="mobile-card-button group dark:bg-white/5 dark:border-white/10 dark:text-white transition-all duration-300">
+              <div className="mb-2 sm:mb-4 p-2 sm:p-4 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
+                <BookOpen size={isMobile ? 24 : 30} />
               </div>
-              <h2 className="text-sm sm:text-xl font-medium text-apple-text dark:text-white mb-1 sm:mb-2">Attendance Tracker</h2>
-              <p className="text-xs sm:text-sm text-muted-foreground dark:text-white/70 text-center mb-2 sm:mb-4 line-clamp-2 sm:line-clamp-none">
+              <h2 className="text-xs sm:text-xl font-medium text-apple-text dark:text-white mb-1 sm:mb-2">Attendance Tracker</h2>
+              <p className="text-[10px] sm:text-sm text-muted-foreground dark:text-white/70 text-center mb-2 sm:mb-4 line-clamp-2 sm:line-clamp-none">
                 Track your class attendance
               </p>
               <div className="mt-auto flex items-center justify-center text-indigo-600 dark:text-white font-medium text-xs sm:text-sm">
                 <span>Get Started</span>
-                <ArrowRight size={isMobile ? 12 : 16} className="ml-1 transition-transform group-hover:translate-x-1" />
+                <ArrowRight size={isMobile ? 14 : 16} className="ml-1 transition-transform group-hover:translate-x-1" />
               </div>
             </button>
             
             {/* Assignment Tracker */}
             <button onClick={() => handleGetStarted('/assignments')} 
-              className="compact-button group dark:bg-white/5 dark:border-white/10 dark:text-white transition-all duration-300">
-              <div className="mb-2 sm:mb-4 p-2 sm:p-4 w-10 h-10 sm:w-16 sm:h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
-                <CalendarCheck size={isMobile ? 20 : 30} />
+              className="mobile-card-button group dark:bg-white/5 dark:border-white/10 dark:text-white transition-all duration-300">
+              <div className="mb-2 sm:mb-4 p-2 sm:p-4 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
+                <CalendarCheck size={isMobile ? 24 : 30} />
               </div>
-              <h2 className="text-sm sm:text-xl font-medium text-apple-text dark:text-white mb-1 sm:mb-2">Assignment Tracker</h2>
-              <p className="text-xs sm:text-sm text-muted-foreground dark:text-white/70 text-center mb-2 sm:mb-4 line-clamp-2 sm:line-clamp-none">
+              <h2 className="text-xs sm:text-xl font-medium text-apple-text dark:text-white mb-1 sm:mb-2">Assignment Tracker</h2>
+              <p className="text-[10px] sm:text-sm text-muted-foreground dark:text-white/70 text-center mb-2 sm:mb-4 line-clamp-2 sm:line-clamp-none">
                 Track assignments and deadlines
               </p>
               <div className="mt-auto flex items-center justify-center text-indigo-600 dark:text-white font-medium text-xs sm:text-sm">
                 <span>Get Started</span>
-                <ArrowRight size={isMobile ? 12 : 16} className="ml-1 transition-transform group-hover:translate-x-1" />
+                <ArrowRight size={isMobile ? 14 : 16} className="ml-1 transition-transform group-hover:translate-x-1" />
               </div>
             </button>
             
             {/* Notes Organizer */}
             <button onClick={() => handleGetStarted('/notes')} 
-              className="compact-button group dark:bg-white/5 dark:border-white/10 dark:text-white transition-all duration-300">
-              <div className="mb-2 sm:mb-4 p-2 sm:p-4 w-10 h-10 sm:w-16 sm:h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
-                <FileText size={isMobile ? 20 : 30} />
+              className="mobile-card-button group dark:bg-white/5 dark:border-white/10 dark:text-white transition-all duration-300">
+              <div className="mb-2 sm:mb-4 p-2 sm:p-4 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
+                <FileText size={isMobile ? 24 : 30} />
               </div>
-              <h2 className="text-sm sm:text-xl font-medium text-apple-text dark:text-white mb-1 sm:mb-2">Notes Organizer</h2>
-              <p className="text-xs sm:text-sm text-muted-foreground dark:text-white/70 text-center mb-2 sm:mb-4 line-clamp-2 sm:line-clamp-none">
+              <h2 className="text-xs sm:text-xl font-medium text-apple-text dark:text-white mb-1 sm:mb-2">Notes Organizer</h2>
+              <p className="text-[10px] sm:text-sm text-muted-foreground dark:text-white/70 text-center mb-2 sm:mb-4 line-clamp-2 sm:line-clamp-none">
                 Organize your study notes
               </p>
               <div className="mt-auto flex items-center justify-center text-indigo-600 dark:text-white font-medium text-xs sm:text-sm">
                 <span>Get Started</span>
-                <ArrowRight size={isMobile ? 12 : 16} className="ml-1 transition-transform group-hover:translate-x-1" />
+                <ArrowRight size={isMobile ? 14 : 16} className="ml-1 transition-transform group-hover:translate-x-1" />
               </div>
             </button>
           </div>
