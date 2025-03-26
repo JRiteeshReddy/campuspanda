@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
@@ -103,7 +104,10 @@ const NotesOrganizer = () => {
       <Navbar />
 
       <main className="container max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-12">
-        <h1 className="text-3xl font-bold mb-6">Notes Organizer</h1>
+        <h1 className="text-3xl font-bold mb-2">Notes Organizer</h1>
+        <p className="text-muted-foreground mb-6">
+          Due to limited storage, we cannot accept PDFs or PPTs directly. However, you can upload your notes to Google Drive or Dropbox and paste the link here.
+        </p>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-3">
