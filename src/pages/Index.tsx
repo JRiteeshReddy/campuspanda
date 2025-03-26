@@ -1,28 +1,25 @@
-
 import { Link, useNavigate } from 'react-router-dom';
 import { BookOpen, CalendarCheck, FileText, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import Navbar from '@/components/layout/Navbar';
 import { useIsMobile } from '@/hooks/use-mobile';
-
 const Index = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const {
+    user
+  } = useAuth();
   const isMobile = useIsMobile();
-  
   const handleGetStarted = (path: string) => {
     navigate(path);
   };
-  
   return <div className="min-h-screen bg-white dark:bg-gradient-dark flex flex-col">
       <Navbar />
       
       <main className="flex-1 pt-24 pb-12">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 animate-fade-in">
           <div className="text-center mb-8 sm:mb-16">
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-apple-blue dark:text-white mb-4">
-              CampusBuddy
-            </h1>
+            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4 text-slate-50">CampusPanda
+          </h1>
             <p className="text-xl text-muted-foreground dark:text-white/80 max-w-2xl mx-auto">
               Track. Manage. Succeed.
             </p>
@@ -30,8 +27,7 @@ const Index = () => {
           
           <div className="grid grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-5xl mx-auto">
             {/* Attendance Tracker */}
-            <button onClick={() => handleGetStarted('/attendance')} 
-              className="mobile-card-button group dark:bg-white/5 dark:border-white/10 dark:text-white transition-all duration-300">
+            <button onClick={() => handleGetStarted('/attendance')} className="mobile-card-button group dark:bg-white/5 dark:border-white/10 dark:text-white transition-all duration-300">
               <div className="mb-2 sm:mb-4 p-2 sm:p-4 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
                 <BookOpen size={isMobile ? 24 : 30} />
               </div>
@@ -46,8 +42,7 @@ const Index = () => {
             </button>
             
             {/* Assignment Tracker */}
-            <button onClick={() => handleGetStarted('/assignments')} 
-              className="mobile-card-button group dark:bg-white/5 dark:border-white/10 dark:text-white transition-all duration-300">
+            <button onClick={() => handleGetStarted('/assignments')} className="mobile-card-button group dark:bg-white/5 dark:border-white/10 dark:text-white transition-all duration-300">
               <div className="mb-2 sm:mb-4 p-2 sm:p-4 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
                 <CalendarCheck size={isMobile ? 24 : 30} />
               </div>
@@ -62,8 +57,7 @@ const Index = () => {
             </button>
             
             {/* Notes Organizer */}
-            <button onClick={() => handleGetStarted('/notes')} 
-              className="mobile-card-button group dark:bg-white/5 dark:border-white/10 dark:text-white transition-all duration-300">
+            <button onClick={() => handleGetStarted('/notes')} className="mobile-card-button group dark:bg-white/5 dark:border-white/10 dark:text-white transition-all duration-300">
               <div className="mb-2 sm:mb-4 p-2 sm:p-4 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
                 <FileText size={isMobile ? 24 : 30} />
               </div>
@@ -89,5 +83,4 @@ const Index = () => {
       </footer>
     </div>;
 };
-
 export default Index;
