@@ -18,7 +18,7 @@ const Index = () => {
       <main className="flex-1 pt-24 pb-12">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 animate-fade-in">
           <div className="text-center mb-8 sm:mb-16">
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4 text-slate-50">CampusPanda
+            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4 text-[#0071e3]">CampusPanda
           </h1>
             <p className="text-xl text-muted-foreground dark:text-white/80 max-w-2xl mx-auto">
               Track. Manage. Succeed.
