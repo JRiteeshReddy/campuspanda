@@ -2,12 +2,16 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
+import { useDocumentTitle } from '@/hooks/use-document-title';
 import ProfileMenu from '@/components/ui/ProfileMenu';
 import { Home, BookOpen, CalendarCheck, FileText } from 'lucide-react';
 
 const Navbar = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
+  
+  // Use the custom hook to update document title
+  useDocumentTitle();
   
   const logoSrc = theme === 'light' 
     ? "/lovable-uploads/3a03d6f2-dedf-4107-8b06-8944fc1b13be.png" 
