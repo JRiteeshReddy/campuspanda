@@ -28,6 +28,9 @@ export const useDocumentTitle = () => {
         case 'notes':
           formattedPageName = 'Notes Organizer';
           break;
+        case 'events':
+          formattedPageName = 'EventPanda';
+          break;
         case 'login':
           formattedPageName = 'Login';
           break;
