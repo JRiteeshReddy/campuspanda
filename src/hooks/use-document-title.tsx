@@ -14,7 +14,33 @@ export const useDocumentTitle = () => {
     } else {
       // Remove leading slash and format the path
       const pageName = path.substring(1);
-      const formattedPageName = pageName.charAt(0).toUpperCase() + pageName.slice(1);
+      
+      // Format page names with proper capitalization and spacing
+      let formattedPageName;
+      
+      switch (pageName) {
+        case 'attendance':
+          formattedPageName = 'Attendance Tracker';
+          break;
+        case 'assignments':
+          formattedPageName = 'Assignment Tracker';
+          break;
+        case 'notes':
+          formattedPageName = 'Notes Organizer';
+          break;
+        case 'login':
+          formattedPageName = 'Login';
+          break;
+        case 'signup':
+          formattedPageName = 'Sign Up';
+          break;
+        default:
+          // Capitalize first letter of each word
+          formattedPageName = pageName.split('-')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+      }
+      
       document.title = `CampusPanda - ${formattedPageName}`;
     }
     
