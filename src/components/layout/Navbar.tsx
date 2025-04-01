@@ -10,8 +10,8 @@ const Navbar = () => {
   const { theme } = useTheme();
   
   const logoSrc = theme === 'light' 
-    ? "/lovable-uploads/c0858d5f-c932-484a-9e3f-31b896b122d7.png" 
-    : "/lovable-uploads/7ff12a1f-6bcd-4d7a-a698-64c8f474e6a3.png";
+    ? "/lovable-uploads/3a03d6f2-dedf-4107-8b06-8944fc1b13be.png" 
+    : "/lovable-uploads/984a254c-11ac-4a97-ac8c-d0bcdeaf791c.png";
   
   const currentPath = window.location.pathname;
 
@@ -19,7 +19,7 @@ const Navbar = () => {
     <nav className="w-full h-16 px-6 sm:px-8 flex items-center justify-between border-b border-border bg-background/80 backdrop-blur-md z-50 fixed top-0 left-0 right-0 transition-colors duration-300">
       <div className="flex items-center">
         <Link to="/" className="flex items-center space-x-2">
-          <img src={logoSrc} alt="UniBuddy Logo" className="h-10 w-auto object-contain" />
+          <img src={logoSrc} alt="CampusPanda Logo" className="h-10 w-auto object-contain" />
         </Link>
       </div>
 

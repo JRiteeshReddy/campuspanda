@@ -1,24 +1,28 @@
+
 import { Link, useNavigate } from 'react-router-dom';
 import { BookOpen, CalendarCheck, FileText, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import Navbar from '@/components/layout/Navbar';
 import { useIsMobile } from '@/hooks/use-mobile';
+
 const Index = () => {
   const navigate = useNavigate();
   const {
     user
   } = useAuth();
   const isMobile = useIsMobile();
+  
   const handleGetStarted = (path: string) => {
     navigate(path);
   };
-  return <div className="min-h-screen bg-white dark:bg-gradient-dark flex flex-col">
+  
+  return <div className="min-h-screen bg-gradient-light dark:bg-gradient-dark flex flex-col">
       <Navbar />
       
       <main className="flex-1 pt-24 pb-12">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 animate-fade-in">
           <div className="text-center mb-8 sm:mb-16">
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4 text-[#0071e3]">CampusPanda
+            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4 text-[#0071e3] dark:text-white">CampusPanda
           </h1>
             <p className="text-xl text-muted-foreground dark:text-white/80 max-w-2xl mx-auto">
               Track. Manage. Succeed.
@@ -27,8 +31,16 @@ const Index = () => {
           
           <div className="grid grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-5xl mx-auto">
             {/* Attendance Tracker */}
-            <button onClick={() => handleGetStarted('/attendance')} className="mobile-card-button group dark:bg-white/5 dark:border-white/10 dark:text-white transition-all duration-300">
-              <div className="mb-2 sm:mb-4 p-2 sm:p-4 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
+            <button 
+              onClick={() => handleGetStarted('/attendance')} 
+              className="mobile-card-button group dark:bg-white/5 dark:border-white/10 dark:text-white 
+                        transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-xl 
+                        hover:bg-gradient-to-br hover:from-indigo-50 hover:to-blue-100 
+                        dark:hover:bg-gradient-to-br dark:hover:from-indigo-900/30 dark:hover:to-blue-800/20"
+            >
+              <div className="mb-2 sm:mb-4 p-2 sm:p-4 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-indigo-600/10 
+                           flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white
+                           group-hover:scale-110 transition-transform duration-300">
                 <BookOpen size={isMobile ? 24 : 30} />
               </div>
               <h2 className="text-xs sm:text-xl font-medium text-apple-text dark:text-white mb-1 sm:mb-2">Attendance Tracker</h2>
@@ -37,13 +49,21 @@ const Index = () => {
               </p>
               <div className="mt-auto flex items-center justify-center text-indigo-600 dark:text-white font-medium text-xs sm:text-sm">
                 <span>Get Started</span>
-                <ArrowRight size={isMobile ? 14 : 16} className="ml-1 transition-transform group-hover:translate-x-1" />
+                <ArrowRight size={isMobile ? 14 : 16} className="ml-1 transition-transform group-hover:translate-x-2" />
               </div>
             </button>
             
             {/* Assignment Tracker */}
-            <button onClick={() => handleGetStarted('/assignments')} className="mobile-card-button group dark:bg-white/5 dark:border-white/10 dark:text-white transition-all duration-300">
-              <div className="mb-2 sm:mb-4 p-2 sm:p-4 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
+            <button 
+              onClick={() => handleGetStarted('/assignments')} 
+              className="mobile-card-button group dark:bg-white/5 dark:border-white/10 dark:text-white 
+                        transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-xl 
+                        hover:bg-gradient-to-br hover:from-pink-50 hover:to-purple-100 
+                        dark:hover:bg-gradient-to-br dark:hover:from-pink-900/30 dark:hover:to-purple-800/20"
+            >
+              <div className="mb-2 sm:mb-4 p-2 sm:p-4 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-indigo-600/10 
+                           flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white
+                           group-hover:scale-110 transition-transform duration-300">
                 <CalendarCheck size={isMobile ? 24 : 30} />
               </div>
               <h2 className="text-xs sm:text-xl font-medium text-apple-text dark:text-white mb-1 sm:mb-2">Assignment Tracker</h2>
@@ -52,13 +72,21 @@ const Index = () => {
               </p>
               <div className="mt-auto flex items-center justify-center text-indigo-600 dark:text-white font-medium text-xs sm:text-sm">
                 <span>Get Started</span>
-                <ArrowRight size={isMobile ? 14 : 16} className="ml-1 transition-transform group-hover:translate-x-1" />
+                <ArrowRight size={isMobile ? 14 : 16} className="ml-1 transition-transform group-hover:translate-x-2" />
               </div>
             </button>
             
             {/* Notes Organizer */}
-            <button onClick={() => handleGetStarted('/notes')} className="mobile-card-button group dark:bg-white/5 dark:border-white/10 dark:text-white transition-all duration-300">
-              <div className="mb-2 sm:mb-4 p-2 sm:p-4 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-indigo-600/10 flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white">
+            <button 
+              onClick={() => handleGetStarted('/notes')} 
+              className="mobile-card-button group dark:bg-white/5 dark:border-white/10 dark:text-white 
+                        transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-xl 
+                        hover:bg-gradient-to-br hover:from-blue-50 hover:to-cyan-100 
+                        dark:hover:bg-gradient-to-br dark:hover:from-blue-900/30 dark:hover:to-cyan-800/20"
+            >
+              <div className="mb-2 sm:mb-4 p-2 sm:p-4 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-indigo-600/10 
+                           flex items-center justify-center text-indigo-600 dark:bg-indigo-600/20 dark:text-white
+                           group-hover:scale-110 transition-transform duration-300">
                 <FileText size={isMobile ? 24 : 30} />
               </div>
               <h2 className="text-xs sm:text-xl font-medium text-apple-text dark:text-white mb-1 sm:mb-2">Notes Organizer</h2>
@@ -67,7 +95,7 @@ const Index = () => {
               </p>
               <div className="mt-auto flex items-center justify-center text-indigo-600 dark:text-white font-medium text-xs sm:text-sm">
                 <span>Get Started</span>
-                <ArrowRight size={isMobile ? 14 : 16} className="ml-1 transition-transform group-hover:translate-x-1" />
+                <ArrowRight size={isMobile ? 14 : 16} className="ml-1 transition-transform group-hover:translate-x-2" />
               </div>
             </button>
           </div>
