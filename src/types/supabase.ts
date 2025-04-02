@@ -1,7 +1,7 @@
 
 import { Database as OriginalDatabase } from '@/integrations/supabase/types';
 
-// Extend the original Database type to include our assignments table
+// Extend the original Database type to include our event tables
 export interface Database extends OriginalDatabase {
   public: {
     Tables: {
@@ -60,6 +60,93 @@ export interface Database extends OriginalDatabase {
           classes_attended?: number;
           classes_conducted?: number;
           required_percentage?: number;
+          created_at?: string;
+        };
+      };
+      event_notices: {
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          description: string | null;
+          deadline: string | null;
+          type: 'urgent' | 'upcoming' | 'general';
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          title: string;
+          description?: string | null;
+          deadline?: string | null;
+          type: 'urgent' | 'upcoming' | 'general';
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          title?: string;
+          description?: string | null;
+          deadline?: string | null;
+          type?: 'urgent' | 'upcoming' | 'general';
+          created_at?: string;
+        };
+      };
+      event_tasks: {
+        Row: {
+          id: string;
+          user_id: string;
+          name: string;
+          assigned_to: string | null;
+          due_date: string | null;
+          priority: 'Low' | 'Medium' | 'High';
+          status: 'Pending' | 'In Progress' | 'Completed';
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          name: string;
+          assigned_to?: string | null;
+          due_date?: string | null;
+          priority: 'Low' | 'Medium' | 'High';
+          status?: 'Pending' | 'In Progress' | 'Completed';
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          name?: string;
+          assigned_to?: string | null;
+          due_date?: string | null;
+          priority?: 'Low' | 'Medium' | 'High';
+          status?: 'Pending' | 'In Progress' | 'Completed';
+          created_at?: string;
+        };
+      };
+      event_teams: {
+        Row: {
+          id: string;
+          user_id: string;
+          name: string;
+          members: string[];
+          events: string[];
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          name: string;
+          members?: string[];
+          events?: string[];
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          name?: string;
+          members?: string[];
+          events?: string[];
           created_at?: string;
         };
       };
