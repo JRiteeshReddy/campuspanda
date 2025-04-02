@@ -39,6 +39,33 @@ export type Database = {
         }
         Relationships: []
       }
+      event_links: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          title: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          title: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          title?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       event_notices: {
         Row: {
           created_at: string
@@ -109,6 +136,7 @@ export type Database = {
           id: string
           members: Json
           name: string
+          team_lead: string | null
           user_id: string
         }
         Insert: {
@@ -117,6 +145,7 @@ export type Database = {
           id?: string
           members?: Json
           name: string
+          team_lead?: string | null
           user_id: string
         }
         Update: {
@@ -125,6 +154,7 @@ export type Database = {
           id?: string
           members?: Json
           name?: string
+          team_lead?: string | null
           user_id?: string
         }
         Relationships: []

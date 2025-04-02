@@ -1,3 +1,4 @@
+
 import { Database as OriginalDatabase } from '@/integrations/supabase/types';
 
 // Extend the original Database type to include our event tables

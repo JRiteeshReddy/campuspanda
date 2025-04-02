@@ -31,6 +31,7 @@ export const parseJsonArray = (json: unknown): string[] => {
 // Helper function to get unique categories from links
 export const fetchUniqueCategories = async (userId: string): Promise<string[]> => {
   try {
+    // Use the correct type from our extended Database type
     const { data, error } = await supabase
       .from('event_links')
       .select('category')

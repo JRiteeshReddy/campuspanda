@@ -65,7 +65,7 @@ const ImportantLinksSection = () => {
     
     // Ensure URL has http:// or https:// prefix
     let url = currentLink.url;
-    if (!/^https?:\/\//i.test(url)) {
+    if (!/^https?:\/\//i.test(url!)) {
       url = 'https://' + url;
     }
     
@@ -83,7 +83,7 @@ const ImportantLinksSection = () => {
         if (error) throw error;
         
         setLinks(links.map(link => 
-          link.id === currentLink.id ? { ...link, title: currentLink.title!, url, category: currentLink.category! } : link
+          link.id === currentLink.id ? { ...link, title: currentLink.title!, url: url!, category: currentLink.category! } : link
         ));
         
         toast.success('Link updated successfully');
@@ -209,11 +209,9 @@ const ImportantLinksSection = () => {
             </Select>
           )}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="flex items-center gap-1">
-                <Plus className="h-4 w-4" /> Add Link
-              </Button>
-            </DialogTrigger>
+            <Button className="flex items-center gap-1" onClick={() => setIsDialogOpen(true)}>
+              <Plus className="h-4 w-4" /> Add Link
+            </Button>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
                 <DialogTitle>{isEditMode ? 'Edit Link' : 'Add New Link'}</DialogTitle>
