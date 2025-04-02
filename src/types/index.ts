@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   email: string;
@@ -105,5 +104,15 @@ export interface EventTeam {
   name: string;
   members: string[];
   events: string[];
+  team_lead?: string;
+  created_at: string;
+}
+
+export interface EventLink {
+  id: string;
+  user_id: string;
+  title: string;
+  url: string;
+  category: string;
   created_at: string;
 }

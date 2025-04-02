@@ -27,3 +27,23 @@ export const parseJsonArray = (json: unknown): string[] => {
     return [];
   }
 };
+
+// Helper function to get unique categories from links
+export const fetchUniqueCategories = async (userId: string): Promise<string[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('event_links')
+      .select('category')
+      .eq('user_id', userId)
+      .order('category');
+      
+    if (error) throw error;
+    
+    // Extract unique categories
+    const categories = [...new Set(data.map(item => item.category))];
+    return categories;
+  } catch (error) {
+    handleError(error);
+    return [];
+  }
+};

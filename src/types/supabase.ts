@@ -1,4 +1,3 @@
-
 import { Database as OriginalDatabase } from '@/integrations/supabase/types';
 
 // Extend the original Database type to include our event tables
@@ -131,6 +130,7 @@ export interface Database extends OriginalDatabase {
           name: string;
           members: string[];
           events: string[];
+          team_lead?: string;
           created_at: string;
         };
         Insert: {
@@ -139,6 +139,7 @@ export interface Database extends OriginalDatabase {
           name: string;
           members?: string[];
           events?: string[];
+          team_lead?: string;
           created_at?: string;
         };
         Update: {
@@ -147,6 +148,33 @@ export interface Database extends OriginalDatabase {
           name?: string;
           members?: string[];
           events?: string[];
+          team_lead?: string;
+          created_at?: string;
+        };
+      };
+      event_links: {
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          url: string;
+          category: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          title: string;
+          url: string;
+          category: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          title?: string;
+          url?: string;
+          category?: string;
           created_at?: string;
         };
       };

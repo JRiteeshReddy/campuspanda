@@ -36,6 +36,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { supabase, handleError, parseJsonArray } from '@/lib/supabase';
 import { EventNotice, EventTask, EventTeam } from '@/types';
+import ImportantLinksSection from '@/components/events/ImportantLinksSection';
 
 const EventPanda = () => {
   const [notices, setNotices] = useState<EventNotice[]>([]);
@@ -60,7 +61,8 @@ const EventPanda = () => {
   const [currentTeam, setCurrentTeam] = useState<Partial<EventTeam>>({
     name: '',
     members: [],
-    events: []
+    events: [],
+    team_lead: ''
   });
   const [isEditMode, setIsEditMode] = useState(false);
   const [newMember, setNewMember] = useState('');
@@ -217,6 +219,7 @@ const EventPanda = () => {
             name: currentTeam.name,
             members: currentTeam.members || [],
             events: currentTeam.events || [],
+            team_lead: currentTeam.team_lead || null,
           }
         ])
         .select();
@@ -232,7 +235,7 @@ const EventPanda = () => {
       
       setTeams([...(processedData || []), ...teams]);
       
-      setCurrentTeam({ name: '', members: [], events: [] });
+      setCurrentTeam({ name: '', members: [], events: [], team_lead: '' });
       setIsTeamDialogOpen(false);
     } catch (error) {
       handleError(error);
@@ -354,13 +357,14 @@ const EventPanda = () => {
       name: team.name,
       members: [...team.members],
       events: [...team.events],
+      team_lead: team.team_lead || '',
     });
     setIsEditMode(true);
     setIsTeamDialogOpen(true);
   };
 
   const resetTeamForm = () => {
-    setCurrentTeam({ name: '', members: [], events: [] });
+    setCurrentTeam({ name: '', members: [], events: [], team_lead: '' });
     setIsEditMode(false);
   };
 
@@ -379,6 +383,7 @@ const EventPanda = () => {
             name: currentTeam.name,
             members: currentTeam.members || [],
             events: currentTeam.events || [],
+            team_lead: currentTeam.team_lead || null,
           })
           .eq('id', currentTeam.id);
           
@@ -386,7 +391,7 @@ const EventPanda = () => {
         
         setTeams(teams.map(team => 
           team.id === currentTeam.id 
-            ? { ...team, name: currentTeam.name!, members: currentTeam.members || [], events: currentTeam.events || [] }
+            ? { ...team, name: currentTeam.name!, members: currentTeam.members || [], events: currentTeam.events || [], team_lead: currentTeam.team_lead }
             : team
         ));
         
@@ -400,6 +405,7 @@ const EventPanda = () => {
               name: currentTeam.name,
               members: currentTeam.members || [],
               events: currentTeam.events || [],
+              team_lead: currentTeam.team_lead || null,
             }
           ])
           .select();
@@ -795,6 +801,16 @@ const EventPanda = () => {
                           placeholder="Team name"
                         />
                       </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <label htmlFor="teamLead" className="text-right text-sm font-medium">Team Lead</label>
+                        <Input
+                          id="teamLead"
+                          className="col-span-3"
+                          value={currentTeam.team_lead || ''}
+                          onChange={(e) => setCurrentTeam({...currentTeam, team_lead: e.target.value})}
+                          placeholder="Team lead (optional)"
+                        />
+                      </div>
                       <div className="grid grid-cols-4 items-start gap-4">
                         <label htmlFor="members" className="text-right text-sm font-medium pt-2">Members</label>
                         <div className="col-span-3 space-y-2">
@@ -881,25 +897,30 @@ const EventPanda = () => {
                     {teams.map((team) => (
                       <Card key={team.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                         <CardHeader className="bg-muted/50">
-                          <CardTitle>{team.name}</CardTitle>
-                          <div className="absolute top-2 right-2 flex space-x-1">
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              className="h-8 w-8 text-muted-foreground hover:text-primary"
-                              onClick={() => handleEditTeam(team)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                              onClick={() => deleteTeam(team.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                          <div className="flex justify-between items-start">
+                            <CardTitle>{team.name}</CardTitle>
+                            <div className="flex space-x-1">
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                                onClick={() => handleEditTeam(team)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                onClick={() => deleteTeam(team.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
+                          {team.team_lead && (
+                            <p className="text-sm text-muted-foreground mt-1">Lead: {team.team_lead}</p>
+                          )}
                         </CardHeader>
                         <CardContent className="pt-4">
                           <div className="space-y-2">
@@ -932,6 +953,8 @@ const EventPanda = () => {
                 )}
               </CardContent>
             </Card>
+
+            <ImportantLinksSection />
 
             <Card className="shadow-lg border border-border dark:border-white/10">
               <CardHeader>
