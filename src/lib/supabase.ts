@@ -12,3 +12,18 @@ export const handleError = (error: Error | unknown) => {
   toast.error(message);
   return message;
 };
+
+// Helper function to parse JSON from Supabase
+export const parseJsonArray = (json: unknown): string[] => {
+  if (Array.isArray(json)) {
+    return json as string[];
+  }
+  
+  try {
+    const parsed = JSON.parse(json as string);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    console.error('Failed to parse JSON array:', e);
+    return [];
+  }
+};

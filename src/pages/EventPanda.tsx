@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { 
   AlertTriangle, 
@@ -35,57 +34,30 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/lib/supabase';
-
-// Types for the EventPanda data
-interface Notice {
-  id: string;
-  title: string;
-  description: string | null;
-  deadline: string | null;
-  type: 'urgent' | 'upcoming' | 'general';
-  created_at: string;
-}
-
-interface Task {
-  id: string;
-  name: string;
-  assigned_to: string | null;
-  due_date: string | null;
-  priority: 'Low' | 'Medium' | 'High';
-  status: 'Pending' | 'In Progress' | 'Completed';
-  created_at: string;
-}
-
-interface Team {
-  id: string;
-  name: string;
-  members: string[];
-  events: string[];
-  created_at: string;
-}
+import { supabase, handleError, parseJsonArray } from '@/lib/supabase';
+import { EventNotice, EventTask, EventTeam } from '@/types';
 
 const EventPanda = () => {
-  const [notices, setNotices] = useState<Notice[]>([]);
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [teams, setTeams] = useState<Team[]>([]);
+  const [notices, setNotices] = useState<EventNotice[]>([]);
+  const [tasks, setTasks] = useState<EventTask[]>([]);
+  const [teams, setTeams] = useState<EventTeam[]>([]);
   const [isNoticeDialogOpen, setIsNoticeDialogOpen] = useState(false);
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
   const [isTeamDialogOpen, setIsTeamDialogOpen] = useState(false);
-  const [currentNotice, setCurrentNotice] = useState<Partial<Notice>>({
+  const [currentNotice, setCurrentNotice] = useState<Partial<EventNotice>>({
     title: '',
     description: '',
     deadline: '',
     type: 'general'
   });
-  const [currentTask, setCurrentTask] = useState<Partial<Task>>({
+  const [currentTask, setCurrentTask] = useState<Partial<EventTask>>({
     name: '',
     assigned_to: '',
     due_date: '',
     priority: 'Medium',
     status: 'Pending'
   });
-  const [currentTeam, setCurrentTeam] = useState<Partial<Team>>({
+  const [currentTeam, setCurrentTeam] = useState<Partial<EventTeam>>({
     name: '',
     members: [],
     events: []
@@ -94,7 +66,6 @@ const EventPanda = () => {
   const [newEvent, setNewEvent] = useState('');
   const { user } = useAuth();
 
-  // Fetch data from Supabase on component mount
   useEffect(() => {
     if (user) {
       fetchNotices();
@@ -103,7 +74,6 @@ const EventPanda = () => {
     }
   }, [user]);
 
-  // Fetch notices
   const fetchNotices = async () => {
     if (!user) return;
     
@@ -114,14 +84,13 @@ const EventPanda = () => {
         .order('created_at', { ascending: false });
         
       if (error) throw error;
-      setNotices(data || []);
+
+      setNotices(data as EventNotice[]);
     } catch (error) {
-      console.error('Error fetching notices:', error);
-      toast.error('Failed to load notices');
+      handleError(error);
     }
   };
 
-  // Fetch tasks
   const fetchTasks = async () => {
     if (!user) return;
     
@@ -132,14 +101,13 @@ const EventPanda = () => {
         .order('created_at', { ascending: false });
         
       if (error) throw error;
-      setTasks(data || []);
+      
+      setTasks(data as EventTask[]);
     } catch (error) {
-      console.error('Error fetching tasks:', error);
-      toast.error('Failed to load tasks');
+      handleError(error);
     }
   };
 
-  // Fetch teams
   const fetchTeams = async () => {
     if (!user) return;
     
@@ -150,14 +118,19 @@ const EventPanda = () => {
         .order('created_at', { ascending: false });
         
       if (error) throw error;
-      setTeams(data || []);
+      
+      const processedData = data?.map(team => ({
+        ...team,
+        members: parseJsonArray(team.members),
+        events: parseJsonArray(team.events)
+      })) as EventTeam[];
+      
+      setTeams(processedData);
     } catch (error) {
-      console.error('Error fetching teams:', error);
-      toast.error('Failed to load teams');
+      handleError(error);
     }
   };
 
-  // Add new notice
   const addNotice = async () => {
     if (!user) return;
     if (!currentNotice.title) {
@@ -181,16 +154,17 @@ const EventPanda = () => {
         
       if (error) throw error;
       toast.success('Notice added successfully');
-      setNotices([...(data || []), ...notices]);
+      
+      const newNotices = [...(data as EventNotice[] || []), ...notices];
+      setNotices(newNotices);
+      
       setCurrentNotice({ title: '', description: '', deadline: '', type: 'general' });
       setIsNoticeDialogOpen(false);
     } catch (error) {
-      console.error('Error adding notice:', error);
-      toast.error('Failed to add notice');
+      handleError(error);
     }
   };
 
-  // Add new task
   const addTask = async () => {
     if (!user) return;
     if (!currentTask.name) {
@@ -215,16 +189,17 @@ const EventPanda = () => {
         
       if (error) throw error;
       toast.success('Task added successfully');
-      setTasks([...(data || []), ...tasks]);
+      
+      const newTasks = [...(data as EventTask[] || []), ...tasks];
+      setTasks(newTasks);
+      
       setCurrentTask({ name: '', assigned_to: '', due_date: '', priority: 'Medium', status: 'Pending' });
       setIsTaskDialogOpen(false);
     } catch (error) {
-      console.error('Error adding task:', error);
-      toast.error('Failed to add task');
+      handleError(error);
     }
   };
 
-  // Add new team
   const addTeam = async () => {
     if (!user) return;
     if (!currentTeam.name) {
@@ -247,16 +222,22 @@ const EventPanda = () => {
         
       if (error) throw error;
       toast.success('Team added successfully');
-      setTeams([...(data || []), ...teams]);
+      
+      const processedData = data?.map(team => ({
+        ...team,
+        members: parseJsonArray(team.members),
+        events: parseJsonArray(team.events)
+      })) as EventTeam[];
+      
+      setTeams([...(processedData || []), ...teams]);
+      
       setCurrentTeam({ name: '', members: [], events: [] });
       setIsTeamDialogOpen(false);
     } catch (error) {
-      console.error('Error adding team:', error);
-      toast.error('Failed to add team');
+      handleError(error);
     }
   };
 
-  // Update task status
   const updateTaskStatus = async (taskId: string, newStatus: 'Pending' | 'In Progress' | 'Completed') => {
     if (!user) return;
     
@@ -274,12 +255,10 @@ const EventPanda = () => {
       
       toast.success('Task status updated');
     } catch (error) {
-      console.error('Error updating task status:', error);
-      toast.error('Failed to update task status');
+      handleError(error);
     }
   };
 
-  // Delete notice
   const deleteNotice = async (noticeId: string) => {
     if (!user) return;
     
@@ -294,12 +273,10 @@ const EventPanda = () => {
       setNotices(notices.filter(notice => notice.id !== noticeId));
       toast.success('Notice deleted successfully');
     } catch (error) {
-      console.error('Error deleting notice:', error);
-      toast.error('Failed to delete notice');
+      handleError(error);
     }
   };
 
-  // Delete task
   const deleteTask = async (taskId: string) => {
     if (!user) return;
     
@@ -314,12 +291,10 @@ const EventPanda = () => {
       setTasks(tasks.filter(task => task.id !== taskId));
       toast.success('Task deleted successfully');
     } catch (error) {
-      console.error('Error deleting task:', error);
-      toast.error('Failed to delete task');
+      handleError(error);
     }
   };
 
-  // Delete team
   const deleteTeam = async (teamId: string) => {
     if (!user) return;
     
@@ -334,12 +309,10 @@ const EventPanda = () => {
       setTeams(teams.filter(team => team.id !== teamId));
       toast.success('Team deleted successfully');
     } catch (error) {
-      console.error('Error deleting team:', error);
-      toast.error('Failed to delete team');
+      handleError(error);
     }
   };
 
-  // Add member to current team
   const addMemberToTeam = () => {
     if (!newMember.trim()) return;
     
@@ -351,7 +324,6 @@ const EventPanda = () => {
     setNewMember('');
   };
 
-  // Add event to current team
   const addEventToTeam = () => {
     if (!newEvent.trim()) return;
     
@@ -363,21 +335,18 @@ const EventPanda = () => {
     setNewEvent('');
   };
 
-  // Remove member from current team
   const removeMemberFromTeam = (memberIndex: number) => {
     const updatedMembers = [...(currentTeam.members || [])];
     updatedMembers.splice(memberIndex, 1);
     setCurrentTeam({ ...currentTeam, members: updatedMembers });
   };
 
-  // Remove event from current team
   const removeEventFromTeam = (eventIndex: number) => {
     const updatedEvents = [...(currentTeam.events || [])];
     updatedEvents.splice(eventIndex, 1);
     setCurrentTeam({ ...currentTeam, events: updatedEvents });
   };
 
-  // Calculate progress statistics for dashboard
   const calculateTaskStats = () => {
     const pending = tasks.filter(task => task.status === 'Pending').length;
     const inProgress = tasks.filter(task => task.status === 'In Progress').length;
