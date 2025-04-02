@@ -99,7 +99,7 @@ const Index = () => {
               </div>
             </button>
             
-            {/* EventPanda - New Card */}
+            {/* EventPanda - Updated Card */}
             <button 
               onClick={() => handleGetStarted('/events')} 
               className="mobile-card-button group dark:bg-white/5 dark:border-white/10 dark:text-white 
@@ -113,7 +113,7 @@ const Index = () => {
                 <Calendar size={isMobile ? 24 : 30} />
               </div>
               <h2 className="text-xs sm:text-xl font-medium text-apple-text dark:text-white mb-1 sm:mb-2">
-                🐼 EventPanda
+                EventPanda
               </h2>
               <p className="text-[10px] sm:text-sm text-muted-foreground dark:text-white/70 text-center mb-2 sm:mb-4 line-clamp-2 sm:line-clamp-none">
                 Stay on Track with Your Events

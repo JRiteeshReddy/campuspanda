@@ -39,6 +39,123 @@ export type Database = {
         }
         Relationships: []
       }
+      event_notices: {
+        Row: {
+          created_at: string
+          deadline: string | null
+          description: string | null
+          id: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          deadline?: string | null
+          description?: string | null
+          id?: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          deadline?: string | null
+          description?: string | null
+          id?: string
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      event_tasks: {
+        Row: {
+          assigned_to: string | null
+          created_at: string
+          due_date: string | null
+          id: string
+          name: string
+          priority: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          name: string
+          priority: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          name?: string
+          priority?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      event_teams: {
+        Row: {
+          created_at: string
+          events: Json
+          id: string
+          members: Json
+          name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          events?: Json
+          id?: string
+          members?: Json
+          name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          events?: Json
+          id?: string
+          members?: Json
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notes: {
         Row: {
           created_at: string

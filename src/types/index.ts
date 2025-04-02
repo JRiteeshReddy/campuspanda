@@ -77,3 +77,33 @@ export interface NoteForm {
 export interface SubjectWithNotesCount extends Subject {
   notesCount: number;
 }
+
+export interface EventNotice {
+  id: string;
+  user_id: string;
+  title: string;
+  description: string | null;
+  deadline: string | null;
+  type: 'urgent' | 'upcoming' | 'general';
+  created_at: string;
+}
+
+export interface EventTask {
+  id: string;
+  user_id: string;
+  name: string;
+  assigned_to: string | null;
+  due_date: string | null;
+  priority: 'Low' | 'Medium' | 'High';
+  status: 'Pending' | 'In Progress' | 'Completed';
+  created_at: string;
+}
+
+export interface EventTeam {
+  id: string;
+  user_id: string;
+  name: string;
+  members: string[];
+  events: string[];
+  created_at: string;
+}
