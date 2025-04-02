@@ -62,6 +62,7 @@ const EventPanda = () => {
     members: [],
     events: []
   });
+  const [isEditMode, setIsEditMode] = useState(false);
   const [newMember, setNewMember] = useState('');
   const [newEvent, setNewEvent] = useState('');
   const { user } = useAuth();
@@ -347,6 +348,81 @@ const EventPanda = () => {
     setCurrentTeam({ ...currentTeam, events: updatedEvents });
   };
 
+  const handleEditTeam = (team: EventTeam) => {
+    setCurrentTeam({
+      id: team.id,
+      name: team.name,
+      members: [...team.members],
+      events: [...team.events],
+    });
+    setIsEditMode(true);
+    setIsTeamDialogOpen(true);
+  };
+
+  const resetTeamForm = () => {
+    setCurrentTeam({ name: '', members: [], events: [] });
+    setIsEditMode(false);
+  };
+
+  const saveTeam = async () => {
+    if (!user) return;
+    if (!currentTeam.name) {
+      toast.error('Team name is required');
+      return;
+    }
+    
+    try {
+      if (isEditMode && currentTeam.id) {
+        const { error } = await supabase
+          .from('event_teams')
+          .update({
+            name: currentTeam.name,
+            members: currentTeam.members || [],
+            events: currentTeam.events || [],
+          })
+          .eq('id', currentTeam.id);
+          
+        if (error) throw error;
+        
+        setTeams(teams.map(team => 
+          team.id === currentTeam.id 
+            ? { ...team, name: currentTeam.name!, members: currentTeam.members || [], events: currentTeam.events || [] }
+            : team
+        ));
+        
+        toast.success('Team updated successfully');
+      } else {
+        const { data, error } = await supabase
+          .from('event_teams')
+          .insert([
+            {
+              user_id: user.id,
+              name: currentTeam.name,
+              members: currentTeam.members || [],
+              events: currentTeam.events || [],
+            }
+          ])
+          .select();
+          
+        if (error) throw error;
+        
+        const processedData = data?.map(team => ({
+          ...team,
+          members: parseJsonArray(team.members),
+          events: parseJsonArray(team.events)
+        })) as EventTeam[];
+        
+        setTeams([...(processedData || []), ...teams]);
+        toast.success('Team added successfully');
+      }
+      
+      resetTeamForm();
+      setIsTeamDialogOpen(false);
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
   const calculateTaskStats = () => {
     const pending = tasks.filter(task => task.status === 'Pending').length;
     const inProgress = tasks.filter(task => task.status === 'In Progress').length;
@@ -382,7 +458,6 @@ const EventPanda = () => {
           </div>
           
           <div className="space-y-8">
-            {/* Section 1: Notice Board */}
             <Card className="shadow-lg border border-border dark:border-white/10">
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
@@ -516,7 +591,6 @@ const EventPanda = () => {
               </CardContent>
             </Card>
 
-            {/* Section 2: Task Assignment System */}
             <Card className="shadow-lg border border-border dark:border-white/10">
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
@@ -689,7 +763,6 @@ const EventPanda = () => {
               </CardContent>
             </Card>
 
-            {/* Section 3: Teams System */}
             <Card className="shadow-lg border border-border dark:border-white/10">
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
@@ -698,7 +771,10 @@ const EventPanda = () => {
                   </CardTitle>
                   <CardDescription>Collaborate with team members</CardDescription>
                 </div>
-                <Dialog open={isTeamDialogOpen} onOpenChange={setIsTeamDialogOpen}>
+                <Dialog open={isTeamDialogOpen} onOpenChange={(open) => {
+                  if (!open) resetTeamForm();
+                  setIsTeamDialogOpen(open);
+                }}>
                   <DialogTrigger asChild>
                     <Button className="flex items-center gap-1">
                       <Plus className="h-4 w-4" /> New Team
@@ -706,7 +782,7 @@ const EventPanda = () => {
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-lg">
                     <DialogHeader>
-                      <DialogTitle>Create New Team</DialogTitle>
+                      <DialogTitle>{isEditMode ? 'Edit Team' : 'Create New Team'}</DialogTitle>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                       <div className="grid grid-cols-4 items-center gap-4">
@@ -781,7 +857,13 @@ const EventPanda = () => {
                       </div>
                     </div>
                     <DialogFooter>
-                      <Button type="submit" onClick={addTeam}>Create Team</Button>
+                      <Button variant="outline" onClick={() => {
+                        resetTeamForm();
+                        setIsTeamDialogOpen(false);
+                      }}>Cancel</Button>
+                      <Button type="submit" onClick={saveTeam}>
+                        {isEditMode ? 'Update Team' : 'Create Team'}
+                      </Button>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
@@ -800,14 +882,24 @@ const EventPanda = () => {
                       <Card key={team.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                         <CardHeader className="bg-muted/50">
                           <CardTitle>{team.name}</CardTitle>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="absolute top-2 right-2 text-muted-foreground hover:text-destructive"
-                            onClick={() => deleteTeam(team.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          <div className="absolute top-2 right-2 flex space-x-1">
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8 text-muted-foreground hover:text-primary"
+                              onClick={() => handleEditTeam(team)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                              onClick={() => deleteTeam(team.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </CardHeader>
                         <CardContent className="pt-4">
                           <div className="space-y-2">
@@ -841,7 +933,6 @@ const EventPanda = () => {
               </CardContent>
             </Card>
 
-            {/* Section 4: Progress Dashboard */}
             <Card className="shadow-lg border border-border dark:border-white/10">
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-2">

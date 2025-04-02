@@ -15,9 +15,10 @@ const AuthLayout = ({ children, title, subtitle }: AuthLayoutProps) => {
   const navigate = useNavigate();
   const { theme } = useTheme();
   
+  // Update logo paths to match the ones used in the main app
   const logoSrc = theme === 'light' 
-    ? "/lovable-uploads/c0858d5f-c932-484a-9e3f-31b896b122d7.png" 
-    : "/lovable-uploads/7ff12a1f-6bcd-4d7a-a698-64c8f474e6a3.png";
+    ? "/lovable-uploads/3a03d6f2-dedf-4107-8b06-8944fc1b13be.png" 
+    : "/lovable-uploads/e4e6b3ba-28db-4d0e-8e71-2e507a625add.png";
   
   return (
     <div className="min-h-screen flex items-center justify-center bg-background transition-colors duration-300 p-4 sm:p-6">
