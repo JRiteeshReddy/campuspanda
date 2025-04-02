@@ -14,8 +14,8 @@ const Navbar = () => {
   useDocumentTitle();
   
   const logoSrc = theme === 'light' 
-    ? "/lovable-uploads/3a03d6f2-dedf-4107-8b06-8944fc1b13be.png" 
-    : "/lovable-uploads/984a254c-11ac-4a97-ac8c-d0bcdeaf791c.png";
+    ? "/lovable-uploads/3c2c04b3-4321-4d75-acf9-9ba8a3dda8d5.png" 
+    : "/lovable-uploads/259a2ad1-1ce7-481c-bdf3-3df888799e9d.png";
   
   const currentPath = window.location.pathname;
 
