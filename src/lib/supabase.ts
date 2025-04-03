@@ -40,8 +40,8 @@ export const fetchUniqueCategories = async (userId: string): Promise<string[]> =
       
     if (error) throw error;
     
-    // Extract unique categories
-    const categories = [...new Set(data.map(item => item.category))];
+    // Extract unique categories and properly cast them to strings
+    const categories = [...new Set(data.map(item => item.category))] as string[];
     return categories;
   } catch (error) {
     handleError(error);
