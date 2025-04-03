@@ -4,6 +4,7 @@ import { BookOpen, CalendarCheck, FileText, ArrowRight, Calendar } from 'lucide-
 import { useAuth } from '@/context/AuthContext';
 import Navbar from '@/components/layout/Navbar';
 import { useIsMobile } from '@/hooks/use-mobile';
+import FeedbackLink from '@/components/layout/FeedbackLink';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -126,6 +127,8 @@ const Index = () => {
           </div>
         </div>
       </main>
+      
+      <FeedbackLink />
       
       <footer className="py-6 border-t border-border dark:border-white/10">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6">

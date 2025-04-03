@@ -8,6 +8,7 @@ import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import TimetableGrid from '@/components/timetable/TimetableGrid';
 import { Subject } from '@/types';
+import FeedbackLink from '@/components/layout/FeedbackLink';
 
 const Timetable = () => {
   const { user, loading: authLoading } = useAuth();
@@ -83,6 +84,8 @@ const Timetable = () => {
           )}
         </div>
       </main>
+      
+      <FeedbackLink />
       
       <footer className="py-6 border-t border-border">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6">

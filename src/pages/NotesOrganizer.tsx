@@ -11,6 +11,7 @@ import Navbar from "@/components/layout/Navbar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileQuestion } from "lucide-react";
 import { toast } from "sonner";
+import FeedbackLink from "@/components/layout/FeedbackLink";
 
 const NotesOrganizer = () => {
   const { user } = useAuth();
@@ -100,10 +101,10 @@ const NotesOrganizer = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
 
-      <main className="container max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-12">
+      <main className="container max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-12 flex-1">
         <h1 className="text-3xl font-bold mb-2">Notes Organizer</h1>
         <p className="text-muted-foreground mb-6">
           Due to limited storage, we cannot accept PDFs or PPTs directly. However, you can upload your notes to Google Drive or Dropbox and paste the link here.
@@ -188,6 +189,16 @@ const NotesOrganizer = () => {
           </div>
         </div>
       </main>
+
+      <FeedbackLink />
+      
+      <footer className="py-6 border-t border-border">
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6">
+          <p className="text-center text-sm text-muted-foreground">
+            Developed By J Riteesh Reddy
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };

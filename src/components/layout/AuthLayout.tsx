@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import { useTheme } from '@/context/ThemeContext';
+import FeedbackLink from './FeedbackLink';
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -21,7 +22,7 @@ const AuthLayout = ({ children, title, subtitle }: AuthLayoutProps) => {
     : "/lovable-uploads/259a2ad1-1ce7-481c-bdf3-3df888799e9d.png";
   
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background transition-colors duration-300 p-4 sm:p-6">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background transition-colors duration-300 p-4 sm:p-6">
       <div className="w-full max-w-md bg-card rounded-xl shadow-subtle p-6 sm:p-8 animate-scale-in relative">
         <div className="absolute right-6 top-6">
           <ThemeToggle showLabel={false} />
@@ -45,6 +46,10 @@ const AuthLayout = ({ children, title, subtitle }: AuthLayoutProps) => {
         </div>
         
         {children}
+      </div>
+      
+      <div className="mt-6 w-full max-w-md">
+        <FeedbackLink />
       </div>
     </div>
   );
