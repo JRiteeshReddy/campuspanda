@@ -14,12 +14,12 @@ const Chatbot = () => {
   const navigate = useNavigate();
   
   return (
-    <div className="min-h-screen bg-gradient-light dark:bg-gradient-dark flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       
-      <main className="flex-1 pt-24 pb-12 px-4">
-        <div className="container max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6 text-center text-[#0071e3] dark:text-white">
+      <main className="flex-1 pt-20 pb-8 px-4">
+        <div className="container max-w-4xl mx-auto">
+          <h1 className="text-2xl font-bold mb-6 text-center text-primary">
             PandaAI Chat
           </h1>
           

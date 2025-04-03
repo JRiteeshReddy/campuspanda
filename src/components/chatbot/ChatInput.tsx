@@ -28,10 +28,10 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2 items-end mt-2">
+    <form onSubmit={handleSubmit} className="flex gap-2 items-end">
       <Textarea
-        className="flex-1 min-h-[80px] resize-none"
-        placeholder="Ask PandaAI anything about your campus life..."
+        className="flex-1 min-h-[56px] resize-none rounded-lg focus-visible:ring-1"
+        placeholder="Type your message..."
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         onKeyDown={handleKeyDown}
@@ -41,7 +41,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled }) => {
         type="submit" 
         size="icon" 
         disabled={!message.trim() || disabled}
-        className="mb-1.5"
+        className="mb-1 h-10 w-10 rounded-lg"
       >
         <Send className="h-4 w-4" />
         <span className="sr-only">Send message</span>

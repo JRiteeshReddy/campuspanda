@@ -1,12 +1,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
 import ChatMessage, { Message } from './ChatMessage';
 import ChatInput from './ChatInput';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const SYSTEM_PROMPT = "You are PandaAI, a helpful assistant for college students using the CampusPanda app. You help with assignments, study tips, campus events, and general academic advice. Keep your responses concise, friendly, and focused on helping students succeed in their academic journey.";
 
@@ -21,6 +20,7 @@ const ChatbotContainer = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   
   useEffect(() => {
     scrollToBottom();
@@ -75,37 +75,28 @@ const ChatbotContainer = () => {
   };
   
   return (
-    <Card className="w-full max-w-3xl mx-auto h-[600px] flex flex-col">
-      <CardHeader>
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-primary" />
-          <CardTitle>PandaAI Chat</CardTitle>
-        </div>
-        <CardDescription>
-          Your AI campus assistant powered by DeepSeek
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex-1 overflow-y-auto mb-2 px-4">
-        <div className="space-y-4">
+    <div className="w-full max-w-4xl mx-auto h-[calc(100vh-180px)] flex flex-col bg-background rounded-lg overflow-hidden">
+      <div className="flex-1 overflow-y-auto p-4">
+        <div className="space-y-4 pb-4">
           {messages.map((message, index) => (
             <ChatMessage key={index} message={message} />
           ))}
           {isLoading && (
             <ChatMessage 
-              message={{ role: 'assistant', content: "Thinking..." }} 
+              message={{ role: 'assistant', content: "..." }} 
               isLoading={true}
             />
           )}
           <div ref={messagesEndRef} />
         </div>
-      </CardContent>
-      <CardFooter className="border-t pt-4">
+      </div>
+      <div className="border-t p-4">
         <ChatInput 
           onSendMessage={handleSendMessage} 
           disabled={isLoading || !user} 
         />
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 };
 

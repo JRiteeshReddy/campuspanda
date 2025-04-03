@@ -24,13 +24,13 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isLoading }) => {
       )}
     >
       {!isUser && (
-        <Avatar className="h-8 w-8 bg-primary/10">
-          <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-blue-700 text-white text-xs">AI</AvatarFallback>
+        <Avatar className="h-8 w-8">
+          <AvatarFallback className="bg-primary/10 text-primary text-xs">AI</AvatarFallback>
         </Avatar>
       )}
       <div 
         className={cn(
-          "rounded-xl px-4 py-3 max-w-[80%] break-words",
+          "rounded-lg px-4 py-2 max-w-[80%] break-words",
           isUser ? "bg-primary text-primary-foreground" : "bg-muted",
           isLoading ? "animate-pulse" : ""
         )}
