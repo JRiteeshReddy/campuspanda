@@ -14,6 +14,8 @@ const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
 
 const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey);
 
+// This function is designed to run on a schedule via the Supabase dashboard
+// Set up a cron job to run this function daily
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
