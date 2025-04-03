@@ -1,12 +1,10 @@
 
-import { Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const FeedbackLink = () => {
   return (
     <div className="flex flex-col sm:flex-row items-center justify-center gap-2 py-4 text-center">
-      <span className="text-sm text-muted-foreground flex items-center gap-1">
-        <Lightbulb size={16} className="text-amber-500" />
+      <span className="text-xs text-muted-foreground">
         Got a wacky idea to make CampusPanda even better? Share your genius!
       </span>
       <Button
