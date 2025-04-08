@@ -1,6 +1,6 @@
 
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, CalendarCheck, FileText, ArrowRight, Calendar, Clock } from 'lucide-react';
+import { BookOpen, CalendarCheck, FileText, ArrowRight, Calendar, MessageSquare } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import Navbar from '@/components/layout/Navbar';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -100,7 +100,7 @@ const Index = () => {
               </div>
             </button>
             
-            {/* EventPanda - Updated Card */}
+            {/* EventPanda */}
             <button 
               onClick={() => handleGetStarted('/events')} 
               className="mobile-card-button group dark:bg-white/5 dark:border-white/10 dark:text-white 
@@ -125,26 +125,27 @@ const Index = () => {
               </div>
             </button>
             
-            {/* Coming Soon Card */}
+            {/* PandaAI Chat - New Card */}
             <button 
+              onClick={() => handleGetStarted('/chat')} 
               className="mobile-card-button group dark:bg-white/5 dark:border-white/10 dark:text-white 
                         transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-xl 
-                        hover:bg-gradient-to-br hover:from-amber-50 hover:to-yellow-100 
-                        dark:hover:bg-gradient-to-br dark:hover:from-amber-900/30 dark:hover:to-yellow-800/20"
+                        hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-100 
+                        dark:hover:bg-gradient-to-br dark:hover:from-purple-900/30 dark:hover:to-pink-800/20"
             >
-              <div className="mb-2 sm:mb-4 p-2 sm:p-4 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-amber-600/10 
-                           flex items-center justify-center text-amber-600 dark:bg-amber-600/20 dark:text-white
+              <div className="mb-2 sm:mb-4 p-2 sm:p-4 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-purple-600/10 
+                           flex items-center justify-center text-purple-600 dark:bg-purple-600/20 dark:text-white
                            group-hover:scale-110 transition-transform duration-300">
-                <Clock size={isMobile ? 24 : 30} />
+                <MessageSquare size={isMobile ? 24 : 30} />
               </div>
               <h2 className="text-xs sm:text-xl font-medium text-apple-text dark:text-white mb-1 sm:mb-2">
-                Coming Soon
+                PandaAI Chat
               </h2>
               <p className="text-[10px] sm:text-sm text-muted-foreground dark:text-white/70 text-center mb-2 sm:mb-4 line-clamp-2 sm:line-clamp-none">
-                New features on the way
+                AI Assistant for Campus Life
               </p>
-              <div className="mt-auto flex items-center justify-center text-amber-600 dark:text-white font-medium text-xs sm:text-sm">
-                <span>Stay Tuned</span>
+              <div className="mt-auto flex items-center justify-center text-purple-600 dark:text-white font-medium text-xs sm:text-sm">
+                <span>Chat Now</span>
                 <ArrowRight size={isMobile ? 14 : 16} className="ml-1 transition-transform group-hover:translate-x-2" />
               </div>
             </button>
