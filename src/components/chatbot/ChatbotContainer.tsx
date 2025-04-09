@@ -42,9 +42,7 @@ const ChatbotContainer = () => {
     
     try {
       // Prepare all previous messages for context (excluding the initial greeting)
-      const messagesToSend = messages.length > 1 ? 
-        messages.slice(1).concat(userMessage) : 
-        [userMessage];
+      const messagesToSend = messages.slice(1).concat(userMessage);
       
       // Call Supabase Edge Function
       const { data, error } = await supabase.functions.invoke('deepseek-chat', {
