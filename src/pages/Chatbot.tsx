@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import FeedbackLink from '@/components/layout/FeedbackLink';
 
 const Chatbot = () => {
-  useDocumentTitle('PandaAI Chat');
+  useDocumentTitle(); // Fixed: Removed the argument as the hook doesn't expect one
   const { user } = useAuth();
   const navigate = useNavigate();
   
