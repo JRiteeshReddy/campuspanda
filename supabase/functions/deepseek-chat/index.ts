@@ -37,40 +37,71 @@ Deno.serve(async (req) => {
     
     console.log('Sending request to DeepSeek API');
     
-    // Call DeepSeek API
-    const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'deepseek-chat',
-        messages: completeMessages,
-        temperature: 0.7,
-        max_tokens: 800,
-      }),
-    });
-    
-    if (!response.ok) {
-      const error = await response.text();
-      console.error('DeepSeek API error:', error);
-      throw new Error(`DeepSeek API returned an error: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    console.log('DeepSeek API response received');
-    
-    return new Response(
-      JSON.stringify({
-        success: true,
-        answer: data.choices[0].message.content,
-      }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
+    try {
+      // Call DeepSeek API
+      const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: 'deepseek-chat',
+          messages: completeMessages,
+          temperature: 0.7,
+          max_tokens: 800,
+        }),
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('DeepSeek API error:', errorText);
+        
+        // If we get a payment required error (402), provide a helpful fallback response
+        if (response.status === 402) {
+          return new Response(
+            JSON.stringify({
+              success: true,
+              answer: "I apologize, but I'm currently experiencing technical difficulties. The AI service is unavailable due to account balance issues. Please try again later or contact support for assistance.",
+            }),
+            {
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+              status: 200,
+            }
+          );
+        }
+        
+        throw new Error(`DeepSeek API returned an error: ${response.status}`);
       }
-    );
+      
+      const data = await response.json();
+      console.log('DeepSeek API response received');
+      
+      return new Response(
+        JSON.stringify({
+          success: true,
+          answer: data.choices[0].message.content,
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        }
+      );
+    } catch (apiError) {
+      console.error('API call error:', apiError.message);
+      
+      // Provide a fallback response when the API call fails
+      return new Response(
+        JSON.stringify({
+          success: true,
+          answer: "I apologize, but I'm currently experiencing technical difficulties. Please try again later or contact support for assistance.",
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        }
+      );
+    }
   } catch (error) {
     console.error('Error in deepseek-chat function:', error.message);
     
