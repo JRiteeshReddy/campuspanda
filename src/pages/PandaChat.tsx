@@ -4,7 +4,7 @@ import { useDocumentTitle } from '@/hooks/use-document-title';
 import Navbar from '@/components/layout/Navbar';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Send, Bot, User } from 'lucide-react';
+import { Send, Bot, User, RefreshCw } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
@@ -12,6 +12,7 @@ import { supabase } from '@/lib/supabase';
 interface Message {
   role: 'user' | 'assistant';
   content: string;
+  timestamp?: Date;
 }
 
 const PandaChat = () => {
@@ -20,12 +21,15 @@ const PandaChat = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: 'Hi there! I\'m PandaChat, your campus life assistant. How can I help you today?'
+      content: "Hey there, friend! 👋 I'm PandaChat, your campus buddy! How's your day going? Anything exciting happening in your college life that you want to chat about?",
+      timestamp: new Date()
     }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -33,6 +37,23 @@ const PandaChat = () => {
 
   useEffect(() => {
     scrollToBottom();
+    // Focus on input when component loads
+    inputRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // Simulate typing effect for new AI messages
+  useEffect(() => {
+    if (messages.length > 0 && messages[messages.length - 1].role === 'assistant') {
+      setIsTyping(true);
+      const timer = setTimeout(() => {
+        setIsTyping(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
   }, [messages]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,20 +61,31 @@ const PandaChat = () => {
     
     if (!input.trim()) return;
     
-    const userMessage = { role: 'user' as const, content: input.trim() };
+    const userMessage = { 
+      role: 'user' as const, 
+      content: input.trim(),
+      timestamp: new Date()
+    };
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
     
     try {
+      // Use a more conversational system prompt
       const systemPrompt = 
-        "You are PandaChat, a friendly and helpful AI assistant for college students. " + 
-        "You provide information about campus life, study tips, time management advice, and help with student-related queries. " +
-        "Keep your answers concise, friendly, and focused on helping students succeed in their academic and campus life.";
+        "You are PandaChat, a friendly and enthusiastic AI companion for college students. " +
+        "Talk to the user as if you're their friend - be warm, empathetic, and even a bit humorous. " +
+        "Use a conversational tone, occasional emojis, and show genuine interest in their campus life. " +
+        "Ask follow-up questions when appropriate. Keep your answers conversational and friendly. " +
+        "If they ask about campus topics, classes, or student life, provide helpful advice while maintaining a friendly tone. " +
+        "Always be supportive and encouraging.";
       
       const { data, error } = await supabase.functions.invoke('deepseek-chat', {
         body: {
-          messages: [userMessage],
+          messages: [
+            ...messages.filter(m => m.role !== 'system').slice(-5), // Keep context from last 5 messages
+            userMessage
+          ],
           systemPrompt: systemPrompt
         }
       });
@@ -63,33 +95,58 @@ const PandaChat = () => {
         toast({
           variant: "destructive",
           title: "Chat Error",
-          description: "Sorry, I couldn't process your request. Please try again."
+          description: "Sorry, I couldn't process your message. Let's try again!"
         });
         return;
       }
       
       if (data && data.success && data.answer) {
-        setMessages((prev) => [...prev, { 
-          role: 'assistant', 
-          content: data.answer 
-        }]);
+        // Short delay to simulate thinking
+        setTimeout(() => {
+          setMessages((prev) => [...prev, { 
+            role: 'assistant', 
+            content: data.answer,
+            timestamp: new Date()
+          }]);
+          setIsLoading(false);
+        }, 500);
       } else {
         toast({
           variant: "destructive",
           title: "Chat Error",
-          description: "Received an invalid response. Please try again."
+          description: "I didn't catch that. Mind trying again?"
         });
+        setIsLoading(false);
       }
     } catch (error) {
       console.error('Error in chat request:', error);
       toast({
         variant: "destructive",
         title: "Chat Error",
-        description: "An unexpected error occurred. Please try again."
+        description: "Oops! Something went wrong. Let's try that again!"
       });
-    } finally {
       setIsLoading(false);
     }
+  };
+
+  const formatTime = (date?: Date) => {
+    if (!date) return '';
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+
+  const clearChat = () => {
+    setMessages([{
+      role: 'assistant',
+      content: "Hey there! Starting fresh! What's on your mind today?",
+      timestamp: new Date()
+    }]);
   };
 
   return (
@@ -97,14 +154,24 @@ const PandaChat = () => {
       <Navbar />
       
       <main className="flex-1 pt-24 pb-12 container max-w-4xl mx-auto px-4 flex flex-col">
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <h1 className="text-3xl font-bold tracking-tight text-primary dark:text-white">PandaChat</h1>
-          <p className="text-muted-foreground dark:text-white/70">Your campus life assistant</p>
+          <p className="text-muted-foreground dark:text-white/70">Your friendly campus companion</p>
         </div>
         
         <div className="flex-1 flex flex-col">
-          <div className="bg-card dark:bg-card shadow-md rounded-lg p-4 flex-1 overflow-y-auto max-h-[60vh] mb-4">
-            <div className="space-y-4">
+          <div className="bg-card dark:bg-card shadow-md rounded-lg p-4 flex-1 overflow-y-auto max-h-[60vh] mb-4 relative">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="absolute top-2 right-2 p-2 h-8 w-8" 
+              onClick={clearChat}
+              title="Clear chat"
+            >
+              <RefreshCw size={16} />
+            </Button>
+            
+            <div className="space-y-4 pt-2">
               {messages.map((message, index) => (
                 <div 
                   key={index}
@@ -112,54 +179,79 @@ const PandaChat = () => {
                 >
                   <div className={`flex max-w-[80%] ${message.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                     <div className={`flex items-center justify-center h-8 w-8 rounded-full shrink-0 
-                                   ${message.role === 'user' ? 'bg-primary ml-2' : 'bg-secondary mr-2'}`}>
+                                   ${message.role === 'user' ? 'bg-primary ml-2' : 'bg-purple-500 mr-2'}`}>
                       {message.role === 'user' ? 
                         <User size={16} className="text-white" /> : 
                         <Bot size={16} className="text-white" />
                       }
                     </div>
-                    <div className={`px-4 py-2 rounded-lg 
+                    <div className={`px-4 py-3 rounded-lg relative group
                                    ${message.role === 'user' 
                                       ? 'bg-primary text-white rounded-tr-none' 
-                                      : 'bg-muted rounded-tl-none'}`}>
+                                      : 'bg-muted dark:bg-slate-700 rounded-tl-none'}`}>
                       <div className="whitespace-pre-wrap">{message.content}</div>
+                      <div className={`text-xs mt-1 opacity-60 
+                                     ${message.role === 'user' ? 'text-right' : 'text-left'}`}>
+                        {formatTime(message.timestamp)}
+                      </div>
                     </div>
                   </div>
                 </div>
               ))}
+              
+              {isTyping && (
+                <div className="flex justify-start">
+                  <div className="flex flex-row">
+                    <div className="flex items-center justify-center h-8 w-8 rounded-full shrink-0 bg-purple-500 mr-2">
+                      <Bot size={16} className="text-white" />
+                    </div>
+                    <div className="px-4 py-3 rounded-lg bg-muted dark:bg-slate-700 rounded-tl-none">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                        <div className="w-2 h-2 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: '200ms' }}></div>
+                        <div className="w-2 h-2 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: '400ms' }}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               <div ref={messagesEndRef} />
             </div>
           </div>
           
-          <form onSubmit={handleSubmit} className="flex gap-2">
+          <form onSubmit={handleSubmit} className="flex gap-2 items-end">
             <Textarea
+              ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Type your message..."
-              className="flex-1 resize-none"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSubmit(e);
-                }
-              }}
+              placeholder="Message PandaChat..."
+              className="flex-1 resize-none min-h-[60px] p-3"
+              onKeyDown={handleKeyDown}
               disabled={isLoading}
+              maxLength={1000}
             />
             <Button 
               type="submit" 
               size="icon" 
               disabled={isLoading || !input.trim()}
-              className="h-auto"
+              className="h-[60px] w-[60px] rounded-full bg-primary hover:bg-primary/90"
             >
-              <Send size={20} />
+              <Send size={20} className="text-white" />
             </Button>
           </form>
           
           {isLoading && (
             <div className="text-center text-muted-foreground text-sm mt-2">
-              Thinking...
+              PandaChat is thinking...
             </div>
           )}
+          
+          <div className="text-center text-xs text-muted-foreground mt-4">
+            {input.length > 0 && (
+              <p>{1000 - input.length} characters remaining</p>
+            )}
+          </div>
         </div>
       </main>
     </div>

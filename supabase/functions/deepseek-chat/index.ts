@@ -30,10 +30,19 @@ Deno.serve(async (req) => {
       throw new Error('Invalid messages format');
     }
     
-    // Construct the complete message array with system prompt if provided
+    // Define a more conversational and friendly system prompt
+    const friendlySystemPrompt = 
+      "You are PandaChat, a friendly and enthusiastic AI companion for college students. " + 
+      "Talk to the user as if you're their friend - be warm, empathetic, and even a bit humorous. " +
+      "Use a conversational tone, occasional emojis, and show genuine interest in their campus life. " +
+      "Ask follow-up questions when appropriate. Keep your answers conversational and friendly. " +
+      "If they ask about campus topics, classes, or student life, provide helpful advice while maintaining a friendly tone. " +
+      "Always be supportive and encouraging.";
+    
+    // Use the provided system prompt or the default friendly one
     const completeMessages = systemPrompt 
       ? [{ role: 'system', content: systemPrompt }, ...messages]
-      : messages;
+      : [{ role: 'system', content: friendlySystemPrompt }, ...messages];
     
     console.log('Sending request to DeepSeek API');
     
@@ -48,7 +57,7 @@ Deno.serve(async (req) => {
         body: JSON.stringify({
           model: 'deepseek-chat',
           messages: completeMessages,
-          temperature: 0.7,
+          temperature: 0.85, // Increased for more personality
           max_tokens: 800,
         }),
       });
@@ -62,7 +71,7 @@ Deno.serve(async (req) => {
           return new Response(
             JSON.stringify({
               success: true,
-              answer: "I apologize, but I'm currently experiencing technical difficulties. The AI service is unavailable due to account balance issues. Please try again later or contact support for assistance.",
+              answer: "Hey there! I'm really sorry, but I'm having some technical difficulties at the moment. Our AI service seems to be having some account balance issues. Could you try again a bit later? Thanks for understanding! 😊",
             }),
             {
               headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -90,11 +99,11 @@ Deno.serve(async (req) => {
     } catch (apiError) {
       console.error('API call error:', apiError.message);
       
-      // Provide a fallback response when the API call fails
+      // Provide a more friendly fallback response when the API call fails
       return new Response(
         JSON.stringify({
           success: true,
-          answer: "I apologize, but I'm currently experiencing technical difficulties. Please try again later or contact support for assistance.",
+          answer: "Hey friend! 👋 I'm having a bit of trouble connecting right now. Would you mind trying again in a minute? My digital brain might need a quick restart! 😅",
         }),
         {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
