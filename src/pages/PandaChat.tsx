@@ -2,6 +2,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useDocumentTitle } from '@/hooks/use-document-title';
 import Navbar from '@/components/layout/Navbar';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 
 interface Message {
   role: 'user' | 'assistant' | 'system';
@@ -28,19 +32,21 @@ const PandaChat = () => {
   }, [messages]);
 
   const sendMessage = async () => {
-    if (!input.trim()) return;
+    const userText = input.trim();
+    if (!userText) return;
     
     // Add user message to chat
-    const userMessage = { role: 'user' as const, content: input.trim() };
+    const userMessage = { role: 'user' as const, content: userText };
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
     
     try {
       // Set up the API request
-      const API_KEY = "sk-fbc3b5c654e5473dbd97994f86f63fa4"; // Using the key from the DeepSeek function
+      const API_KEY = "sk-6351ef57c07a4d99b5172efc80466de2";
+      const endpoint = "https://api.deepseek.com/v1/chat/completions";
       
-      const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${API_KEY}`,
@@ -55,11 +61,14 @@ const PandaChat = () => {
             },
             ...messages.filter(m => m.role === 'user' || m.role === 'assistant'),
             userMessage
-          ],
-          temperature: 0.7,
-          max_tokens: 800
+          ]
         })
       });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`HTTP ${response.status} - ${errText}`);
+      }
 
       const data = await response.json();
       const reply = data.choices[0].message.content;
@@ -67,11 +76,11 @@ const PandaChat = () => {
       // Add AI response to chat
       setMessages((prev) => [...prev, { role: 'assistant', content: reply }]);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('🐼 DeepSeek Error:', error);
       // Add error message to chat
       setMessages((prev) => [...prev, { 
         role: 'assistant', 
-        content: "Oops! 🐼 Something went wrong. Could you try sending your message again?" 
+        content: `Oops! 🐼 Something went wrong...\n${error instanceof Error ? error.message : 'Unknown error'}` 
       }]);
     } finally {
       setIsLoading(false);
@@ -86,48 +95,56 @@ const PandaChat = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#eaf6f6] flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       
       <main className="flex-1 pt-24 pb-6 container max-w-4xl mx-auto px-4 flex flex-col">
-        <h2 className="text-center text-2xl font-bold text-[#2c3e50] mb-4">🐼 Panda AI - Chat with me!</h2>
-        
-        {/* Chatbox */}
-        <div 
-          ref={chatboxRef}
-          className="border-2 border-[#d1d1d1] rounded-xl p-5 h-[400px] bg-white overflow-y-auto mb-4"
-        >
-          {messages.map((message, index) => (
-            <div key={index} className={`my-3 ${message.role === 'user' ? 'text-[#444]' : 'text-[#27ae60] font-bold'}`}>
-              {message.role === 'user' ? '👤 You: ' : '🐼 Panda AI: '}
-              {message.content}
+        <Card className="shadow-md w-full">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-2xl font-bold flex items-center justify-center">
+              <span className="mr-2">🐼</span> Panda AI Chat
+            </CardTitle>
+            <Separator className="my-2" />
+          </CardHeader>
+          
+          <CardContent className="space-y-4">
+            {/* Chatbox */}
+            <div 
+              ref={chatboxRef}
+              className="border rounded-lg p-4 h-[400px] bg-card overflow-y-auto mb-4"
+            >
+              {messages.map((message, index) => (
+                <div key={index} className={`my-3 ${message.role === 'user' ? 'text-foreground' : 'text-primary font-semibold'}`}>
+                  {message.role === 'user' ? '👤 You: ' : '🐼 Panda AI: '}
+                  {message.content}
+                </div>
+              ))}
+              {isLoading && (
+                <div className="text-primary font-semibold my-3">
+                  🐼 Panda AI is typing...
+                </div>
+              )}
             </div>
-          ))}
-          {isLoading && (
-            <div className="text-[#27ae60] font-bold my-3">
-              🐼 Panda AI is typing...
+            
+            {/* Input area */}
+            <div className="flex gap-2">
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Ask Panda AI something..."
+                onKeyDown={handleKeyDown}
+                className="flex-1"
+              />
+              <Button
+                onClick={sendMessage}
+                disabled={isLoading || !input.trim()}
+                variant="default"
+              >
+                Send
+              </Button>
             </div>
-          )}
-        </div>
-        
-        {/* Input area */}
-        <div className="flex items-center justify-center gap-2">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask Panda AI something..."
-            onKeyDown={handleKeyDown}
-            className="py-3 px-4 text-base w-4/5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#27ae60]"
-          />
-          <button
-            onClick={sendMessage}
-            disabled={isLoading || !input.trim()}
-            className="py-3 px-4 w-1/5 bg-[#27ae60] hover:bg-[#219150] text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Send
-          </button>
-        </div>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );
