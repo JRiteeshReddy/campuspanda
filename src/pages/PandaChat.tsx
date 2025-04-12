@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useDocumentTitle } from '@/hooks/use-document-title';
 import Navbar from '@/components/layout/Navbar';
@@ -10,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
 
 interface Message {
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp?: Date;
 }
@@ -37,7 +36,6 @@ const PandaChat = () => {
 
   useEffect(() => {
     scrollToBottom();
-    // Focus on input when component loads
     inputRef.current?.focus();
   }, []);
 
@@ -45,7 +43,6 @@ const PandaChat = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Simulate typing effect for new AI messages
   useEffect(() => {
     if (messages.length > 0 && messages[messages.length - 1].role === 'assistant') {
       setIsTyping(true);
@@ -71,7 +68,6 @@ const PandaChat = () => {
     setIsLoading(true);
     
     try {
-      // Use a more conversational system prompt
       const systemPrompt = 
         "You are PandaChat, a friendly and enthusiastic AI companion for college students. " +
         "Talk to the user as if you're their friend - be warm, empathetic, and even a bit humorous. " +
@@ -83,7 +79,7 @@ const PandaChat = () => {
       const { data, error } = await supabase.functions.invoke('deepseek-chat', {
         body: {
           messages: [
-            ...messages.filter(m => m.role !== 'system').slice(-5), // Keep context from last 5 messages
+            ...messages.filter(m => m.role === 'user' || m.role === 'assistant').slice(-5),
             userMessage
           ],
           systemPrompt: systemPrompt
@@ -101,7 +97,6 @@ const PandaChat = () => {
       }
       
       if (data && data.success && data.answer) {
-        // Short delay to simulate thinking
         setTimeout(() => {
           setMessages((prev) => [...prev, { 
             role: 'assistant', 
