@@ -33,22 +33,13 @@ const PandaChat = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://asegblxpnduuagqincnj.supabase.co/functions/v1/chat-gpt', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message: userMessage }),
+      // Use supabase.functions.invoke instead of direct fetch
+      const { data, error } = await supabase.functions.invoke('chat-gpt', {
+        body: { message: userMessage },
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to get response');
-      }
-
-      const data = await response.json();
-      
-      if (data.error) {
-        throw new Error(data.error);
+      if (error) {
+        throw new Error(error.message);
       }
 
       setMessages(prev => [...prev, { text: data.reply, isBot: true }]);
