@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Send } from 'lucide-react';
 import ChatMessage from '@/components/chat/ChatMessage';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Message {
   text: string;
@@ -32,7 +33,7 @@ const PandaChat = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://yourapp.supabase.co/functions/v1/chat-gpt', {
+      const response = await fetch('https://asegblxpnduuagqincnj.supabase.co/functions/v1/chat-gpt', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
