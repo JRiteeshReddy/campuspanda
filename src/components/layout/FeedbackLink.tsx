@@ -1,22 +1,11 @@
 
 import { Button } from '@/components/ui/button';
-import { Mail } from 'lucide-react';
 
 const FeedbackLink = () => {
-  const handleEmailClick = () => {
-    window.location.href = 'mailto:jriteeshreddy@gmail.com';
-  };
-
   return (
     <div className="flex flex-col sm:flex-row items-center justify-center gap-2 py-4 text-center">
       <span className="text-xs text-muted-foreground">
-        Got a wacky idea to make CampusPanda even better? 
-        <button 
-          onClick={handleEmailClick} 
-          className="ml-1 text-primary hover:underline text-xs"
-        >
-          J Riteesh Reddy
-        </button>
+        Got a wacky idea to make CampusPanda even better? Share your genius!
       </span>
       <Button
         variant="outline"
