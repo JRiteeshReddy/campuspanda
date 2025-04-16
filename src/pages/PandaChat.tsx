@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Send } from 'lucide-react';
+import { Send, Loader2 } from 'lucide-react';
 import ChatMessage from '@/components/chat/ChatMessage';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -33,23 +33,38 @@ const PandaChat = () => {
     setIsLoading(true);
 
     try {
+      console.log("Sending message to chat-gpt function...");
+      
       // Use supabase.functions.invoke instead of direct fetch
       const { data, error } = await supabase.functions.invoke('chat-gpt', {
         body: { message: userMessage },
       });
 
       if (error) {
-        throw new Error(error.message);
+        console.error("Supabase function error:", error);
+        throw new Error(error.message || "Failed to communicate with AI service");
+      }
+
+      if (!data || !data.reply) {
+        console.error("Invalid response format:", data);
+        throw new Error("Received an invalid response from the AI service");
       }
 
       setMessages(prev => [...prev, { text: data.reply, isBot: true }]);
     } catch (error) {
+      console.error('Chat error:', error);
+      
+      // Show a helpful error message
+      let errorMessage = "Failed to get response from AI. Please try again.";
+      if (error instanceof Error && error.message.includes("API key")) {
+        errorMessage = "AI service configuration issue. Please contact the administrator.";
+      }
+      
       toast({
         title: "Error",
-        description: "Failed to get response from AI. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
-      console.error('Chat error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -79,6 +94,13 @@ const PandaChat = () => {
                   <ChatMessage key={idx} message={msg.text} isBot={msg.isBot} />
                 ))
               )}
+              
+              {isLoading && (
+                <div className="flex justify-center items-center py-2">
+                  <Loader2 className="h-5 w-5 text-primary animate-spin mr-2" />
+                  <span className="text-sm text-muted-foreground">PandaAI is thinking...</span>
+                </div>
+              )}
             </div>
             
             <form onSubmit={handleSubmit} className="flex gap-2 mt-auto">
@@ -90,7 +112,7 @@ const PandaChat = () => {
                 className="flex-1"
               />
               <Button type="submit" disabled={isLoading}>
-                <Send className="h-4 w-4" />
+                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               </Button>
             </form>
           </CardContent>

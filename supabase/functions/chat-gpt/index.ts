@@ -16,7 +16,16 @@ serve(async (req) => {
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     
     if (!OPENAI_API_KEY) {
-      throw new Error('OpenAI API key not found');
+      console.error('OpenAI API key not found');
+      return new Response(
+        JSON.stringify({
+          error: 'OpenAI API key not configured. Please check your Supabase secrets.'
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 500,
+        }
+      );
     }
 
     const { message } = await req.json();
@@ -25,6 +34,9 @@ serve(async (req) => {
       throw new Error('No message provided');
     }
 
+    // Log for debugging
+    console.log(`Processing message: ${message.substring(0, 30)}...`);
+    
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -46,8 +58,9 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`OpenAI API error: ${error}`);
+      const errorText = await response.text();
+      console.error(`OpenAI API error: ${errorText}`);
+      throw new Error(`OpenAI API error: ${errorText}`);
     }
 
     const data = await response.json();
