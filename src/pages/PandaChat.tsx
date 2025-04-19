@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useDocumentTitle } from '@/hooks/use-document-title';
 import Navbar from '@/components/layout/Navbar';
@@ -33,10 +32,9 @@ const PandaChat = () => {
     setIsLoading(true);
 
     try {
-      console.log("Sending message to chat-gpt function...");
+      console.log("Sending message to Gemini...");
       
-      // Use supabase.functions.invoke instead of direct fetch
-      const { data, error } = await supabase.functions.invoke('chat-gpt', {
+      const { data, error } = await supabase.functions.invoke('gemini-chat', {
         body: { message: userMessage },
       });
 
@@ -53,16 +51,9 @@ const PandaChat = () => {
       setMessages(prev => [...prev, { text: data.reply, isBot: true }]);
     } catch (error) {
       console.error('Chat error:', error);
-      
-      // Show a helpful error message
-      let errorMessage = "Failed to get response from AI. Please try again.";
-      if (error instanceof Error && error.message.includes("API key")) {
-        errorMessage = "AI service configuration issue. Please contact the administrator.";
-      }
-      
       toast({
         title: "Error",
-        description: errorMessage,
+        description: error instanceof Error ? error.message : "Failed to get response from AI",
         variant: "destructive",
       });
     } finally {
