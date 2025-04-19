@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useDocumentTitle } from '@/hooks/use-document-title';
 import Navbar from '@/components/layout/Navbar';
