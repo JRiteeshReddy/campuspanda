@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -6,7 +7,9 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import { addMonths, isSameDay, format } from 'date-fns';
+import { addMonths } from 'date-fns/addMonths';
+import { isSameDay } from 'date-fns/isSameDay';
+import { format } from 'date-fns/format';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import Navbar from '@/components/layout/Navbar';

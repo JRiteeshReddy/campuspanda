@@ -1,5 +1,7 @@
+
 import React, { useState } from 'react';
-import { differenceInDays, format } from 'date-fns';
+import { differenceInDays } from 'date-fns/differenceInDays';
+import { format } from 'date-fns/format';
 import { Assignment } from '@/types';
 import { Check, Trash, Edit } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
