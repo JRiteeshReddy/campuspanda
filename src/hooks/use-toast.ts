@@ -1,19 +1,21 @@
-import { toast as sonnerToast } from 'sonner';
+// This file contains the toast hook and utilities used to display notifications
+
+import * as React from "react";
 import {
-  type ToastProps as ToastToastProps,
-  type ToastActionElement,
+  Toast,
+  ToastActionElement,
+  ToastProps,
 } from "@/components/ui/toast";
 
 const TOAST_LIMIT = 10;
-const TOAST_REMOVE_DELAY = 5000; // 5 seconds
+const TOAST_REMOVE_DELAY = 1000000;
 
-type ToasterToast = ToastToastProps & {
+type ToasterToast = ToastProps & {
   id: string;
   title?: React.ReactNode;
   description?: React.ReactNode;
   action?: ToastActionElement;
-  variant?: "default" | "destructive";
-  onOpenChange?: (open: boolean) => void;
+  cancel?: React.ReactNode;
 };
 
 const actionTypes = {
@@ -64,8 +66,8 @@ const addToRemoveQueue = (toastId: string) => {
   const timeout = setTimeout(() => {
     toastTimeouts.delete(toastId);
     dispatch({
-      type: actionTypes.REMOVE_TOAST,
-      toastId,
+      type: "REMOVE_TOAST",
+      toastId: toastId,
     });
   }, TOAST_REMOVE_DELAY);
 
@@ -74,13 +76,13 @@ const addToRemoveQueue = (toastId: string) => {
 
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
-    case actionTypes.ADD_TOAST:
+    case "ADD_TOAST":
       return {
         ...state,
         toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
       };
 
-    case actionTypes.UPDATE_TOAST:
+    case "UPDATE_TOAST":
       return {
         ...state,
         toasts: state.toasts.map((t) =>
@@ -88,7 +90,7 @@ export const reducer = (state: State, action: Action): State => {
         ),
       };
 
-    case actionTypes.DISMISS_TOAST: {
+    case "DISMISS_TOAST": {
       const { toastId } = action;
 
       // ! Side effects ! - This could be extracted into a dismissToast() action,
@@ -107,13 +109,13 @@ export const reducer = (state: State, action: Action): State => {
           t.id === toastId || toastId === undefined
             ? {
                 ...t,
-                dismissed: true,
+                open: false,
               }
             : t
         ),
       };
     }
-    case actionTypes.REMOVE_TOAST:
+    case "REMOVE_TOAST":
       if (action.toastId === undefined) {
         return {
           ...state,
@@ -124,8 +126,6 @@ export const reducer = (state: State, action: Action): State => {
         ...state,
         toasts: state.toasts.filter((t) => t.id !== action.toastId),
       };
-    default:
-      return state;
   }
 };
 
@@ -142,45 +142,62 @@ function dispatch(action: Action) {
 
 type Toast = Omit<ToasterToast, "id">;
 
-function toastFunction({ ...props }: Toast) {
+function toast({ ...props }: Toast) {
   const id = genId();
 
-  const dismissToast = () => dispatch({ type: actionTypes.DISMISS_TOAST, toastId: id });
+  const update = (props: ToasterToast) =>
+    dispatch({
+      type: "UPDATE_TOAST",
+      toast: { ...props, id },
+    });
+  
+  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id });
 
   dispatch({
-    type: actionTypes.ADD_TOAST,
+    type: "ADD_TOAST",
     toast: {
       ...props,
       id,
+      open: true,
       onOpenChange: (open) => {
-        if (!open) dismissToast();
-        props.onOpenChange?.(open);
+        if (!open) dismiss();
       },
     },
   });
 
   return {
-    id,
-    dismiss: dismissToast,
+    id: id,
+    dismiss,
+    update,
   };
 }
 
 function useToast() {
+  const [state, setState] = React.useState<State>(memoryState);
+
+  React.useEffect(() => {
+    listeners.push(setState);
+    return () => {
+      const index = listeners.indexOf(setState);
+      if (index > -1) {
+        listeners.splice(index, 1);
+      }
+    };
+  }, [state]);
+
   return {
-    toast: toastFunction,
-    dismiss: (toastId?: string) => dispatch({ type: actionTypes.DISMISS_TOAST, toastId }),
-    toasts: memoryState.toasts,
+    ...state,
+    toast,
+    dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
   };
 }
 
-// Expose a Sonner-compatible interface as well
-// Simpler toast approach that hooks into sonner
-const sonnerCompatToast = {
-  success: (message: string, options?: any) => sonnerToast.success(message, options),
-  error: (message: string, options?: any) => sonnerToast.error(message, options),
-  info: (message: string, options?: any) => sonnerToast.info(message, options),
-  warning: (message: string, options?: any) => sonnerToast.warning(message, options),
-  custom: (message: string, options?: any) => sonnerToast(message, options),
-};
+// For compatibility with sonner
+function sonnerCompatToast(message: string, options = {}) {
+  toast({
+    title: message,
+    ...options,
+  });
+}
 
-export { useToast, toastFunction as toast, sonnerCompatToast };
+export { useToast, toast, sonnerCompatToast };

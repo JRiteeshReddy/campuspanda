@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { formatDistanceToNow } from 'date-fns';
 import { NoteWithSubject } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
@@ -26,7 +26,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from 'sonner';
-import { formatDistanceToNow } from 'date-fns';
 
 interface NotesListProps {
   notes: NoteWithSubject[];
