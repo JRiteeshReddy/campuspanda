@@ -3,7 +3,6 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -11,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { formatDate } from '@/lib/date-utils';
 
 const formSchema = z.object({
   subject: z.string().min(1, { message: 'Subject is required' }),
@@ -89,7 +89,7 @@ const NewAssignmentForm = ({ onSubmit, onCancel, initialValues, initialDate }: N
                       )}
                     >
                       {field.value ? (
-                        format(field.value, "PPP")
+                        formatDate(field.value, "PPP")
                       ) : (
                         <span>Pick a date</span>
                       )}
