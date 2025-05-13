@@ -1,6 +1,6 @@
 
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, CalendarCheck, FileText, ArrowRight, Calendar, MessageSquare } from 'lucide-react';
+import { BookOpen, CalendarCheck, FileText, ArrowRight, Calendar } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import Navbar from '@/components/layout/Navbar';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -30,7 +30,7 @@ const Index = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 gap-4 sm:gap-6 md:gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 max-w-5xl mx-auto">
             {/* Attendance Tracker */}
             <button 
               onClick={() => handleGetStarted('/attendance')} 
@@ -121,31 +121,6 @@ const Index = () => {
               </p>
               <div className="mt-auto flex items-center justify-center text-green-600 dark:text-white font-medium text-xs sm:text-sm">
                 <span>Get Started</span>
-                <ArrowRight size={isMobile ? 14 : 16} className="ml-1 transition-transform group-hover:translate-x-2" />
-              </div>
-            </button>
-            
-            {/* PandaChat - New Card */}
-            <button 
-              onClick={() => handleGetStarted('/chat')} 
-              className="mobile-card-button group dark:bg-white/5 dark:border-white/10 dark:text-white 
-                        transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-xl 
-                        hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-100 
-                        dark:hover:bg-gradient-to-br dark:hover:from-purple-900/30 dark:hover:to-pink-800/20"
-            >
-              <div className="mb-2 sm:mb-4 p-2 sm:p-4 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-purple-600/10 
-                           flex items-center justify-center text-purple-600 dark:bg-purple-600/20 dark:text-white
-                           group-hover:scale-110 transition-transform duration-300">
-                <MessageSquare size={isMobile ? 24 : 30} />
-              </div>
-              <h2 className="text-xs sm:text-xl font-medium text-apple-text dark:text-white mb-1 sm:mb-2">
-                PandaChat
-              </h2>
-              <p className="text-[10px] sm:text-sm text-muted-foreground dark:text-white/70 text-center mb-2 sm:mb-4 line-clamp-2 sm:line-clamp-none">
-                AI Assistant for Campus Life
-              </p>
-              <div className="mt-auto flex items-center justify-center text-purple-600 dark:text-white font-medium text-xs sm:text-sm">
-                <span>Chat Now</span>
                 <ArrowRight size={isMobile ? 14 : 16} className="ml-1 transition-transform group-hover:translate-x-2" />
               </div>
             </button>
