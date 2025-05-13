@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { formatDistanceToNow as dateFormatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 import { Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Note } from '@/types';
@@ -8,7 +8,7 @@ import { Note } from '@/types';
 interface NotesListProps {
   notes: Note[];
   onDelete: (id: string) => void;
-  refetchNotes?: () => void;  // Added optional refetchNotes prop
+  refetchNotes?: () => void;
 }
 
 const NotesList = ({ notes, onDelete, refetchNotes }: NotesListProps) => {
@@ -37,7 +37,7 @@ const NotesList = ({ notes, onDelete, refetchNotes }: NotesListProps) => {
             )}
           </p>
           <div className="text-xs text-muted-foreground mt-2">
-            Created {dateFormatDistanceToNow(new Date(note.created_at), { addSuffix: true })}
+            Created {formatDistanceToNow(new Date(note.created_at), { addSuffix: true })}
           </div>
           <Button
             variant="ghost"
