@@ -6,7 +6,7 @@ import { NoteForm, NoteWithSubject, SubjectWithNotesCount } from "@/types";
 import { supabase } from "@/lib/supabase";
 import { UploadArea } from "@/components/notes/UploadArea";
 import { SubjectCard } from "@/components/notes/SubjectCard";
-import { NotesList } from "@/components/notes/NotesList";
+import NotesList from "@/components/notes/NotesList";
 import Navbar from "@/components/layout/Navbar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileQuestion } from "lucide-react";

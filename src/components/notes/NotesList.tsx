@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { Trash2 } from 'lucide-react';
@@ -15,9 +16,20 @@ const NotesList = ({ notes, onDelete }: NotesListProps) => {
       {notes.map((note) => (
         <div key={note.id} className="bg-card text-card-foreground rounded-md shadow-sm p-4 relative">
           <h3 className="text-lg font-semibold mb-2">{note.title}</h3>
-          <p className="text-sm text-muted-foreground">{note.content}</p>
+          <p className="text-sm text-muted-foreground">
+            {note.link_url && (
+              <a href={note.link_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                {note.link_url}
+              </a>
+            )}
+            {note.file_url && (
+              <a href={note.file_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                View file
+              </a>
+            )}
+          </p>
           <div className="text-xs text-muted-foreground mt-2">
-            Created {formatDistanceToNow(new Date(note.createdAt), { addSuffix: true })}
+            Created {formatDistanceToNow(new Date(note.created_at), { addSuffix: true })}
           </div>
           <Button
             variant="ghost"
