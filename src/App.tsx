@@ -16,7 +16,6 @@ import AttendanceTracker from "./pages/AttendanceTracker";
 import AssignmentTracker from "./pages/AssignmentTracker";
 import NotesOrganizer from "./pages/NotesOrganizer";
 import EventPanda from "./pages/EventPanda";
-import PandaChat from "./pages/PandaChat";
 import NotFound from "./pages/NotFound";
 
 // Create a client for React Query
@@ -31,7 +30,6 @@ const AppRoutes = () => (
     <Route path="/assignments" element={<AssignmentTracker />} />
     <Route path="/notes" element={<NotesOrganizer />} />
     <Route path="/events" element={<EventPanda />} />
-    <Route path="/chat" element={<PandaChat />} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
