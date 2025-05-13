@@ -1,7 +1,11 @@
 
-import { addMonths, format, isSameDay, differenceInDays } from "date-fns";
+import { addMonths as addMonthsOriginal, format as formatOriginal, isSameDay as isSameDayOriginal, differenceInDays as differenceInDaysOriginal } from "date-fns";
 
-export { addMonths, format, isSameDay, differenceInDays };
+// Re-export the imported functions properly
+export const addMonths = addMonthsOriginal;
+export const format = formatOriginal;
+export const isSameDay = isSameDayOriginal;
+export const differenceInDays = differenceInDaysOriginal;
 
 export function getAssignmentStatusColor(deadline: Date, completed: boolean): {
   bgColor: string;
@@ -16,7 +20,7 @@ export function getAssignmentStatusColor(deadline: Date, completed: boolean): {
     };
   }
 
-  const daysUntilDeadline = differenceInDays(deadline, new Date());
+  const daysUntilDeadline = differenceInDaysOriginal(deadline, new Date());
 
   if (daysUntilDeadline <= 0) {
     return {
@@ -46,5 +50,5 @@ export function getAssignmentStatusColor(deadline: Date, completed: boolean): {
 }
 
 export function formatDate(date: Date, formatString: string = "MMMM d"): string {
-  return format(date, formatString);
+  return formatOriginal(date, formatString);
 }

@@ -50,7 +50,7 @@ export function useAssignments(userId?: string) {
         subject: newAssignment.subject,
         title: newAssignment.title,
         deadline: newAssignment.deadline.toISOString(),
-        completed: false
+        completed: newAssignment.completed !== undefined ? newAssignment.completed : false
       };
 
       const { data, error } = await supabase

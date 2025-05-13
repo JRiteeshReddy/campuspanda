@@ -19,11 +19,12 @@ import {
 
 interface NotesListProps {
   notes: Note[];
-  subjects: Subject[];
+  subjects?: Subject[];
   onDelete: (noteId: string) => void;
+  refetchNotes?: () => void;
 }
 
-const NotesList = ({ notes, subjects, onDelete }: NotesListProps) => {
+const NotesList = ({ notes, subjects = [], onDelete, refetchNotes }: NotesListProps) => {
   if (notes.length === 0) {
     return (
       <div className="text-center py-12">
@@ -112,7 +113,10 @@ const NotesList = ({ notes, subjects, onDelete }: NotesListProps) => {
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction
-                        onClick={() => onDelete(note.id)}
+                        onClick={() => {
+                          onDelete(note.id);
+                          if (refetchNotes) refetchNotes();
+                        }}
                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                       >
                         Delete

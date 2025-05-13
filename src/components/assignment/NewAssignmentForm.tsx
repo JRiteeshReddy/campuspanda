@@ -10,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { formatDate } from '@/lib/date-utils';
+import { format } from 'date-fns';
 
 const formSchema = z.object({
   subject: z.string().min(1, { message: 'Subject is required' }),
@@ -89,7 +89,7 @@ const NewAssignmentForm = ({ onSubmit, onCancel, initialValues, initialDate }: N
                       )}
                     >
                       {field.value ? (
-                        formatDate(field.value, "PPP")
+                        format(field.value, "PPP")
                       ) : (
                         <span>Pick a date</span>
                       )}

@@ -3,8 +3,8 @@ import React from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
-import { addMonths, isSameDay } from '@/lib/date-utils';
 import { Assignment } from '@/types';
+import { addMonths, isSameDay } from '@/lib/date-utils';
 
 interface AssignmentCalendarProps {
   assignments: Assignment[];

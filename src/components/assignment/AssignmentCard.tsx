@@ -5,7 +5,7 @@ import { Check, Trash, Edit } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import NewAssignmentForm from './NewAssignmentForm';
-import { differenceInDays, formatDate, getAssignmentStatusColor } from '@/lib/date-utils';
+import { formatDate, getAssignmentStatusColor, differenceInDays } from '@/lib/date-utils';
 
 interface AssignmentCardProps {
   assignment: Assignment;
@@ -37,7 +37,8 @@ const AssignmentCard = ({ assignment, onUpdate, onDelete }: AssignmentCardProps)
       ...assignment,
       subject: formData.subject,
       title: formData.title,
-      deadline: formData.deadline
+      deadline: formData.deadline,
+      completed: assignment.completed
     });
     setIsEditDialogOpen(false);
   };

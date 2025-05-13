@@ -47,7 +47,10 @@ const AssignmentTracker = () => {
     deadline: Date;
   }) => {
     try {
-      await addAssignment(newAssignment);
+      await addAssignment({
+        ...newAssignment,
+        completed: false
+      });
       setIsNewAssignmentDialogOpen(false);
     } catch (error) {
       // Error is already handled in the hook
