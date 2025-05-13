@@ -6,7 +6,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import { addMonths, isSameDay, format } from 'date-fns';
+import { addMonths as addMonthsFunc, isSameDay as isSameDayFunc, format as formatFunc } from 'date-fns/fp';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import Navbar from '@/components/layout/Navbar';
@@ -70,7 +70,7 @@ const AssignmentTracker = () => {
 
   const handleMonthChange = (offset: number) => {
     setSelectedMonthOffset(offset);
-    setDate(addMonths(new Date(), offset));
+    setDate(addMonthsFunc(offset)(new Date()));
   };
 
   const handlePreviousMonth = () => {
@@ -169,7 +169,7 @@ const AssignmentTracker = () => {
   };
 
   const getDayClassNames = (day: Date) => {
-    const assignment = assignments.find(a => isSameDay(new Date(a.deadline), day));
+    const assignment = assignments.find(a => isSameDayFunc(day)(new Date(a.deadline)));
     
     if (!assignment) return undefined;
     
@@ -199,7 +199,7 @@ const AssignmentTracker = () => {
   const modifiers = {
     assignment: (day: Date) => 
       assignments.some(assignment => 
-        isSameDay(new Date(assignment.deadline), day)
+        isSameDayFunc(day)(new Date(assignment.deadline))
       )
   };
 
@@ -239,7 +239,7 @@ const AssignmentTracker = () => {
               components={{
                 DayContent: (props) => {
                   const day = props.date;
-                  const assignment = assignments.find(a => isSameDay(new Date(a.deadline), day));
+                  const assignment = assignments.find(a => isSameDayFunc(day)(new Date(a.deadline)));
                   
                   if (!assignment) {
                     return <div>{props.date.getDate()}</div>;
