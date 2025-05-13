@@ -13,6 +13,7 @@ type ToasterToast = ToastToastProps & {
   description?: React.ReactNode;
   action?: ToastActionElement;
   variant?: "default" | "destructive";
+  onOpenChange?: (open: boolean) => void;
 };
 
 const actionTypes = {
@@ -144,11 +145,6 @@ type Toast = Omit<ToasterToast, "id">;
 function toastFunction({ ...props }: Toast) {
   const id = genId();
 
-  const update = (props: ToasterToast) =>
-    dispatch({
-      type: actionTypes.UPDATE_TOAST,
-      toast: { ...props, id },
-    });
   const dismissToast = () => dispatch({ type: actionTypes.DISMISS_TOAST, toastId: id });
 
   dispatch({
@@ -156,18 +152,16 @@ function toastFunction({ ...props }: Toast) {
     toast: {
       ...props,
       id,
-      // Changed from dismiss to align with the expected type
       onOpenChange: (open) => {
         if (!open) dismissToast();
+        props.onOpenChange?.(open);
       },
-      update,
     },
   });
 
   return {
     id,
     dismiss: dismissToast,
-    update,
   };
 }
 
