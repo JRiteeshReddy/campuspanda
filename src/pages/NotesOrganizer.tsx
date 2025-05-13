@@ -100,6 +100,26 @@ const NotesOrganizer = () => {
     queryClient.invalidateQueries({ queryKey: ["subjects-with-counts"] });
   };
 
+  const handleDeleteNote = async (id: string) => {
+    if (!user) {
+      toast.error("You must be logged in to delete notes");
+      return;
+    }
+
+    const { error } = await supabase
+      .from('notes')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      toast.error("Failed to delete note");
+      console.error(error);
+      return;
+    }
+
+    toast.success("Note deleted successfully");
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
@@ -169,6 +189,7 @@ const NotesOrganizer = () => {
                 <TabsContent value="all">
                   <NotesList 
                     notes={notes} 
+                    onDelete={handleDeleteNote}
                     refetchNotes={() => {
                       refetchNotes();
                       queryClient.invalidateQueries({ queryKey: ["subjects-with-counts"] });
@@ -178,6 +199,7 @@ const NotesOrganizer = () => {
                 <TabsContent value="links">
                   <NotesList 
                     notes={notes.filter(note => note.file_type === 'link')} 
+                    onDelete={handleDeleteNote}
                     refetchNotes={() => {
                       refetchNotes();
                       queryClient.invalidateQueries({ queryKey: ["subjects-with-counts"] });

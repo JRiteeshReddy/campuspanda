@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { formatDistanceToNow } from 'date-fns';
+import React from 'react';
+import { formatDistanceToNow as dateFormatDistanceToNow } from 'date-fns';
 import { Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Note } from '@/types';
@@ -8,9 +8,17 @@ import { Note } from '@/types';
 interface NotesListProps {
   notes: Note[];
   onDelete: (id: string) => void;
+  refetchNotes?: () => void;  // Added optional refetchNotes prop
 }
 
-const NotesList = ({ notes, onDelete }: NotesListProps) => {
+const NotesList = ({ notes, onDelete, refetchNotes }: NotesListProps) => {
+  const handleDelete = (id: string) => {
+    onDelete(id);
+    if (refetchNotes) {
+      refetchNotes();
+    }
+  };
+
   return (
     <div className="space-y-4">
       {notes.map((note) => (
@@ -29,13 +37,13 @@ const NotesList = ({ notes, onDelete }: NotesListProps) => {
             )}
           </p>
           <div className="text-xs text-muted-foreground mt-2">
-            Created {formatDistanceToNow(new Date(note.created_at), { addSuffix: true })}
+            Created {dateFormatDistanceToNow(new Date(note.created_at), { addSuffix: true })}
           </div>
           <Button
             variant="ghost"
             size="icon"
             className="absolute top-2 right-2 text-muted-foreground hover:text-red-500"
-            onClick={() => onDelete(note.id)}
+            onClick={() => handleDelete(note.id)}
             aria-label="Delete note"
           >
             <Trash2 className="h-4 w-4" />
