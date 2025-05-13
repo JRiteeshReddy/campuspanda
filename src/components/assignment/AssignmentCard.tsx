@@ -5,7 +5,8 @@ import { Check, Trash, Edit } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import NewAssignmentForm from './NewAssignmentForm';
-import { formatDate, getAssignmentStatusColor, differenceInDays } from '@/lib/date-utils';
+import { formatDate, getAssignmentStatusColor } from '@/lib/date-utils';
+import { differenceInDays } from 'date-fns';
 
 interface AssignmentCardProps {
   assignment: Assignment;

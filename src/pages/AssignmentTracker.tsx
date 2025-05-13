@@ -27,11 +27,16 @@ const AssignmentTracker = () => {
     deleteAssignment
   } = useAssignments(user?.id);
 
-  // Handle date selection
+  // Handle date selection - only allow future dates
   const handleDateSelect = (day: Date | undefined) => {
     if (day) {
-      setSelectedDate(day);
-      setIsNewAssignmentDialogOpen(true);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (day >= today) {
+        setSelectedDate(day);
+        setIsNewAssignmentDialogOpen(true);
+      }
     }
   };
 

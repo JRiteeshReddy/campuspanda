@@ -4,7 +4,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Assignment } from '@/types';
-import { addMonths, isSameDay } from '@/lib/date-utils';
+import { addMonths, isSameDay } from 'date-fns';
 
 interface AssignmentCalendarProps {
   assignments: Assignment[];
@@ -37,6 +37,11 @@ const AssignmentCalendar = ({
 
   const handleNextMonth = () => {
     onMonthChange(selectedMonthOffset + 1);
+  };
+
+  // Function to disable past dates
+  const disablePastDates = (date: Date) => {
+    return date < new Date(new Date().setHours(0, 0, 0, 0));
   };
 
   // Custom calendar day rendering
@@ -97,6 +102,7 @@ const AssignmentCalendar = ({
           onMonthChange={setDisplayedMonth}
           onPrevious={handlePreviousMonth}
           onNext={handleNextMonth}
+          disabled={disablePastDates}
           components={{
             DayContent: ({ date }) => getDayContent(date)
           }}

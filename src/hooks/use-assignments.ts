@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Assignment } from '@/types';
+import { differenceInDays } from 'date-fns';
 
 export function useAssignments(userId?: string) {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
@@ -16,6 +17,30 @@ export function useAssignments(userId?: string) {
       setIsLoading(false);
     }
   }, [userId]);
+
+  // Function to check and delete assignments that are more than 2 days past their deadline
+  const checkAndDeleteExpiredAssignments = (assignments: Assignment[]) => {
+    const today = new Date();
+    const assignmentsToDelete: string[] = [];
+
+    assignments.forEach(assignment => {
+      const deadline = new Date(assignment.deadline);
+      const daysPastDeadline = differenceInDays(today, deadline);
+      
+      if (daysPastDeadline > 2) {
+        assignmentsToDelete.push(assignment.id);
+      }
+    });
+
+    // Delete expired assignments if any exist
+    if (assignmentsToDelete.length > 0) {
+      Promise.all(assignmentsToDelete.map(id => deleteAssignment(id, true)));
+    }
+
+    return assignments.filter(assignment => 
+      !assignmentsToDelete.includes(assignment.id)
+    );
+  };
 
   const fetchAssignments = async () => {
     try {
@@ -34,7 +59,9 @@ export function useAssignments(userId?: string) {
         deadline: new Date(assignment.deadline)
       }));
       
-      setAssignments(formattedAssignments);
+      // Check and delete expired assignments
+      const filteredAssignments = checkAndDeleteExpiredAssignments(formattedAssignments);
+      setAssignments(filteredAssignments);
     } catch (error) {
       console.error('Error fetching assignments:', error);
       toast.error('Failed to load assignments');
@@ -114,7 +141,7 @@ export function useAssignments(userId?: string) {
     }
   };
 
-  const deleteAssignment = async (assignmentId: string) => {
+  const deleteAssignment = async (assignmentId: string, silent = false) => {
     try {
       const { error } = await supabase
         .from('assignments')
@@ -127,10 +154,16 @@ export function useAssignments(userId?: string) {
         prevAssignments.filter(assignment => assignment.id !== assignmentId)
       );
       
-      toast.success('Assignment deleted successfully');
+      if (!silent) {
+        toast.success('Assignment deleted successfully');
+      }
+      
+      return true;
     } catch (error) {
       console.error('Error deleting assignment:', error);
-      toast.error('Failed to delete assignment');
+      if (!silent) {
+        toast.error('Failed to delete assignment');
+      }
       throw error;
     }
   };

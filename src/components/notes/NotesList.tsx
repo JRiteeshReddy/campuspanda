@@ -1,134 +1,132 @@
 
-import React from 'react';
+import React, { useState } from 'react';
+import { Note, NoteWithSubject } from '@/types';
 import { formatDistanceToNow, parseISO } from 'date-fns';
-import { Note, Subject } from '@/types';
+import { Trash2, ExternalLink, Download, File } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Download, ExternalLink, File, FileText, Trash } from 'lucide-react';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface NotesListProps {
-  notes: Note[];
-  subjects?: Subject[];
-  onDelete: (noteId: string) => void;
-  refetchNotes?: () => void;
+  notes: NoteWithSubject[];
+  onDelete: (id: string) => Promise<void>;
 }
 
-const NotesList = ({ notes, subjects = [], onDelete, refetchNotes }: NotesListProps) => {
+const NotesList = ({ notes, onDelete }: NotesListProps) => {
+  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    if (!selectedNoteId) return;
+    
+    setIsDeleting(true);
+    try {
+      await onDelete(selectedNoteId);
+      setIsDeleteDialogOpen(false);
+    } catch (error) {
+      console.error("Failed to delete note:", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const openDeleteDialog = (noteId: string) => {
+    setSelectedNoteId(noteId);
+    setIsDeleteDialogOpen(true);
+  };
+
   if (notes.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">No notes found. Upload your first note using the form above.</p>
+      <div className="text-center py-12 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg mt-6">
+        <h3 className="text-lg font-medium text-gray-500 dark:text-gray-400">No notes yet</h3>
+        <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
+          Upload your first note above
+        </p>
       </div>
     );
   }
 
-  const getSubjectName = (subjectId: string) => {
-    const subject = subjects.find((s) => s.id === subjectId);
-    return subject ? subject.name : 'Unknown Subject';
-  };
-
-  const getFileIcon = (fileType: string) => {
-    switch (fileType) {
-      case 'pdf':
-        return <FileText />;
-      case 'link':
-        return <ExternalLink />;
-      default:
-        return <File />;
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    try {
-      return formatDistanceToNow(parseISO(dateString), { addSuffix: true });
-    } catch (error) {
-      return 'Date unknown';
-    }
-  };
-
   return (
-    <div className="space-y-4">
+    <div className="mt-6 space-y-4">
       {notes.map((note) => (
-        <Card key={note.id} className="overflow-hidden">
-          <CardContent className="p-0">
-            <div className="flex items-start sm:items-center justify-between p-4 sm:p-6 flex-col sm:flex-row gap-4 sm:gap-0">
-              <div className="flex items-start space-x-4">
-                <div className="p-2 bg-primary/10 text-primary rounded-md">
-                  {getFileIcon(note.file_type)}
-                </div>
-                <div>
-                  <h3 className="font-semibold">{note.title}</h3>
-                  <p className="text-sm text-muted-foreground">{getSubjectName(note.subject_id)}</p>
-                  <p className="text-xs text-muted-foreground">Added {formatDate(note.created_at)}</p>
-                </div>
-              </div>
-              <div className="flex space-x-2 w-full sm:w-auto justify-end">
-                {note.file_type === 'link' ? (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => window.open(note.link_url, '_blank')}
-                    className="flex items-center"
-                  >
-                    <ExternalLink className="h-4 w-4 mr-1" />
-                    Open
-                  </Button>
-                ) : (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => window.open(note.file_url, '_blank')}
-                    className="flex items-center"
-                  >
-                    <Download className="h-4 w-4 mr-1" />
-                    Download
-                  </Button>
-                )}
-
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="outline" size="sm" className="flex items-center text-destructive">
-                      <Trash className="h-4 w-4 mr-1" />
-                      Delete
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete your note.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => {
-                          onDelete(note.id);
-                          if (refetchNotes) refetchNotes();
-                        }}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                      >
-                        Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+        <div
+          key={note.id}
+          className="p-4 bg-card border rounded-lg flex items-start justify-between gap-4"
+        >
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            {note.file_type === 'pdf' ? (
+              <File className="h-10 w-10 text-red-500" />
+            ) : note.file_type === 'image' ? (
+              <File className="h-10 w-10 text-blue-500" />
+            ) : (
+              <File className="h-10 w-10 text-gray-500" />
+            )}
+            <div className="min-w-0">
+              <h3 className="font-medium text-foreground truncate">{note.title}</h3>
+              <div className="flex gap-3 text-xs text-muted-foreground mt-1">
+                <span>{note.subject?.name || 'Unknown Subject'}</span>
+                <span>•</span>
+                <span>{formatDistanceToNow(parseISO(note.created_at), { addSuffix: true })}</span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+
+          <div className="flex gap-2">
+            {note.file_url && (
+              <Button variant="ghost" size="sm" asChild>
+                <a href={note.file_url} target="_blank" rel="noopener noreferrer" aria-label="Download">
+                  <Download className="h-4 w-4" />
+                </a>
+              </Button>
+            )}
+            
+            {note.link_url && (
+              <Button variant="ghost" size="sm" asChild>
+                <a href={note.link_url} target="_blank" rel="noopener noreferrer" aria-label="Open link">
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </Button>
+            )}
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => openDeleteDialog(note.id)}
+              aria-label="Delete note"
+            >
+              <Trash2 className="h-4 w-4 text-red-500" />
+            </Button>
+          </div>
+        </div>
       ))}
+
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Note</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this note? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

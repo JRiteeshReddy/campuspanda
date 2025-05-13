@@ -36,15 +36,10 @@ Deno.serve(async (req) => {
     // Check each assignment to see if it should be deleted
     assignments.forEach((assignment) => {
       const deadline = new Date(assignment.deadline);
-      const daysOverdue = differenceInDays(today, deadline);
+      const daysPastDeadline = differenceInDays(today, deadline);
       
-      // Delete completed assignments that are more than 2 days past deadline
-      if (assignment.completed && daysOverdue > 2) {
-        assignmentsToDelete.push(assignment.id);
-      }
-      
-      // Delete incomplete assignments that are more than 2 days past deadline
-      if (!assignment.completed && daysOverdue > 2) {
+      // Delete assignments (whether completed or not) that are more than 2 days past deadline
+      if (daysPastDeadline > 2) {
         assignmentsToDelete.push(assignment.id);
       }
     });
@@ -81,7 +76,7 @@ Deno.serve(async (req) => {
     
     return new Response(
       JSON.stringify({
-        error: error.message || 'An error occurred during cleanup',
+        error: error instanceof Error ? error.message : 'An error occurred during cleanup',
       }),
       {
         headers: {
