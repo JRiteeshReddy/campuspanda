@@ -2,7 +2,6 @@ import { toast as sonnerToast } from 'sonner';
 import {
   type ToastProps as ToastToastProps,
   type ToastActionElement,
-  ToastActionProps,
 } from "@/components/ui/toast";
 
 const TOAST_LIMIT = 10;
@@ -142,7 +141,7 @@ function dispatch(action: Action) {
 
 type Toast = Omit<ToasterToast, "id">;
 
-function toast({ ...props }: Toast) {
+function toastFunction({ ...props }: Toast) {
   const id = genId();
 
   const update = (props: ToasterToast) =>
@@ -150,28 +149,31 @@ function toast({ ...props }: Toast) {
       type: actionTypes.UPDATE_TOAST,
       toast: { ...props, id },
     });
-  const dismiss = () => dispatch({ type: actionTypes.DISMISS_TOAST, toastId: id });
+  const dismissToast = () => dispatch({ type: actionTypes.DISMISS_TOAST, toastId: id });
 
   dispatch({
     type: actionTypes.ADD_TOAST,
     toast: {
       ...props,
       id,
-      dismiss,
+      // Changed from dismiss to align with the expected type
+      onOpenChange: (open) => {
+        if (!open) dismissToast();
+      },
       update,
     },
   });
 
   return {
     id,
-    dismiss,
+    dismiss: dismissToast,
     update,
   };
 }
 
 function useToast() {
   return {
-    toast,
+    toast: toastFunction,
     dismiss: (toastId?: string) => dispatch({ type: actionTypes.DISMISS_TOAST, toastId }),
     toasts: memoryState.toasts,
   };
@@ -187,4 +189,4 @@ const sonnerCompatToast = {
   custom: (message: string, options?: any) => sonnerToast(message, options),
 };
 
-export { useToast, toast, sonnerCompatToast as toast };
+export { useToast, toastFunction as toast, sonnerCompatToast };

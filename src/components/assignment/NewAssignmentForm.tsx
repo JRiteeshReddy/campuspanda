@@ -8,7 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { format } from 'date-fns';
+import { format as dateFnsFormat } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -89,7 +89,7 @@ const NewAssignmentForm = ({ onSubmit, onCancel, initialValues, initialDate }: N
                       )}
                     >
                       {field.value ? (
-                        format(field.value, "PPP")
+                        dateFnsFormat(field.value, "PPP")
                       ) : (
                         <span>Pick a date</span>
                       )}

@@ -26,7 +26,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from 'sonner';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow as dateFnsFormatDistanceToNow } from 'date-fns';
 
 interface NotesListProps {
   notes: NoteWithSubject[];
@@ -106,7 +106,7 @@ export const NotesList: React.FC<NotesListProps> = ({ notes, refetchNotes }) => 
             <div className="flex-1 min-w-0">
               <h3 className="font-medium text-sm md:text-base truncate">{note.title}</h3>
               <p className="text-xs text-muted-foreground">
-                {note.subject?.name || 'Unknown Subject'} · {formatDistanceToNow(new Date(note.created_at), { addSuffix: true })}
+                {note.subject?.name || 'Unknown Subject'} · {dateFnsFormatDistanceToNow(new Date(note.created_at), { addSuffix: true })}
               </p>
             </div>
           </div>
