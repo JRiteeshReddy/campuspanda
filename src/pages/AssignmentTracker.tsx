@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -6,7 +7,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import { addMonths as addMonthsFunc, isSameDay as isSameDayFunc, format as formatFunc } from 'date-fns/fp';
+import { addMonths, isSameDay, format } from 'date-fns';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import Navbar from '@/components/layout/Navbar';
@@ -70,7 +71,7 @@ const AssignmentTracker = () => {
 
   const handleMonthChange = (offset: number) => {
     setSelectedMonthOffset(offset);
-    setDate(addMonthsFunc(offset)(new Date()));
+    setDate(addMonths(new Date(), offset));
   };
 
   const handlePreviousMonth = () => {
@@ -169,7 +170,7 @@ const AssignmentTracker = () => {
   };
 
   const getDayClassNames = (day: Date) => {
-    const assignment = assignments.find(a => isSameDayFunc(day)(new Date(a.deadline)));
+    const assignment = assignments.find(a => isSameDay(new Date(a.deadline), day));
     
     if (!assignment) return undefined;
     
@@ -199,7 +200,7 @@ const AssignmentTracker = () => {
   const modifiers = {
     assignment: (day: Date) => 
       assignments.some(assignment => 
-        isSameDayFunc(day)(new Date(assignment.deadline))
+        isSameDay(new Date(assignment.deadline), day)
       )
   };
 
@@ -239,7 +240,7 @@ const AssignmentTracker = () => {
               components={{
                 DayContent: (props) => {
                   const day = props.date;
-                  const assignment = assignments.find(a => isSameDayFunc(day)(new Date(a.deadline)));
+                  const assignment = assignments.find(a => isSameDay(new Date(assignment.deadline), day));
                   
                   if (!assignment) {
                     return <div>{props.date.getDate()}</div>;
