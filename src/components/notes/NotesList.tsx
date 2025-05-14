@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Note, NoteWithSubject } from '@/types';
-import { formatDistanceToNow, parseISO } from '@/lib/date-utils';
+import { formatDistanceToNow, parseISO } from 'date-fns'; // Import directly from date-fns
 import { Trash2, ExternalLink, Download, File } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';

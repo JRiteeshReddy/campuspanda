@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from '@/components/ui/button';
 import NewAssignmentForm from './NewAssignmentForm';
 import { formatDate, getAssignmentStatusColor } from '@/lib/date-utils';
-import { differenceInDays } from '@/lib/date-utils';
+import { differenceInDays } from 'date-fns'; // Import directly from date-fns
 
 interface AssignmentCardProps {
   assignment: Assignment;

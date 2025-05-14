@@ -1,13 +1,11 @@
 
-// Import functions from date-fns
-import { 
-  addMonths,
-  format,
-  isSameDay,
-  differenceInDays,
-  formatDistanceToNow,
-  parseISO
-} from "date-fns";
+// Import functions directly from date-fns
+import addMonths from "date-fns/addMonths";
+import format from "date-fns/format";
+import isSameDay from "date-fns/isSameDay";
+import differenceInDays from "date-fns/differenceInDays";
+import formatDistanceToNow from "date-fns/formatDistanceToNow";
+import parseISO from "date-fns/parseISO";
 
 export function getAssignmentStatusColor(deadline: Date, completed: boolean): {
   bgColor: string;
@@ -66,5 +64,5 @@ export function isPastDate(date: Date): boolean {
   return compareDate < today;
 }
 
-// Re-export the functions for use in other files
+// Re-export the functions to be used elsewhere
 export { addMonths, format, isSameDay, differenceInDays, formatDistanceToNow, parseISO };

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,7 +10,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { format, isPastDate } from '@/lib/date-utils';
+import { format } from 'date-fns'; // Import directly from date-fns
+import { isPastDate } from '@/lib/date-utils';
 
 const formSchema = z.object({
   subject: z.string().min(1, { message: 'Subject is required' }),
