@@ -1,15 +1,6 @@
 
-// Directly import from date-fns with no aliases
-import {
-  addMonths,
-  format,
-  isSameDay,
-  differenceInDays,
-  formatDistanceToNow,
-  parseISO,
-  isAfter,
-  startOfToday
-} from 'date-fns';
+// Import date-fns functions directly
+import * as dateFns from 'date-fns';
 
 /**
  * Returns a class name for a date cell based on its status
@@ -27,7 +18,7 @@ export const getDateCellClassName = (
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   
-  const daysUntil = differenceInDays(date, today);
+  const daysUntil = dateFns.differenceInDays(date, today);
   
   // Base classes for the cell
   let className = 'relative w-full aspect-square flex items-center justify-center text-sm';
@@ -64,9 +55,9 @@ export const getDateCellClassName = (
 export const formatDate = (date: Date | string, formatStr: string = 'PPP'): string => {
   try {
     if (typeof date === 'string') {
-      return format(parseISO(date), formatStr);
+      return dateFns.format(dateFns.parseISO(date), formatStr);
     }
-    return format(date, formatStr);
+    return dateFns.format(date, formatStr);
   } catch (error) {
     console.error('Error formatting date:', error);
     return 'Invalid date';
@@ -77,8 +68,8 @@ export const formatDate = (date: Date | string, formatStr: string = 'PPP'): stri
  * Checks if a date is in the past
  */
 export const isPastDate = (date: Date): boolean => {
-  const today = startOfToday();
-  return !isAfter(date, today) && !isSameDay(date, today);
+  const today = dateFns.startOfToday();
+  return !dateFns.isAfter(date, today) && !dateFns.isSameDay(date, today);
 };
 
 /**
@@ -97,7 +88,7 @@ export const getAssignmentStatusColor = (deadline: Date, isCompleted: boolean) =
   today.setHours(0, 0, 0, 0);
   
   // Calculate days until deadline
-  const daysUntil = differenceInDays(deadline, today);
+  const daysUntil = dateFns.differenceInDays(deadline, today);
   
   if (daysUntil < 0) {
     return {
@@ -132,14 +123,12 @@ export const getAssignmentStatusColor = (deadline: Date, isCompleted: boolean) =
   }
 };
 
-// Export date-fns functions for use in other modules
-export {
-  addMonths,
-  format,
-  isSameDay,
-  differenceInDays,
-  formatDistanceToNow,
-  parseISO,
-  isAfter,
-  startOfToday
-};
+// Re-export date-fns functions for use throughout the application
+export const addMonths = dateFns.addMonths;
+export const format = dateFns.format;
+export const isSameDay = dateFns.isSameDay;
+export const differenceInDays = dateFns.differenceInDays;
+export const formatDistanceToNow = dateFns.formatDistanceToNow;
+export const parseISO = dateFns.parseISO;
+export const isAfter = dateFns.isAfter;
+export const startOfToday = dateFns.startOfToday;
