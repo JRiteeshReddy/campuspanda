@@ -15,10 +15,17 @@ const Login = () => {
     }
   }, [user, loading, navigate]);
   
+  // Custom back handler to navigate to home
+  const handleBackToHome = () => {
+    navigate('/');
+  };
+  
   return (
     <AuthLayout 
       title="Welcome back" 
       subtitle="Sign in to your account"
+      onBackClick={handleBackToHome}
+      hideFeedback={true}
     >
       <LoginForm />
     </AuthLayout>

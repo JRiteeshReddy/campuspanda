@@ -15,10 +15,17 @@ const Signup = () => {
     }
   }, [user, loading, navigate]);
   
+  // Custom back handler to navigate to home
+  const handleBackToHome = () => {
+    navigate('/');
+  };
+  
   return (
     <AuthLayout 
       title="Create an account" 
       subtitle="Sign up to get started"
+      onBackClick={handleBackToHome}
+      hideFeedback={true}
     >
       <SignupForm />
     </AuthLayout>

@@ -10,9 +10,11 @@ interface AuthLayoutProps {
   children: ReactNode;
   title: string;
   subtitle?: string;
+  onBackClick?: () => void;
+  hideFeedback?: boolean;
 }
 
-const AuthLayout = ({ children, title, subtitle }: AuthLayoutProps) => {
+const AuthLayout = ({ children, title, subtitle, onBackClick, hideFeedback = false }: AuthLayoutProps) => {
   const navigate = useNavigate();
   const { theme } = useTheme();
   
@@ -20,6 +22,14 @@ const AuthLayout = ({ children, title, subtitle }: AuthLayoutProps) => {
   const logoSrc = theme === 'light' 
     ? "/lovable-uploads/3c2c04b3-4321-4d75-acf9-9ba8a3dda8d5.png" 
     : "/lovable-uploads/259a2ad1-1ce7-481c-bdf3-3df888799e9d.png";
+  
+  const handleBackClick = () => {
+    if (onBackClick) {
+      onBackClick();
+    } else {
+      navigate(-1);
+    }
+  };
   
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background transition-colors duration-300 p-4 sm:p-6">
@@ -33,7 +43,7 @@ const AuthLayout = ({ children, title, subtitle }: AuthLayoutProps) => {
         </div>
         
         <button 
-          onClick={() => navigate(-1)}
+          onClick={handleBackClick}
           className="mb-6 flex items-center text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft size={16} className="mr-1" />
@@ -48,9 +58,11 @@ const AuthLayout = ({ children, title, subtitle }: AuthLayoutProps) => {
         {children}
       </div>
       
-      <div className="mt-6 w-full max-w-md">
-        <FeedbackLink />
-      </div>
+      {!hideFeedback && (
+        <div className="mt-6 w-full max-w-md">
+          <FeedbackLink />
+        </div>
+      )}
     </div>
   );
 };
