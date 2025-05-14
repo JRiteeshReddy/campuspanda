@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import { toast } from 'sonner';
 import Navbar from '@/components/layout/Navbar';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,31 +8,66 @@ import { Button } from '@/components/ui/button';
 import { Send } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
+type Message = {
+  type: 'user' | 'ai';
+  content: string;
+  timestamp: Date;
+};
+
 const AI = () => {
-  const [messages, setMessages] = useState<Array<{type: 'user' | 'ai', content: string}>>([
-    { type: 'ai', content: 'Hello! How can I help you with your studies today?' }
+  const [messages, setMessages] = useState<Message[]>([
+    { type: 'ai', content: 'Hello! How can I help you with your studies today?', timestamp: new Date() }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  const sendMessageToWebhook = async (message: string) => {
+    setIsLoading(true);
+    
+    try {
+      const response = await fetch('http://localhost:5678/webhook-test/063c029b-45b7-4a00-8cdc-e5f0bcabe152', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.output;
+    } catch (error) {
+      console.error('Error calling webhook:', error);
+      toast.error('Failed to get response from AI. Please try again.');
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSend = async () => {
+    if (!input.trim() || isLoading) return;
     
     // Add user message
-    const userMessage = { type: 'user' as const, content: input.trim() };
+    const userMessage = { type: 'user' as const, content: input.trim(), timestamp: new Date() };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     
-    // Simulate AI response (in a real app, this would be a webhook call)
-    setIsLoading(true);
-    setTimeout(() => {
+    // Send to webhook and get response
+    const webhookResponse = await sendMessageToWebhook(input.trim());
+    
+    // Only add AI response if we got something back
+    if (webhookResponse) {
       const aiResponse = { 
         type: 'ai' as const, 
-        content: "I'm CampusPanda's AI assistant. I'm currently in development, but I'll be able to help you with your studies soon!" 
+        content: webhookResponse,
+        timestamp: new Date()
       };
       setMessages(prev => [...prev, aiResponse]);
-      setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -60,7 +96,10 @@ const AI = () => {
                           : 'bg-muted text-foreground'
                       }`}
                     >
-                      {message.content}
+                      <div>{message.content}</div>
+                      <div className="text-xs opacity-70 mt-1">
+                        {message.timestamp.toLocaleTimeString()}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -85,8 +124,9 @@ const AI = () => {
                 placeholder="Type your question..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                onKeyDown={(e) => e.key === 'Enter' && !isLoading && handleSend()}
                 className="flex-1"
+                disabled={isLoading}
               />
               <Button 
                 onClick={handleSend} 

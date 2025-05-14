@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useDocumentTitle } from '@/hooks/use-document-title';
 import ProfileMenu from '@/components/ui/ProfileMenu';
-import { Home, BookOpen, CalendarCheck, FileText, Calendar, MessageSquare, Cpu } from 'lucide-react';
+import { Home, BookOpen, CalendarCheck, FileText, Calendar } from 'lucide-react';
 
 const Navbar = () => {
   const { user } = useAuth();
@@ -30,52 +30,38 @@ const Navbar = () => {
       <div className="flex items-center space-x-4">
         {user ? (
           <>
-            {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/notes' || currentPath === '/events' || currentPath === '/chat' || currentPath === '/ai') && (
+            {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/notes' || currentPath === '/events') && (
               <Link to="/" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
                 <Home size={20} />
                 <span className="ml-1 hidden sm:inline-block">Home</span>
               </Link>
             )}
             
-            {(currentPath === '/assignments' || currentPath === '/notes' || currentPath === '/events' || currentPath === '/chat' || currentPath === '/ai') && (
+            {(currentPath === '/assignments' || currentPath === '/notes' || currentPath === '/events') && (
               <Link to="/attendance" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
                 <BookOpen size={20} />
                 <span className="ml-1 hidden sm:inline-block">Attendance</span>
               </Link>
             )}
             
-            {(currentPath === '/attendance' || currentPath === '/notes' || currentPath === '/events' || currentPath === '/chat' || currentPath === '/ai') && (
+            {(currentPath === '/attendance' || currentPath === '/notes' || currentPath === '/events') && (
               <Link to="/assignments" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
                 <CalendarCheck size={20} />
                 <span className="ml-1 hidden sm:inline-block">Assignments</span>
               </Link>
             )}
             
-            {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/events' || currentPath === '/chat' || currentPath === '/ai') && (
+            {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/events') && (
               <Link to="/notes" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
                 <FileText size={20} />
                 <span className="ml-1 hidden sm:inline-block">Notes</span>
               </Link>
             )}
             
-            {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/notes' || currentPath === '/chat' || currentPath === '/ai') && (
+            {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/notes') && (
               <Link to="/events" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
                 <Calendar size={20} />
                 <span className="ml-1 hidden sm:inline-block">Events</span>
-              </Link>
-            )}
-            
-            {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/notes' || currentPath === '/events' || currentPath === '/ai') && (
-              <Link to="/chat" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
-                <MessageSquare size={20} />
-                <span className="ml-1 hidden sm:inline-block">Chat</span>
-              </Link>
-            )}
-            
-            {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/notes' || currentPath === '/events' || currentPath === '/chat') && (
-              <Link to="/ai" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
-                <Cpu size={20} />
-                <span className="ml-1 hidden sm:inline-block">AI</span>
               </Link>
             )}
             
