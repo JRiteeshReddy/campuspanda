@@ -24,6 +24,7 @@ const AttendanceTracker = () => {
 
   useEffect(() => {
     if (!authLoading && !user) {
+      // Redirect to login page if not authenticated
       navigate('/login');
     } else if (user) {
       fetchSubjects();
