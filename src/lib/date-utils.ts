@@ -1,14 +1,13 @@
 
-// Import date-fns functions directly from their packages
-// Use regular imports without aliases to avoid type-only export issues
-import differenceInDays from 'date-fns/differenceInDays';
-import format from 'date-fns/format';
-import parseISO from 'date-fns/parseISO';
-import startOfDay from 'date-fns/startOfDay';
-import isAfter from 'date-fns/isAfter';
-import isSameDay from 'date-fns/isSameDay';
-import addMonths from 'date-fns/addMonths';
-import formatDistance from 'date-fns/formatDistance';
+// Import date-fns functions using named imports
+import { differenceInDays } from 'date-fns/differenceInDays';
+import { format } from 'date-fns/format';
+import { parseISO } from 'date-fns/parseISO';
+import { startOfDay } from 'date-fns/startOfDay';
+import { isAfter } from 'date-fns/isAfter';
+import { isSameDay } from 'date-fns/isSameDay';
+import { addMonths } from 'date-fns/addMonths';
+import { formatDistance } from 'date-fns/formatDistance';
 
 /**
  * Returns a class name for a date cell based on its status
