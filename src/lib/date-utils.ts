@@ -1,13 +1,13 @@
 
 // Import specific functions directly from their modules in date-fns v3
-import { differenceInDays } from 'date-fns/differenceInDays';
-import { format } from 'date-fns/format';
-import { parseISO } from 'date-fns/parseISO';
-import { startOfDay } from 'date-fns/startOfDay';
-import { isAfter } from 'date-fns/isAfter';
-import { isSameDay } from 'date-fns/isSameDay';
-import { addMonths } from 'date-fns/addMonths';
-import { formatDistance } from 'date-fns/formatDistance';
+import { differenceInDays as dateFnsDifferenceInDays } from 'date-fns/differenceInDays';
+import { format as dateFnsFormat } from 'date-fns/format';
+import { parseISO as dateFnsParseISO } from 'date-fns/parseISO';
+import { startOfDay as dateFnsStartOfDay } from 'date-fns/startOfDay';
+import { isAfter as dateFnsIsAfter } from 'date-fns/isAfter';
+import { isSameDay as dateFnsIsSameDay } from 'date-fns/isSameDay';
+import { addMonths as dateFnsAddMonths } from 'date-fns/addMonths';
+import { formatDistance as dateFnsFormatDistance } from 'date-fns/formatDistance';
 
 /**
  * Returns a class name for a date cell based on its status
@@ -25,7 +25,7 @@ export const getDateCellClassName = (
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   
-  const daysUntil = differenceInDays(date, today);
+  const daysUntil = dateFnsDifferenceInDays(date, today);
   
   // Base classes for the cell
   let className = 'relative w-full aspect-square flex items-center justify-center text-sm';
@@ -62,9 +62,9 @@ export const getDateCellClassName = (
 export const formatDate = (date: Date | string, formatStr: string = 'PPP'): string => {
   try {
     if (typeof date === 'string') {
-      return format(parseISO(date), formatStr);
+      return dateFnsFormat(dateFnsParseISO(date), formatStr);
     }
-    return format(date, formatStr);
+    return dateFnsFormat(date, formatStr);
   } catch (error) {
     console.error('Error formatting date:', error);
     return 'Invalid date';
@@ -75,8 +75,8 @@ export const formatDate = (date: Date | string, formatStr: string = 'PPP'): stri
  * Checks if a date is in the past
  */
 export const isPastDate = (date: Date): boolean => {
-  const today = startOfDay(new Date());
-  return !isAfter(date, today) && !isSameDay(date, today);
+  const today = dateFnsStartOfDay(new Date());
+  return !dateFnsIsAfter(date, today) && !dateFnsIsSameDay(date, today);
 };
 
 /**
@@ -95,7 +95,7 @@ export const getAssignmentStatusColor = (deadline: Date, isCompleted: boolean) =
   today.setHours(0, 0, 0, 0);
   
   // Calculate days until deadline
-  const daysUntil = differenceInDays(deadline, today);
+  const daysUntil = dateFnsDifferenceInDays(deadline, today);
   
   if (daysUntil < 0) {
     return {
@@ -132,13 +132,35 @@ export const getAssignmentStatusColor = (deadline: Date, isCompleted: boolean) =
 
 // Create a formatDistanceToNow function with the same API as before
 export const formatDistanceToNow = (date: Date | number, options?: { addSuffix?: boolean }): string => {
-  return formatDistance(date, new Date(), { addSuffix: options?.addSuffix });
+  return dateFnsFormatDistance(date, new Date(), { addSuffix: options?.addSuffix });
 };
 
 // Create a startOfToday function with the same API as before
 export const startOfToday = (): Date => {
-  return startOfDay(new Date());
+  return dateFnsStartOfDay(new Date());
 };
 
-// Export functions that are used throughout the application
-export { addMonths, format, isSameDay, isAfter, parseISO, differenceInDays };
+// Export direct functions for use in other components
+export const addMonths = (date: Date | number, amount: number): Date => {
+  return dateFnsAddMonths(date, amount);
+};
+
+export const format = (date: Date | number, formatStr: string): string => {
+  return dateFnsFormat(date, formatStr);
+};
+
+export const isSameDay = (dateLeft: Date | number, dateRight: Date | number): boolean => {
+  return dateFnsIsSameDay(dateLeft, dateRight);
+};
+
+export const isAfter = (date: Date | number, dateToCompare: Date | number): boolean => {
+  return dateFnsIsAfter(date, dateToCompare);
+};
+
+export const parseISO = (dateString: string): Date => {
+  return dateFnsParseISO(dateString);
+};
+
+export const differenceInDays = (dateLeft: Date | number, dateRight: Date | number): number => {
+  return dateFnsDifferenceInDays(dateLeft, dateRight);
+};
