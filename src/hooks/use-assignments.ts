@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Assignment } from '@/types';
-import { differenceInDays } from 'date-fns';
+import { differenceInDays } from '@/lib/date-utils';
 
 export function useAssignments(userId?: string) {
   const [assignments, setAssignments] = useState<Assignment[]>([]);

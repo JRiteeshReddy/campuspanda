@@ -4,7 +4,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Assignment } from '@/types';
-import { addMonths, isSameDay } from 'date-fns';
+import { addMonths, isSameDay } from '@/lib/date-utils';
 
 interface AssignmentCalendarProps {
   assignments: Assignment[];

@@ -1,23 +1,21 @@
 
-// Import functions directly from date-fns without re-exporting them
+// Import functions from date-fns directly
 import { 
-  addMonths,
-  format,
-  isSameDay,
-  differenceInDays,
-  formatDistanceToNow,
-  parseISO
+  addMonths as addMonthsOriginal,
+  format as formatOriginal,
+  isSameDay as isSameDayOriginal,
+  differenceInDays as differenceInDaysOriginal,
+  formatDistanceToNow as formatDistanceToNowOriginal,
+  parseISO as parseISOOriginal
 } from "date-fns";
 
-// Export the functions directly
-export { 
-  addMonths, 
-  format, 
-  isSameDay, 
-  differenceInDays, 
-  formatDistanceToNow,
-  parseISO
-};
+// Re-export the functions (not as types)
+export const addMonths = addMonthsOriginal;
+export const format = formatOriginal;
+export const isSameDay = isSameDayOriginal;
+export const differenceInDays = differenceInDaysOriginal;
+export const formatDistanceToNow = formatDistanceToNowOriginal;
+export const parseISO = parseISOOriginal;
 
 export function getAssignmentStatusColor(deadline: Date, completed: boolean): {
   bgColor: string;
@@ -32,7 +30,7 @@ export function getAssignmentStatusColor(deadline: Date, completed: boolean): {
     };
   }
 
-  const daysUntilDeadline = differenceInDays(deadline, new Date());
+  const daysUntilDeadline = differenceInDaysOriginal(deadline, new Date());
 
   if (daysUntilDeadline <= 0) {
     return {
@@ -62,7 +60,7 @@ export function getAssignmentStatusColor(deadline: Date, completed: boolean): {
 }
 
 export function formatDate(date: Date, formatString: string = "MMMM d"): string {
-  return format(date, formatString);
+  return formatOriginal(date, formatString);
 }
 
 export function isPastDate(date: Date): boolean {
