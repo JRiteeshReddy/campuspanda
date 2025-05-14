@@ -1,6 +1,13 @@
 
-// Import all functions directly from date-fns
-import * as dateFns from 'date-fns';
+// Import specific functions directly from their modules in date-fns v3
+import { differenceInDays } from 'date-fns/differenceInDays';
+import { format } from 'date-fns/format';
+import { parseISO } from 'date-fns/parseISO';
+import { startOfDay } from 'date-fns/startOfDay';
+import { isAfter } from 'date-fns/isAfter';
+import { isSameDay } from 'date-fns/isSameDay';
+import { addMonths } from 'date-fns/addMonths';
+import { formatDistance } from 'date-fns/formatDistance';
 
 /**
  * Returns a class name for a date cell based on its status
@@ -18,7 +25,7 @@ export const getDateCellClassName = (
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   
-  const daysUntil = dateFns.differenceInDays(date, today);
+  const daysUntil = differenceInDays(date, today);
   
   // Base classes for the cell
   let className = 'relative w-full aspect-square flex items-center justify-center text-sm';
@@ -55,9 +62,9 @@ export const getDateCellClassName = (
 export const formatDate = (date: Date | string, formatStr: string = 'PPP'): string => {
   try {
     if (typeof date === 'string') {
-      return dateFns.format(dateFns.parseISO(date), formatStr);
+      return format(parseISO(date), formatStr);
     }
-    return dateFns.format(date, formatStr);
+    return format(date, formatStr);
   } catch (error) {
     console.error('Error formatting date:', error);
     return 'Invalid date';
@@ -68,8 +75,8 @@ export const formatDate = (date: Date | string, formatStr: string = 'PPP'): stri
  * Checks if a date is in the past
  */
 export const isPastDate = (date: Date): boolean => {
-  const today = dateFns.startOfDay(new Date());
-  return !dateFns.isAfter(date, today) && !dateFns.isSameDay(date, today);
+  const today = startOfDay(new Date());
+  return !isAfter(date, today) && !isSameDay(date, today);
 };
 
 /**
@@ -88,7 +95,7 @@ export const getAssignmentStatusColor = (deadline: Date, isCompleted: boolean) =
   today.setHours(0, 0, 0, 0);
   
   // Calculate days until deadline
-  const daysUntil = dateFns.differenceInDays(deadline, today);
+  const daysUntil = differenceInDays(deadline, today);
   
   if (daysUntil < 0) {
     return {
@@ -125,19 +132,13 @@ export const getAssignmentStatusColor = (deadline: Date, isCompleted: boolean) =
 
 // Create a formatDistanceToNow function with the same API as before
 export const formatDistanceToNow = (date: Date | number, options?: { addSuffix?: boolean }): string => {
-  return dateFns.formatDistance(date, new Date(), { addSuffix: options?.addSuffix });
+  return formatDistance(date, new Date(), { addSuffix: options?.addSuffix });
 };
 
 // Create a startOfToday function with the same API as before
 export const startOfToday = (): Date => {
-  return dateFns.startOfDay(new Date());
+  return startOfDay(new Date());
 };
 
 // Export functions that are used throughout the application
-export const addMonths = dateFns.addMonths;
-export const format = dateFns.format;
-export const isSameDay = dateFns.isSameDay;
-export const isAfter = dateFns.isAfter;
-export const parseISO = dateFns.parseISO;
-export const differenceInDays = dateFns.differenceInDays;
-
+export { addMonths, format, isSameDay, isAfter, parseISO, differenceInDays };
