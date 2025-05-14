@@ -10,7 +10,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { format, isPastDate } from 'date-fns';
+import { format } from 'date-fns';
+import { isPastDate } from '@/lib/date-utils';
 
 const formSchema = z.object({
   subject: z.string().min(1, { message: 'Subject is required' }),
@@ -43,7 +44,7 @@ const NewAssignmentForm = ({ onSubmit, onCancel, initialValues, initialDate }: N
 
   // Function to disable past dates
   const disablePastDates = (date: Date) => {
-    return date < new Date(new Date().setHours(0, 0, 0, 0));
+    return isPastDate(date);
   };
 
   return (

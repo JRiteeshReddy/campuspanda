@@ -1,9 +1,10 @@
 
+// Import functions directly from date-fns without re-exporting them
 import { 
-  addMonths, 
-  format, 
-  isSameDay, 
-  differenceInDays, 
+  addMonths,
+  format,
+  isSameDay,
+  differenceInDays,
   formatDistanceToNow,
   parseISO
 } from "date-fns";

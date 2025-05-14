@@ -118,6 +118,10 @@ const NotesOrganizer = () => {
     }
 
     toast.success("Note deleted successfully");
+    
+    // Refresh data after deletion
+    refetchNotes();
+    queryClient.invalidateQueries({ queryKey: ["subjects-with-counts"] });
   };
 
   return (
@@ -190,20 +194,12 @@ const NotesOrganizer = () => {
                   <NotesList 
                     notes={notes} 
                     onDelete={handleDeleteNote}
-                    refetchNotes={() => {
-                      refetchNotes();
-                      queryClient.invalidateQueries({ queryKey: ["subjects-with-counts"] });
-                    }}
                   />
                 </TabsContent>
                 <TabsContent value="links">
                   <NotesList 
                     notes={notes.filter(note => note.file_type === 'link')} 
                     onDelete={handleDeleteNote}
-                    refetchNotes={() => {
-                      refetchNotes();
-                      queryClient.invalidateQueries({ queryKey: ["subjects-with-counts"] });
-                    }}
                   />
                 </TabsContent>
               </Tabs>

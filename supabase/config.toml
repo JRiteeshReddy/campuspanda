@@ -1,5 +1,5 @@
 
-project_id = "your-project-id"
+project_id = "3b71e6dd-9ca9-4158-b42e-7670b74a66ba"
 
 [api]
 enabled = true
@@ -10,7 +10,16 @@ schemas = ["public", "storage"]
 port = 54322
 
 [studio]
+enabled = true
 port = 54323
 
+[storage]
+enabled = true
+
+[auth]
+enabled = true
+port = 54324
+
+[functions]
 [functions.cleanup-assignments]
 verify_jwt = false
