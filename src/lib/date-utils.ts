@@ -1,14 +1,24 @@
 
-import { 
-  addMonths, 
-  format, 
-  isSameDay, 
-  differenceInDays, 
-  formatDistanceToNow, 
-  parseISO,
-  isAfter,
-  startOfToday
+import {
+  addMonths as dateAddMonths,
+  format as dateFormat,
+  isSameDay as dateIsSameDay,
+  differenceInDays as dateDifferenceInDays,
+  formatDistanceToNow as dateFormatDistanceToNow,
+  parseISO as dateParseISO,
+  isAfter as dateIsAfter,
+  startOfToday as dateStartOfToday
 } from 'date-fns';
+
+// Explicitly define as non-type exports
+const addMonths = dateAddMonths;
+const format = dateFormat;
+const isSameDay = dateIsSameDay;
+const differenceInDays = dateDifferenceInDays;
+const formatDistanceToNow = dateFormatDistanceToNow;
+const parseISO = dateParseISO;
+const isAfter = dateIsAfter;
+const startOfToday = dateStartOfToday;
 
 /**
  * Returns a class name for a date cell based on its status
@@ -131,12 +141,14 @@ export const getAssignmentStatusColor = (deadline: Date, isCompleted: boolean) =
   }
 };
 
-// Export all date-fns functions we're using
-export { 
-  addMonths, 
-  format, 
-  isSameDay, 
-  differenceInDays, 
-  formatDistanceToNow, 
-  parseISO 
+// Export date-fns functions for use in other modules
+export {
+  addMonths,
+  format,
+  isSameDay,
+  differenceInDays,
+  formatDistanceToNow,
+  parseISO,
+  isAfter,
+  startOfToday
 };
