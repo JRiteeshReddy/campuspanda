@@ -1,13 +1,46 @@
 
-// Direct imports from date-fns v3 modules - import as values, not types
-import { differenceInDays } from 'date-fns/differenceInDays';
-import { format } from 'date-fns/format';
-import { parseISO } from 'date-fns/parseISO';
-import { startOfDay } from 'date-fns/startOfDay';
-import { isAfter } from 'date-fns/isAfter';
-import { isSameDay } from 'date-fns/isSameDay';
-import { addMonths } from 'date-fns/addMonths';
-import { formatDistance } from 'date-fns/formatDistance';
+// Import date-fns functions directly from their respective modules
+import { differenceInDays as dateFnsDifferenceInDays } from 'date-fns/differenceInDays';
+import { format as dateFnsFormat } from 'date-fns/format';
+import { parseISO as dateFnsParseISO } from 'date-fns/parseISO';
+import { startOfDay as dateFnsStartOfDay } from 'date-fns/startOfDay';
+import { isAfter as dateFnsIsAfter } from 'date-fns/isAfter';
+import { isSameDay as dateFnsIsSameDay } from 'date-fns/isSameDay';
+import { addMonths as dateFnsAddMonths } from 'date-fns/addMonths';
+import { formatDistance as dateFnsFormatDistance } from 'date-fns/formatDistance';
+
+// Create wrapper functions for each date-fns function to ensure they're treated as values
+export const differenceInDays = (date1: Date, date2: Date): number => {
+  return dateFnsDifferenceInDays(date1, date2);
+};
+
+export const format = (date: Date | string, formatStr: string): string => {
+  return dateFnsFormat(date, formatStr);
+};
+
+export const parseISO = (dateStr: string): Date => {
+  return dateFnsParseISO(dateStr);
+};
+
+export const startOfDay = (date: Date): Date => {
+  return dateFnsStartOfDay(date);
+};
+
+export const isAfter = (date1: Date, date2: Date): boolean => {
+  return dateFnsIsAfter(date1, date2);
+};
+
+export const isSameDay = (date1: Date, date2: Date): boolean => {
+  return dateFnsIsSameDay(date1, date2);
+};
+
+export const addMonths = (date: Date, amount: number): Date => {
+  return dateFnsAddMonths(date, amount);
+};
+
+export const formatDistance = (date: Date | number, baseDate: Date | number, options?: { addSuffix?: boolean }): string => {
+  return dateFnsFormatDistance(date, baseDate, options);
+};
 
 /**
  * Returns a class name for a date cell based on its status
@@ -142,15 +175,4 @@ export const formatDistanceToNow = (date: Date | number, options?: { addSuffix?:
  */
 export const startOfToday = (): Date => {
   return startOfDay(new Date());
-};
-
-// Explicitly export the date-fns functions as values (not types)
-export {
-  differenceInDays as differenceInDays,
-  format as format,
-  parseISO as parseISO,
-  startOfDay as startOfDay,
-  isAfter as isAfter,
-  isSameDay as isSameDay,
-  addMonths as addMonths
 };
