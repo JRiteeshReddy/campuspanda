@@ -1,68 +1,80 @@
 
-// Import functions directly from date-fns
-import { addMonths } from "date-fns/addMonths";
-import { format } from "date-fns/format";
-import { isSameDay } from "date-fns/isSameDay";
-import { differenceInDays } from "date-fns/differenceInDays";
-import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
-import { parseISO } from "date-fns/parseISO";
+import { addMonths as dateAddMonths, 
+         format as dateFormat,
+         isSameDay as dateIsSameDay, 
+         differenceInDays as dateDifferenceInDays, 
+         formatDistanceToNow as dateFormatDistanceToNow, 
+         parseISO as dateParseISO } from 'date-fns';
 
-export function getAssignmentStatusColor(deadline: Date, completed: boolean): {
-  bgColor: string;
-  textColor: string;
-  statusText: string;
-} {
-  if (completed) {
-    return {
-      bgColor: "bg-green-500",
-      textColor: "text-green-500",
-      statusText: "Completed",
-    };
-  }
+// Re-export date-fns functions
+export const addMonths = dateAddMonths;
+export const format = dateFormat;
+export const isSameDay = dateIsSameDay;
+export const differenceInDays = dateDifferenceInDays;
+export const formatDistanceToNow = dateFormatDistanceToNow;
+export const parseISO = dateParseISO;
 
-  const daysUntilDeadline = differenceInDays(deadline, new Date());
-
-  if (daysUntilDeadline <= 0) {
-    return {
-      bgColor: "bg-red-500",
-      textColor: "text-red-500",
-      statusText: daysUntilDeadline === 0 ? "Due today" : "Overdue",
-    };
-  } else if (daysUntilDeadline === 1) {
-    return {
-      bgColor: "bg-red-500",
-      textColor: "text-red-500",
-      statusText: "Due tomorrow",
-    };
-  } else if (daysUntilDeadline <= 3) {
-    return {
-      bgColor: "bg-yellow-500",
-      textColor: "text-yellow-500",
-      statusText: `Due in ${daysUntilDeadline} days`,
-    };
-  } else {
-    return {
-      bgColor: "bg-green-500",
-      textColor: "text-green-500",
-      statusText: `Due in ${daysUntilDeadline} days`,
-    };
-  }
-}
-
-export function formatDate(date: Date, formatString: string = "MMMM d"): string {
-  return format(date, formatString);
-}
-
-export function isPastDate(date: Date): boolean {
-  // Compare dates, ignoring time component
+/**
+ * Returns a class name for a date cell based on its status
+ */
+export const getDateCellClassName = (
+  date: Date | null,
+  isSelected: boolean,
+  isPast: boolean,
+  isOnSameDay: boolean,
+  isDisabled: boolean,
+  hasAssignments: boolean
+) => {
+  if (!date) return '';
+  
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   
-  const compareDate = new Date(date);
-  compareDate.setHours(0, 0, 0, 0);
+  const daysUntil = dateDifferenceInDays(date, today);
   
-  return compareDate < today;
-}
+  // Base classes for the cell
+  let className = 'relative w-full aspect-square flex items-center justify-center text-sm';
+  
+  // Add specific styles based on conditions
+  if (isSelected) {
+    className += ' bg-primary text-primary-foreground rounded-md font-medium';
+  } else if (isOnSameDay) {
+    className += ' bg-primary/10 text-primary rounded-md font-medium';
+  } else if (isPast) {
+    className += ' text-muted-foreground';
+  } else if (hasAssignments) {
+    // Upcoming date with assignments
+    if (daysUntil <= 1) {
+      className += ' text-red-500 dark:text-red-400 font-medium';
+    } else if (daysUntil <= 3) {
+      className += ' text-orange-500 dark:text-orange-400';
+    } else {
+      className += ' text-blue-600 dark:text-blue-400';
+    }
+  }
+  
+  // If disabled, overwrite with disabled styles
+  if (isDisabled) {
+    className = 'relative w-full aspect-square flex items-center justify-center text-sm text-muted-foreground opacity-50';
+  }
+  
+  return className;
+};
 
-// Re-export the functions to be used elsewhere
+/**
+ * Formats a date for display
+ */
+export const formatDate = (date: Date | string, formatStr: string = 'PPP'): string => {
+  try {
+    if (typeof date === 'string') {
+      return dateFormat(dateParseISO(date), formatStr);
+    }
+    return dateFormat(date, formatStr);
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return 'Invalid date';
+  }
+};
+
+// Export all functions we need from date-fns
 export { addMonths, format, isSameDay, differenceInDays, formatDistanceToNow, parseISO };
