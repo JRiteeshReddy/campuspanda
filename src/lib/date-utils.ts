@@ -1,24 +1,15 @@
 
+// Directly import from date-fns with no aliases
 import {
-  addMonths as dateAddMonths,
-  format as dateFormat,
-  isSameDay as dateIsSameDay,
-  differenceInDays as dateDifferenceInDays,
-  formatDistanceToNow as dateFormatDistanceToNow,
-  parseISO as dateParseISO,
-  isAfter as dateIsAfter,
-  startOfToday as dateStartOfToday
+  addMonths,
+  format,
+  isSameDay,
+  differenceInDays,
+  formatDistanceToNow,
+  parseISO,
+  isAfter,
+  startOfToday
 } from 'date-fns';
-
-// Explicitly define as non-type exports
-const addMonths = dateAddMonths;
-const format = dateFormat;
-const isSameDay = dateIsSameDay;
-const differenceInDays = dateDifferenceInDays;
-const formatDistanceToNow = dateFormatDistanceToNow;
-const parseISO = dateParseISO;
-const isAfter = dateIsAfter;
-const startOfToday = dateStartOfToday;
 
 /**
  * Returns a class name for a date cell based on its status
