@@ -1,11 +1,11 @@
-
 import React, { useState } from 'react';
 import { Note, NoteWithSubject } from '@/types';
-import { formatDistanceToNow, parseISO } from 'date-fns'; // Import directly from date-fns
+import { formatDistanceToNow, parseISO } from '@/lib/date-utils';
 import { Trash2, ExternalLink, Download, File } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { toast } from 'sonner';
 
 interface NotesListProps {
   notes: NoteWithSubject[];
@@ -26,6 +26,7 @@ const NotesList = ({ notes, onDelete }: NotesListProps) => {
       setIsDeleteDialogOpen(false);
     } catch (error) {
       console.error("Failed to delete note:", error);
+      toast.error("Failed to delete note");
     } finally {
       setIsDeleting(false);
     }

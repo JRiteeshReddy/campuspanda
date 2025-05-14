@@ -1,9 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Assignment } from '@/types';
-import { differenceInDays } from 'date-fns'; // Import directly from date-fns
+import { differenceInDays } from '@/lib/date-utils';
 
 export function useAssignments(userId?: string) {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
@@ -166,6 +165,18 @@ export function useAssignments(userId?: string) {
       }
       throw error;
     }
+  };
+
+  // Sort assignments by due date - closest first, then completed ones last
+  const sortAssignments = (items: Assignment[]): Assignment[] => {
+    return [...items].sort((a, b) => {
+      if (a.completed && !b.completed) return 1;
+      if (!a.completed && b.completed) return -1;
+      
+      const aDueIn = differenceInDays(new Date(a.deadline), new Date());
+      const bDueIn = differenceInDays(new Date(b.deadline), new Date());
+      return aDueIn - bDueIn;
+    });
   };
 
   return {
