@@ -1,5 +1,5 @@
 
-// Direct imports from date-fns v3 modules
+// Direct imports from date-fns v3 modules - import as values, not types
 import { differenceInDays } from 'date-fns/differenceInDays';
 import { format } from 'date-fns/format';
 import { parseISO } from 'date-fns/parseISO';
@@ -144,6 +144,13 @@ export const startOfToday = (): Date => {
   return startOfDay(new Date());
 };
 
-// Re-export the imported functions for use elsewhere in the app
-export { differenceInDays, format, parseISO, startOfDay, isAfter, isSameDay, addMonths };
-
+// Explicitly export the date-fns functions as values (not types)
+export {
+  differenceInDays as differenceInDays,
+  format as format,
+  parseISO as parseISO,
+  startOfDay as startOfDay,
+  isAfter as isAfter,
+  isSameDay as isSameDay,
+  addMonths as addMonths
+};
