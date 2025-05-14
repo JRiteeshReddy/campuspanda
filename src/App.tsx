@@ -7,7 +7,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import QuickNav from "./components/layout/QuickNav";
 
 // Pages
 import Index from "./pages/Index";
@@ -18,7 +17,6 @@ import AssignmentTracker from "./pages/AssignmentTracker";
 import NotesOrganizer from "./pages/NotesOrganizer";
 import EventPanda from "./pages/EventPanda";
 import NotFound from "./pages/NotFound";
-import Chat from "./pages/Chat";
 
 // Create a client for React Query
 const queryClient = new QueryClient();
@@ -32,7 +30,6 @@ const AppRoutes = () => (
     <Route path="/assignments" element={<AssignmentTracker />} />
     <Route path="/notes" element={<NotesOrganizer />} />
     <Route path="/events" element={<EventPanda />} />
-    <Route path="/chat" element={<Chat />} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
@@ -46,7 +43,6 @@ const App = () => {
             <AuthProvider>
               <TooltipProvider>
                 <AppRoutes />
-                <QuickNav />
                 <Toaster />
                 <Sonner position="top-right" closeButton />
               </TooltipProvider>

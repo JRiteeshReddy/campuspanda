@@ -15,16 +15,10 @@ const Signup = () => {
     }
   }, [user, loading, navigate]);
   
-  // Handle back button navigation to always return to home page
-  const handleBackClick = () => {
-    navigate('/');
-  };
-  
   return (
     <AuthLayout 
       title="Create an account" 
       subtitle="Sign up to get started"
-      onBackClick={handleBackClick}
     >
       <SignupForm />
     </AuthLayout>

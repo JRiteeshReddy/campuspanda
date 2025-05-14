@@ -10,21 +10,11 @@ interface AuthLayoutProps {
   children: ReactNode;
   title: string;
   subtitle?: string;
-  onBackClick?: () => void;
 }
 
-const AuthLayout = ({ children, title, subtitle, onBackClick }: AuthLayoutProps) => {
+const AuthLayout = ({ children, title, subtitle }: AuthLayoutProps) => {
   const navigate = useNavigate();
   const { theme } = useTheme();
-  
-  // Handle back navigation with the provided handler or default behavior
-  const handleBackNavigation = () => {
-    if (onBackClick) {
-      onBackClick();
-    } else {
-      navigate(-1);
-    }
-  };
   
   // Update logo paths to the newly uploaded images
   const logoSrc = theme === 'light' 
@@ -43,7 +33,7 @@ const AuthLayout = ({ children, title, subtitle, onBackClick }: AuthLayoutProps)
         </div>
         
         <button 
-          onClick={handleBackNavigation}
+          onClick={() => navigate(-1)}
           className="mb-6 flex items-center text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft size={16} className="mr-1" />

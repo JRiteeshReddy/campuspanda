@@ -1,88 +1,77 @@
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4';
-import { differenceInDays } from 'https://esm.sh/date-fns@3.0.0';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { Database } from '../_shared/database.types.ts';
 
-// Define CORS headers for browser interaction
+// Define CORS headers
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Supabase client initialization
+const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
+const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+
+const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey);
+
+// This function is designed to run on a schedule via the Supabase dashboard
+// Set up a cron job to run this function daily
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
-
+  
   try {
-    // Initialize Supabase client with environment variables
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Get all assignments
-    const { data: assignments, error: fetchError } = await supabase
+    console.log('Starting cleanup of old completed assignments');
+    
+    // Get current date
+    const now = new Date();
+    
+    // Calculate date 2 days ago
+    const twoDaysAgo = new Date();
+    twoDaysAgo.setDate(now.getDate() - 2);
+    
+    // Format the date for comparison with Supabase
+    const compareDate = twoDaysAgo.toISOString();
+    
+    console.log(`Deleting completed assignments with deadline before ${compareDate}`);
+    
+    // Delete completed assignments with deadline older than 2 days
+    const { data, error, count } = await supabase
       .from('assignments')
-      .select('*');
-
-    if (fetchError) throw fetchError;
-
-    // Track IDs of assignments to delete
-    const assignmentsToDelete: string[] = [];
-
-    // Current date
-    const today = new Date();
-
-    // Check each assignment to see if it should be deleted
-    assignments.forEach((assignment) => {
-      const deadline = new Date(assignment.deadline);
-      const daysPastDeadline = differenceInDays(today, deadline);
+      .delete()
+      .lt('deadline', compareDate)
+      .eq('completed', true)
+      .select();
       
-      // Delete assignments (whether completed or not) that are more than 2 days past deadline
-      if (daysPastDeadline > 2) {
-        assignmentsToDelete.push(assignment.id);
-      }
-    });
-
-    // Delete identified assignments if any exist
-    let deleteResult = null;
-    if (assignmentsToDelete.length > 0) {
-      const { data, error: deleteError } = await supabase
-        .from('assignments')
-        .delete()
-        .in('id', assignmentsToDelete)
-        .select();
-
-      if (deleteError) throw deleteError;
-      deleteResult = data;
+    if (error) {
+      throw error;
     }
-
+    
+    console.log(`Successfully deleted ${count} completed assignments`);
+    
     return new Response(
       JSON.stringify({
-        message: 'Cleanup process completed successfully',
-        deleted: assignmentsToDelete.length,
-        deletedAssignments: deleteResult
+        success: true,
+        deletedCount: count,
+        deletedAssignments: data
       }),
       {
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'application/json',
-        },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
       }
     );
   } catch (error) {
-    console.error('Error in cleanup function:', error);
+    console.error('Error during assignment cleanup:', error);
     
     return new Response(
       JSON.stringify({
-        error: error instanceof Error ? error.message : 'An error occurred during cleanup',
+        success: false,
+        error: error.message,
       }),
       {
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'application/json',
-        },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
       }
     );
