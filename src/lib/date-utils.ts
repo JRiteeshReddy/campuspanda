@@ -1,13 +1,13 @@
 
 // Import specific functions from date-fns
 import {
-  addMonths,
-  format,
+  addMonths as dateAddMonths,
+  format as dateFormat,
   formatDistance,
   differenceInDays as dateFnsDifferenceInDays,
-  isSameDay,
-  isAfter,
-  parseISO,
+  isSameDay as dateIsSameDay,
+  isAfter as dateIsAfter,
+  parseISO as dateParseISO,
   startOfDay
 } from 'date-fns';
 
@@ -64,9 +64,9 @@ export const getDateCellClassName = (
 export const formatDate = (date: Date | string, formatStr: string = 'PPP'): string => {
   try {
     if (typeof date === 'string') {
-      return format(parseISO(date), formatStr);
+      return dateFormat(dateParseISO(date), formatStr);
     }
-    return format(date, formatStr);
+    return dateFormat(date, formatStr);
   } catch (error) {
     console.error('Error formatting date:', error);
     return 'Invalid date';
@@ -78,7 +78,7 @@ export const formatDate = (date: Date | string, formatStr: string = 'PPP'): stri
  */
 export const isPastDate = (date: Date): boolean => {
   const today = startOfDay(new Date());
-  return !isAfter(date, today) && !isSameDay(date, today);
+  return !dateIsAfter(date, today) && !dateIsSameDay(date, today);
 };
 
 /**
@@ -142,14 +142,10 @@ export const startOfToday = (): Date => {
   return startOfDay(new Date());
 };
 
-// Re-export date-fns functions for use throughout the application
-export { 
-  addMonths,
-  format,
-  isSameDay,
-  isAfter,
-  parseISO
-};
-
-// Re-export renamed functions
+// Export the functions using explicit value exports
+export const addMonths = dateAddMonths;
+export const format = dateFormat;
+export const isSameDay = dateIsSameDay;
+export const isAfter = dateIsAfter;
+export const parseISO = dateParseISO;
 export const differenceInDays = dateFnsDifferenceInDays;
