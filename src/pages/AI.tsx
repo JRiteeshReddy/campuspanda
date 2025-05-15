@@ -75,6 +75,7 @@ const AI = () => {
         setConnectionError(`Error: ${error.message}`);
       }
       
+      // Fix: Call toast as a function, not rendering it as a component
       toast({
         title: 'Connection Error',
         description: 'Failed to get response from the AI webhook.',

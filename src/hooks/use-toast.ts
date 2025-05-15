@@ -1,5 +1,6 @@
+
 import * as React from "react";
-import { toast, Toaster as Sonner } from "sonner";
+import { toast as sonnerToast, Toaster as Sonner } from "sonner";
 
 const TOAST_LIMIT = 5;
 const TOAST_REMOVE_DELAY = 1000000;
@@ -152,13 +153,48 @@ function useToast() {
 
   return {
     ...state,
-    toast,
+    toast: (props: Toast) => {
+      const id = props.id || genId();
+      
+      // Use sonner's toast function for actual display
+      sonnerToast(props.title as string, {
+        description: props.description,
+        id,
+        ...props
+      });
+
+      dispatch({
+        type: "ADD_TOAST",
+        toast: {
+          ...props,
+          id,
+        },
+      });
+    },
     dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
   };
 }
 
-// Pass any sonner compatible props here
-// Ref: https://sonner.emilkowal.ski/
-export const sonnerCompatToast = toast;
+// Define a standalone toast function that uses sonner's toast
+export const toast = (props: Toast) => {
+  const id = props.id || genId();
+  
+  sonnerToast(props.title as string, {
+    description: props.description,
+    id,
+    ...props
+  });
+  
+  dispatch({
+    type: "ADD_TOAST",
+    toast: {
+      ...props,
+      id,
+    },
+  });
+};
 
-export { useToast, toast };
+// Export the original sonner toast as an alternative
+export const sonnerCompatToast = sonnerToast;
+
+export { useToast };
