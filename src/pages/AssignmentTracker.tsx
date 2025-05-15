@@ -1,24 +1,27 @@
-
 import React, { useState, useEffect } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import {
   Card,
   CardContent,
+  CardHeader,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import { addMonths as dateAddMonths, isSameDay as dateIsSameDay, format as dateFormat } from 'date-fns';
+import * as dateFns from 'date-fns';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import Navbar from '@/components/layout/Navbar';
-import AssignmentCard from '@/components/assignment/AssignmentCard';
 import NewAssignmentForm from '@/components/assignment/NewAssignmentForm';
+import AssignmentCard from '@/components/assignment/AssignmentCard';
+import { useDocumentTitle } from '@/hooks/use-document-title';
 import { Assignment } from '@/types';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
-import { toast } from 'sonner';
+import { toast } from '@/hooks/use-toast';
 
 const AssignmentTracker = () => {
+  useDocumentTitle('Assignment Tracker');
+
   const [date, setDate] = useState<Date>(new Date());
   const [selectedMonthOffset, setSelectedMonthOffset] = useState(0);
   const [isNewAssignmentDialogOpen, setIsNewAssignmentDialogOpen] = useState(false);
@@ -71,7 +74,7 @@ const AssignmentTracker = () => {
 
   const handleMonthChange = (offset: number) => {
     setSelectedMonthOffset(offset);
-    setDate(dateAddMonths(new Date(), offset));
+    setDate(dateFns.addMonths(new Date(), offset));
   };
 
   const handlePreviousMonth = () => {
@@ -170,7 +173,7 @@ const AssignmentTracker = () => {
   };
 
   const getDayClassNames = (day: Date) => {
-    const assignment = assignments.find(a => dateIsSameDay(new Date(a.deadline), day));
+    const assignment = assignments.find(a => dateFns.isSameDay(new Date(a.deadline), day));
     
     if (!assignment) return undefined;
     
@@ -200,7 +203,7 @@ const AssignmentTracker = () => {
   const modifiers = {
     assignment: (day: Date) => 
       assignments.some(assignment => 
-        dateIsSameDay(new Date(assignment.deadline), day)
+        dateFns.isSameDay(new Date(assignment.deadline), day)
       )
   };
 
@@ -212,67 +215,69 @@ const AssignmentTracker = () => {
         <h1 className="text-2xl sm:text-3xl font-bold mb-6">Assignment Tracker</h1>
         
         <Card className="mb-6">
-          <CardContent className="p-4 sm:p-6">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-medium">Calendar</h2>
-              <Tabs value={selectedMonthOffset.toString()} className="w-auto">
-                <TabsList>
-                  <TabsTrigger value="0" onClick={() => handleMonthChange(0)}>Current</TabsTrigger>
-                  <TabsTrigger value="1" onClick={() => handleMonthChange(1)}>Next</TabsTrigger>
-                  <TabsTrigger value="2" onClick={() => handleMonthChange(2)}>+2</TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </div>
-            
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={handleDateSelect}
-              month={date}
-              className="rounded-md border pointer-events-auto mx-auto"
-              modifiers={modifiers}
-              modifiersStyles={{
-                assignment: assignmentStyles
-              }}
-              onMonthChange={setDate}
-              onPrevious={handlePreviousMonth}
-              onNext={handleNextMonth}
-              components={{
-                DayContent: (props) => {
-                  const day = props.date;
-                  const assignment = assignments.find(a => isSameDay(new Date(a.deadline), day));
-                  
-                  if (!assignment) {
-                    return <div>{props.date.getDate()}</div>;
-                  }
-                  
-                  let style = {};
-                  
-                  if (assignment.completed) {
-                    style = { backgroundColor: '#22c55e', color: 'white', borderRadius: '9999px' };
-                  } else {
-                    const daysUntilDeadline = Math.ceil(
-                      (new Date(assignment.deadline).getTime() - new Date().setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24)
-                    );
+          <CardHeader>
+            <CardContent className="p-4 sm:p-6">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-lg font-medium">Calendar</h2>
+                <Tabs value={selectedMonthOffset.toString()} className="w-auto">
+                  <TabsList>
+                    <TabsTrigger value="0" onClick={() => handleMonthChange(0)}>Current</TabsTrigger>
+                    <TabsTrigger value="1" onClick={() => handleMonthChange(1)}>Next</TabsTrigger>
+                    <TabsTrigger value="2" onClick={() => handleMonthChange(2)}>+2</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
+              
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={handleDateSelect}
+                month={date}
+                className="rounded-md border pointer-events-auto mx-auto"
+                modifiers={modifiers}
+                modifiersStyles={{
+                  assignment: assignmentStyles
+                }}
+                onMonthChange={setDate}
+                onPrevious={handlePreviousMonth}
+                onNext={handleNextMonth}
+                components={{
+                  DayContent: (props) => {
+                    const day = props.date;
+                    const assignment = assignments.find(a => dateFns.isSameDay(new Date(a.deadline), day));
                     
-                    if (daysUntilDeadline <= 1) {
-                      style = { backgroundColor: '#ef4444', color: 'white', borderRadius: '9999px' };
-                    } else if (daysUntilDeadline <= 3) {
-                      style = { backgroundColor: '#eab308', color: 'white', borderRadius: '9999px' };
-                    } else {
-                      style = { backgroundColor: '#22c55e', color: 'white', borderRadius: '9999px' };
+                    if (!assignment) {
+                      return <div>{props.date.getDate()}</div>;
                     }
+                    
+                    let style = {};
+                    
+                    if (assignment.completed) {
+                      style = { backgroundColor: '#22c55e', color: 'white', borderRadius: '9999px' };
+                    } else {
+                      const daysUntilDeadline = Math.ceil(
+                        (new Date(assignment.deadline).getTime() - new Date().setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24)
+                      );
+                      
+                      if (daysUntilDeadline <= 1) {
+                        style = { backgroundColor: '#ef4444', color: 'white', borderRadius: '9999px' };
+                      } else if (daysUntilDeadline <= 3) {
+                        style = { backgroundColor: '#eab308', color: 'white', borderRadius: '9999px' };
+                      } else {
+                        style = { backgroundColor: '#22c55e', color: 'white', borderRadius: '9999px' };
+                      }
+                    }
+                    
+                    return (
+                      <div style={style} className="flex items-center justify-center w-full h-full">
+                        {props.date.getDate()}
+                      </div>
+                    );
                   }
-                  
-                  return (
-                    <div style={style} className="flex items-center justify-center w-full h-full">
-                      {props.date.getDate()}
-                    </div>
-                  );
-                }
-              }}
-            />
-          </CardContent>
+                }}
+              />
+            </CardContent>
+          </CardHeader>
         </Card>
         
         <div className="flex items-center justify-between mb-6">

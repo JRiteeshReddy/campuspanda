@@ -31,8 +31,8 @@ const AI = () => {
     try {
       console.log('Sending message to Gemini API');
       
-      // Using the Google Generative AI REST API directly
-      const response = await fetch('https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=AIzaSyBTE3kGyjn_YBZEkhjWbwYVYyi7jB44ky0', {
+      // Using the correct Gemini API version (v1beta)
+      const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyBTE3kGyjn_YBZEkhjWbwYVYyi7jB44ky0', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

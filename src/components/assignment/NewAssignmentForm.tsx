@@ -1,16 +1,16 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { format as dateFormat } from 'date-fns';
+import * as dateFns from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { CalendarIcon } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const formSchema = z.object({
   subject: z.string().min(1, { message: 'Subject is required' }),
@@ -23,6 +23,7 @@ const formSchema = z.object({
 interface NewAssignmentFormProps {
   onSubmit: (values: z.infer<typeof formSchema>) => void;
   onCancel: () => void;
+  subjects: string[];
   initialValues?: {
     subject: string;
     title: string;
@@ -31,7 +32,7 @@ interface NewAssignmentFormProps {
   initialDate?: Date;
 }
 
-const NewAssignmentForm = ({ onSubmit, onCancel, initialValues, initialDate }: NewAssignmentFormProps) => {
+const NewAssignmentForm = ({ onSubmit, onCancel, subjects, initialValues, initialDate }: NewAssignmentFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialValues || {
@@ -82,14 +83,14 @@ const NewAssignmentForm = ({ onSubmit, onCancel, initialValues, initialDate }: N
                 <PopoverTrigger asChild>
                   <FormControl>
                     <Button
-                      variant="outline"
+                      variant={"outline"}
                       className={cn(
                         "w-full pl-3 text-left font-normal",
                         !field.value && "text-muted-foreground"
                       )}
                     >
                       {field.value ? (
-                        dateFormat(field.value, "PPP")
+                        dateFns.format(field.value, "PPP")
                       ) : (
                         <span>Pick a date</span>
                       )}
@@ -102,8 +103,8 @@ const NewAssignmentForm = ({ onSubmit, onCancel, initialValues, initialDate }: N
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
+                    disabled={(date) => date < new Date()}
                     initialFocus
-                    className="p-3 pointer-events-auto"
                   />
                 </PopoverContent>
               </Popover>
