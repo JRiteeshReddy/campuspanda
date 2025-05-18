@@ -1,5 +1,11 @@
 
-import * as dateFns from 'date-fns';
+import { 
+  format, 
+  isEqual, 
+  differenceInDays,
+  formatDistance, 
+  addDays
+} from 'date-fns';
 
 export const getAssignmentStatusInfo = (deadline: Date, completed: boolean) => {
   if (completed) {
@@ -9,8 +15,9 @@ export const getAssignmentStatusInfo = (deadline: Date, completed: boolean) => {
     };
   }
   
-  const daysUntilDeadline = Math.ceil(
-    (deadline.getTime() - new Date().setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24)
+  const daysUntilDeadline = differenceInDays(
+    deadline,
+    new Date()
   );
   
   if (daysUntilDeadline <= 0) {
@@ -32,7 +39,7 @@ export const getAssignmentStatusInfo = (deadline: Date, completed: boolean) => {
 };
 
 export const getDayClassNames = (day: Date, assignments: Array<{ deadline: Date, completed: boolean }>) => {
-  const assignment = assignments.find(a => dateFns.isEqual(new Date(a.deadline), day));
+  const assignment = assignments.find(a => isEqual(new Date(a.deadline), day));
   
   if (!assignment) return undefined;
   
@@ -40,8 +47,9 @@ export const getDayClassNames = (day: Date, assignments: Array<{ deadline: Date,
     return "bg-green-500 text-white rounded-full";
   }
   
-  const daysUntilDeadline = Math.ceil(
-    (new Date(assignment.deadline).getTime() - new Date().setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24)
+  const daysUntilDeadline = differenceInDays(
+    new Date(assignment.deadline),
+    new Date()
   );
   
   if (daysUntilDeadline <= 1) {

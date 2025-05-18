@@ -8,7 +8,7 @@ interface NewAssignmentDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   selectedDate?: Date;
-  subjects: string[];
+  subjects?: string[];
   onSubmit: (values: Omit<Assignment, 'id' | 'user_id' | 'created_at'>) => void;
 }
 
@@ -16,7 +16,7 @@ const NewAssignmentDialog = ({
   isOpen,
   onOpenChange,
   selectedDate,
-  subjects,
+  subjects = [],
   onSubmit
 }: NewAssignmentDialogProps) => {
   return (
