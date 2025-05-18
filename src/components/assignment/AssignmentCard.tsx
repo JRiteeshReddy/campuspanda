@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { format as formatDate } from 'date-fns';
-import { CheckCircle, Circle, Trash, Edit } from 'lucide-react';
+import { format } from 'date-fns';
+import { CheckCircle, Circle, Trash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -90,7 +90,7 @@ const AssignmentCard: React.FC<AssignmentCardProps> = ({
         <div className="flex justify-between text-sm">
           <div>
             <p className="text-sm text-muted-foreground">
-              Due: {formatDate(new Date(assignment.deadline), "PPP")}
+              Due: {format(new Date(assignment.deadline), "PPP")}
             </p>
           </div>
           <p className={`text-sm font-medium ${color}`}>{text}</p>
@@ -99,7 +99,7 @@ const AssignmentCard: React.FC<AssignmentCardProps> = ({
       
       <CardFooter className="px-4 py-2 text-xs text-muted-foreground border-t">
         <p>
-          Created: {formatDate(new Date(assignment.created_at), "PP")}
+          Created: {format(new Date(assignment.created_at), "PP")}
         </p>
       </CardFooter>
     </Card>
