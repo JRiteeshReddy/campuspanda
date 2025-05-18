@@ -1,6 +1,6 @@
 
 import * as React from "react";
-import { toast as sonnerToast, Toaster as Sonner } from "sonner";
+import { toast as sonnerToast, Toaster as Sonner, ToastT } from "sonner";
 
 const TOAST_LIMIT = 5;
 const TOAST_REMOVE_DELAY = 1000000;
@@ -175,8 +175,15 @@ function useToast() {
   };
 }
 
+// Enhanced toast function with success and error methods
+export type ToastFunction = {
+  (props: Toast): void;
+  success: (message: string, description?: string) => void;
+  error: (message: string, description?: string) => void;
+};
+
 // Define a standalone toast function that uses sonner's toast
-export const toast = (props: Toast) => {
+export const toast: ToastFunction = ((props: Toast) => {
   const id = props.id || genId();
   
   sonnerToast(props.title as string, {
@@ -191,6 +198,24 @@ export const toast = (props: Toast) => {
       ...props,
       id,
     },
+  });
+}) as ToastFunction;
+
+// Add success and error methods
+toast.success = (message: string, description?: string) => {
+  toast({
+    title: message,
+    description: description,
+    variant: "default",
+    className: "bg-green-500/70 text-white"
+  });
+};
+
+toast.error = (message: string, description?: string) => {
+  toast({
+    title: message,
+    description: description,
+    variant: "destructive",
   });
 };
 

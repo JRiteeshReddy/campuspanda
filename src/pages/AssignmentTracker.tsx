@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -7,7 +8,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import * as dateFns from 'date-fns';
+import { format, addMonths, isSameDay } from 'date-fns';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import Navbar from '@/components/layout/Navbar';
@@ -74,7 +75,7 @@ const AssignmentTracker = () => {
 
   const handleMonthChange = (offset: number) => {
     setSelectedMonthOffset(offset);
-    setDate(dateFns.addMonths(new Date(), offset));
+    setDate(addMonths(new Date(), offset));
   };
 
   const handlePreviousMonth = () => {
@@ -124,29 +125,29 @@ const AssignmentTracker = () => {
     }
   };
 
-  const handleUpdateAssignment = async (updatedAssignment: Assignment) => {
+  const handleMarkComplete = async (assignmentId: string) => {
     try {
+      const assignmentToUpdate = assignments.find(a => a.id === assignmentId);
+      
+      if (!assignmentToUpdate) return;
+      
+      const updatedAssignment = {
+        ...assignmentToUpdate,
+        completed: !assignmentToUpdate.completed
+      };
+      
       const { error } = await supabase
         .from('assignments')
         .update({
-          subject: updatedAssignment.subject,
-          title: updatedAssignment.title,
-          deadline: updatedAssignment.deadline instanceof Date 
-            ? updatedAssignment.deadline.toISOString() 
-            : updatedAssignment.deadline,
           completed: updatedAssignment.completed
         })
-        .eq('id', updatedAssignment.id);
+        .eq('id', assignmentId);
 
       if (error) throw error;
 
-      setAssignments(prevAssignments => 
-        prevAssignments
-          .map(assignment => 
-            assignment.id === updatedAssignment.id ? updatedAssignment : assignment
-          )
-          .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
-      );
+      setAssignments(assignments.map(assignment => 
+        assignment.id === assignmentId ? updatedAssignment : assignment
+      ));
       
       toast.success('Assignment updated successfully');
     } catch (error) {
@@ -173,7 +174,7 @@ const AssignmentTracker = () => {
   };
 
   const getDayClassNames = (day: Date) => {
-    const assignment = assignments.find(a => dateFns.isSameDay(new Date(a.deadline), day));
+    const assignment = assignments.find(a => isSameDay(new Date(a.deadline), day));
     
     if (!assignment) return undefined;
     
@@ -203,7 +204,7 @@ const AssignmentTracker = () => {
   const modifiers = {
     assignment: (day: Date) => 
       assignments.some(assignment => 
-        dateFns.isSameDay(new Date(assignment.deadline), day)
+        isSameDay(new Date(assignment.deadline), day)
       )
   };
 
@@ -244,7 +245,7 @@ const AssignmentTracker = () => {
                 components={{
                   DayContent: (props) => {
                     const day = props.date;
-                    const assignment = assignments.find(a => dateFns.isSameDay(new Date(a.deadline), day));
+                    const assignment = assignments.find(a => isSameDay(new Date(a.deadline), day));
                     
                     if (!assignment) {
                       return <div>{props.date.getDate()}</div>;
@@ -298,7 +299,7 @@ const AssignmentTracker = () => {
               <AssignmentCard
                 key={assignment.id}
                 assignment={assignment}
-                onUpdate={handleUpdateAssignment}
+                onMarkComplete={handleMarkComplete}
                 onDelete={handleDeleteAssignment}
               />
             ))
@@ -320,6 +321,7 @@ const AssignmentTracker = () => {
           </DialogHeader>
           <NewAssignmentForm 
             initialDate={selectedDate} 
+            subjects={[]}
             onSubmit={handleAddAssignment}
             onCancel={() => setIsNewAssignmentDialogOpen(false)}
           />

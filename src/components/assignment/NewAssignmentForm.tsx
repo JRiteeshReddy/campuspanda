@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import * as dateFns from 'date-fns';
+import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -32,7 +33,7 @@ interface NewAssignmentFormProps {
   initialDate?: Date;
 }
 
-const NewAssignmentForm = ({ onSubmit, onCancel, subjects, initialValues, initialDate }: NewAssignmentFormProps) => {
+const NewAssignmentForm = ({ onSubmit, onCancel, subjects = [], initialValues, initialDate }: NewAssignmentFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialValues || {
@@ -90,7 +91,7 @@ const NewAssignmentForm = ({ onSubmit, onCancel, subjects, initialValues, initia
                       )}
                     >
                       {field.value ? (
-                        dateFns.format(field.value, "PPP")
+                        format(field.value, "PPP")
                       ) : (
                         <span>Pick a date</span>
                       )}

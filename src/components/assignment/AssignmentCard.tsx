@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import * as dateFns from 'date-fns';
+import { format, differenceInDays } from 'date-fns';
 import { Assignment } from '@/types';
 import { Check, Trash, Edit } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -17,7 +18,7 @@ const AssignmentCard = ({ assignment, onMarkComplete, onDelete }: AssignmentCard
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   
-  const daysUntilDeadline = dateFns.differenceInDays(new Date(assignment.deadline), new Date());
+  const daysUntilDeadline = differenceInDays(new Date(assignment.deadline), new Date());
   
   let statusColor = 'text-green-500';
   let statusText = 'On track';
@@ -100,7 +101,7 @@ const AssignmentCard = ({ assignment, onMarkComplete, onDelete }: AssignmentCard
       <div>
         <h3 className="text-base font-bold text-foreground">{assignment.subject.toLowerCase()}</h3>
         <p className="text-sm text-foreground/90">{assignment.title}</p>
-        <p className="text-xs text-muted-foreground">Due: {dateFns.format(new Date(assignment.deadline), 'MMMM d')}</p>
+        <p className="text-xs text-muted-foreground">Due: {format(new Date(assignment.deadline), 'MMMM d')}</p>
         <p className={`text-xs font-medium ${statusColor}`}>
           {statusText}
         </p>
@@ -115,7 +116,7 @@ const AssignmentCard = ({ assignment, onMarkComplete, onDelete }: AssignmentCard
             <DialogDescription>More details about this assignment.</DialogDescription>
           </DialogHeader>
           <p>Subject: {assignment.subject}</p>
-          <p>Deadline: {dateFns.format(new Date(assignment.deadline), 'MMMM d, yyyy')}</p>
+          <p>Deadline: {format(new Date(assignment.deadline), 'MMMM d, yyyy')}</p>
         </DialogContent>
       </Dialog>
     </div>

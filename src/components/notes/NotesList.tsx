@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { format, formatDistance } from 'date-fns';
+import { formatDistance } from 'date-fns';
 import { Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Note } from '@/types';
