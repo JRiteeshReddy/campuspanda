@@ -3,7 +3,7 @@ import React from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Assignment } from '@/types';
-import { differenceInMonths, isEqual } from 'date-fns';
+import { differenceInMonths as diffMonths, isEqual as isDateEqual } from 'date-fns';
 
 interface AssignmentCalendarProps {
   assignments: Assignment[];
@@ -45,7 +45,7 @@ const AssignmentCalendar = ({
   const modifiers = {
     assignment: (day: Date) => 
       assignments.some(assignment => 
-        isEqual(new Date(assignment.deadline), day)
+        isDateEqual(new Date(assignment.deadline), day)
       )
   };
 
@@ -73,14 +73,14 @@ const AssignmentCalendar = ({
           assignment: assignmentStyles
         }}
         onMonthChange={date => onMonthChange(
-          Math.floor(differenceInMonths(date, new Date()) || 0)
+          Math.floor(diffMonths(date, new Date()) || 0)
         )}
         onPrevious={handlePreviousMonth}
         onNext={handleNextMonth}
         components={{
           DayContent: (props) => {
             const day = props.date;
-            const assignment = assignments.find(a => isEqual(new Date(a.deadline), day));
+            const assignment = assignments.find(a => isDateEqual(new Date(a.deadline), day));
             
             if (!assignment) {
               return <div>{props.date.getDate()}</div>;
