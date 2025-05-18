@@ -1,15 +1,9 @@
 
 import * as React from "react";
 import { toast as sonnerToast } from "sonner";
-import {
-  Action,
-  State,
-  ToasterToast,
-  actionTypes,
-  addToRemoveQueue,
-  reducer
-} from './toast-reducer';
-import { Toast, ToastFunction } from './toast-types';
+import { Action } from "./toast-action";
+import { addToRemoveQueue, reducer, toastTimeouts } from "./toast-reducer";
+import { Toast, ToastFunction, ToastState, ToasterToast } from "./toast-types";
 
 // Counter for generating unique IDs
 let count = 0;
@@ -20,8 +14,8 @@ function genId() {
 }
 
 // Store listeners and state in memory
-const listeners: Array<(state: State) => void> = [];
-let memoryState: State = { toasts: [] };
+const listeners: Array<(state: ToastState) => void> = [];
+let memoryState: ToastState = { toasts: [] };
 
 // Dispatch function to update state and notify listeners
 function dispatch(action: Action) {
@@ -31,7 +25,7 @@ function dispatch(action: Action) {
   });
 
   // Handle side effects for dismiss actions
-  if (action.type === actionTypes.DISMISS_TOAST) {
+  if (action.type === "DISMISS_TOAST") {
     const { toastId } = action;
     
     if (toastId) {
@@ -46,7 +40,7 @@ function dispatch(action: Action) {
 
 // Hook for accessing toast functionality
 export function useToast() {
-  const [state, setState] = React.useState<State>(memoryState);
+  const [state, setState] = React.useState<ToastState>(memoryState);
 
   React.useEffect(() => {
     listeners.push(setState);

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import * as dateFns from 'date-fns';
+import { addMonths as addMonthsOriginal } from 'date-fns';
 import {
   Card,
   CardContent,
@@ -29,7 +29,7 @@ const AssignmentTracker = () => {
     addAssignment,
     markAssignmentComplete,
     deleteAssignment
-  } = useAssignments(user?.id);
+  } = useAssignments();
 
   const handleDateSelect = (day: Date | undefined) => {
     if (day) {
@@ -40,7 +40,7 @@ const AssignmentTracker = () => {
 
   const handleMonthChange = (offset: number) => {
     setSelectedMonthOffset(offset);
-    setDate(dateFns.addMonths(new Date(), offset));
+    setDate(addMonthsOriginal(new Date(), offset));
   };
 
   const handleAddAssignment = async (newAssignment: any) => {

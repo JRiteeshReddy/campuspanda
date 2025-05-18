@@ -1,45 +1,11 @@
 
-import { Toast } from './toast-types';
+import { Action, actionTypes } from "./toast-action";
+import { ToasterToast, ToastState, TOAST_REMOVE_DELAY } from "./toast-types";
 
-export const TOAST_REMOVE_DELAY = 1000000;
-
-export type ToasterToast = Toast & {
-  id: string;
-};
-
-export const actionTypes = {
-  ADD_TOAST: "ADD_TOAST",
-  UPDATE_TOAST: "UPDATE_TOAST",
-  DISMISS_TOAST: "DISMISS_TOAST",
-  REMOVE_TOAST: "REMOVE_TOAST",
-} as const;
-
-export type ActionType = typeof actionTypes;
-
-export type Action =
-  | {
-      type: ActionType["ADD_TOAST"];
-      toast: ToasterToast;
-    }
-  | {
-      type: ActionType["UPDATE_TOAST"];
-      toast: Partial<ToasterToast>;
-    }
-  | {
-      type: ActionType["DISMISS_TOAST"];
-      toastId?: ToasterToast["id"];
-    }
-  | {
-      type: ActionType["REMOVE_TOAST"];
-      toastId?: ToasterToast["id"];
-    };
-
-export interface State {
-  toasts: ToasterToast[];
-}
-
+// Map to store timeout IDs
 export const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
 
+// Function to add toast to remove queue
 export const addToRemoveQueue = (toastId: string, dispatch: (action: Action) => void) => {
   if (toastTimeouts.has(toastId)) {
     return;
@@ -56,17 +22,18 @@ export const addToRemoveQueue = (toastId: string, dispatch: (action: Action) => 
   toastTimeouts.set(toastId, timeout);
 };
 
-export const reducer = (state: State, action: Action): State => {
+// Reducer function for toast state management
+export const reducer = (state: ToastState, action: Action): ToastState => {
   const TOAST_LIMIT = 5;
 
   switch (action.type) {
-    case "ADD_TOAST":
+    case actionTypes.ADD_TOAST:
       return {
         ...state,
         toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
       };
 
-    case "UPDATE_TOAST":
+    case actionTypes.UPDATE_TOAST:
       return {
         ...state,
         toasts: state.toasts.map((t) =>
@@ -74,11 +41,9 @@ export const reducer = (state: State, action: Action): State => {
         ),
       };
 
-    case "DISMISS_TOAST": {
+    case actionTypes.DISMISS_TOAST: {
       const { toastId } = action;
-
       // Side effects are handled by the dispatcher now, not in the reducer
-
       return {
         ...state,
         toasts: state.toasts.map((t) =>
@@ -91,7 +56,7 @@ export const reducer = (state: State, action: Action): State => {
       };
     }
     
-    case "REMOVE_TOAST":
+    case actionTypes.REMOVE_TOAST:
       if (action.toastId === undefined) {
         return {
           ...state,
