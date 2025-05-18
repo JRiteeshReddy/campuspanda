@@ -1,6 +1,6 @@
 
 import React from 'react';
-import format from 'date-fns/format';
+import { format } from 'date-fns/format';
 import { CheckCircle, Circle, Trash, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
