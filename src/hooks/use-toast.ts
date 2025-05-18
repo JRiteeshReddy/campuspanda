@@ -1,6 +1,5 @@
-
 import * as React from "react";
-import { toast as sonnerToast, Toaster as Sonner, ToastT } from "sonner";
+import { toast as sonnerToast, Toaster as Sonner } from "sonner";
 
 const TOAST_LIMIT = 5;
 const TOAST_REMOVE_DELAY = 1000000;
@@ -134,8 +133,13 @@ function dispatch(action: Action) {
   });
 }
 
-interface Toast extends Omit<ToasterToast, "id"> {
+// Define the accepted properties for our toast function
+export interface Toast {
   id?: string;
+  title?: React.ReactNode;
+  description?: React.ReactNode;
+  action?: React.ReactNode;
+  variant?: "default" | "destructive";
 }
 
 function useToast() {
@@ -160,7 +164,6 @@ function useToast() {
       sonnerToast(props.title as string, {
         description: props.description,
         id,
-        ...props
       });
 
       dispatch({
@@ -175,21 +178,13 @@ function useToast() {
   };
 }
 
-// Enhanced toast function with success and error methods
-export type ToastFunction = {
-  (props: Toast): void;
-  success: (message: string, description?: string) => void;
-  error: (message: string, description?: string) => void;
-};
-
 // Define a standalone toast function that uses sonner's toast
-export const toast: ToastFunction = ((props: Toast) => {
+export const toast = ((props: Toast) => {
   const id = props.id || genId();
   
   sonnerToast(props.title as string, {
     description: props.description,
     id,
-    ...props
   });
   
   dispatch({
@@ -199,23 +194,37 @@ export const toast: ToastFunction = ((props: Toast) => {
       id,
     },
   });
-}) as ToastFunction;
+}) as ((props: Toast) => void) & {
+  success: (message: string, description?: string) => void;
+  error: (message: string, description?: string) => void;
+};
 
 // Add success and error methods
 toast.success = (message: string, description?: string) => {
-  toast({
-    title: message,
-    description: description,
-    variant: "default",
-    className: "bg-green-500/70 text-white"
+  sonnerToast.success(message, { description });
+  
+  dispatch({
+    type: "ADD_TOAST",
+    toast: {
+      id: genId(),
+      title: message,
+      description,
+      variant: "default",
+    },
   });
 };
 
 toast.error = (message: string, description?: string) => {
-  toast({
-    title: message,
-    description: description,
-    variant: "destructive",
+  sonnerToast.error(message, { description });
+  
+  dispatch({
+    type: "ADD_TOAST",
+    toast: {
+      id: genId(),
+      title: message,
+      description,
+      variant: "destructive",
+    },
   });
 };
 

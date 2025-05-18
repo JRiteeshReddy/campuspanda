@@ -1,12 +1,13 @@
 
 import React, { useState } from 'react';
-import { format, differenceInDays } from 'date-fns';
+import * as dateFns from 'date-fns';
 import { Assignment } from '@/types';
 import { Check, Trash, Edit } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
+import { getAssignmentStatusInfo } from '@/utils/dateUtils';
 
 interface AssignmentCardProps {
   assignment: Assignment;
@@ -18,21 +19,10 @@ const AssignmentCard = ({ assignment, onMarkComplete, onDelete }: AssignmentCard
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   
-  const daysUntilDeadline = differenceInDays(new Date(assignment.deadline), new Date());
-  
-  let statusColor = 'text-green-500';
-  let statusText = 'On track';
-
-  if (assignment.completed) {
-    statusColor = 'text-green-500';
-    statusText = 'Completed';
-  } else if (daysUntilDeadline <= 0) {
-    statusColor = 'text-red-500';
-    statusText = 'Overdue';
-  } else if (daysUntilDeadline <= 3) {
-    statusColor = 'text-orange-500';
-    statusText = 'Due soon';
-  }
+  const { color: statusColor, text: statusText } = getAssignmentStatusInfo(
+    new Date(assignment.deadline), 
+    assignment.completed
+  );
 
   const handleDelete = () => {
     onDelete(assignment.id);
@@ -101,14 +91,14 @@ const AssignmentCard = ({ assignment, onMarkComplete, onDelete }: AssignmentCard
       <div>
         <h3 className="text-base font-bold text-foreground">{assignment.subject.toLowerCase()}</h3>
         <p className="text-sm text-foreground/90">{assignment.title}</p>
-        <p className="text-xs text-muted-foreground">Due: {format(new Date(assignment.deadline), 'MMMM d')}</p>
+        <p className="text-xs text-muted-foreground">Due: {dateFns.format(new Date(assignment.deadline), 'MMMM d')}</p>
         <p className={`text-xs font-medium ${statusColor}`}>
           {statusText}
         </p>
       </div>
       <Dialog>
         <DialogTrigger asChild>
-          <Badge variant="outline">View More</Badge>
+          <Badge variant="outline" className="ml-auto">View More</Badge>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
@@ -116,7 +106,7 @@ const AssignmentCard = ({ assignment, onMarkComplete, onDelete }: AssignmentCard
             <DialogDescription>More details about this assignment.</DialogDescription>
           </DialogHeader>
           <p>Subject: {assignment.subject}</p>
-          <p>Deadline: {format(new Date(assignment.deadline), 'MMMM d, yyyy')}</p>
+          <p>Deadline: {dateFns.format(new Date(assignment.deadline), 'MMMM d, yyyy')}</p>
         </DialogContent>
       </Dialog>
     </div>
