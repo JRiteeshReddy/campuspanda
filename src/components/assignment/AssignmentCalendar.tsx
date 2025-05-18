@@ -3,8 +3,7 @@ import React from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Assignment } from '@/types';
-import { differenceInMonths } from 'date-fns/differenceInMonths';
-import { isEqual } from 'date-fns/isEqual';
+import { differenceInMonths, isEqual } from 'date-fns';
 
 interface AssignmentCalendarProps {
   assignments: Assignment[];
