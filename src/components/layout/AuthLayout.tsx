@@ -2,8 +2,6 @@
 import { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import ThemeToggle from '@/components/ui/ThemeToggle';
-import { useTheme } from '@/context/ThemeContext';
 import FeedbackLink from './FeedbackLink';
 
 interface AuthLayoutProps {
@@ -16,12 +14,9 @@ interface AuthLayoutProps {
 
 const AuthLayout = ({ children, title, subtitle, onBackClick, hideFeedback = false }: AuthLayoutProps) => {
   const navigate = useNavigate();
-  const { theme } = useTheme();
   
-  // Update logo paths to the newly uploaded images
-  const logoSrc = theme === 'light' 
-    ? "/lovable-uploads/3c2c04b3-4321-4d75-acf9-9ba8a3dda8d5.png" 
-    : "/lovable-uploads/259a2ad1-1ce7-481c-bdf3-3df888799e9d.png";
+  // Always use dark mode logo
+  const logoSrc = "/lovable-uploads/259a2ad1-1ce7-481c-bdf3-3df888799e9d.png";
   
   const handleBackClick = () => {
     if (onBackClick) {
@@ -34,10 +29,6 @@ const AuthLayout = ({ children, title, subtitle, onBackClick, hideFeedback = fal
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background transition-colors duration-300 p-4 sm:p-6">
       <div className="w-full max-w-md bg-card rounded-xl shadow-subtle p-6 sm:p-8 animate-scale-in relative">
-        <div className="absolute right-6 top-6">
-          <ThemeToggle showLabel={false} />
-        </div>
-        
         <div className="flex flex-col items-center mb-8">
           <img src={logoSrc} alt="Logo" className="h-16 w-auto mb-6" />
         </div>

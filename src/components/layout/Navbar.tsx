@@ -1,21 +1,18 @@
 
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { useTheme } from '@/context/ThemeContext';
 import { useDocumentTitle } from '@/hooks/use-document-title';
 import ProfileMenu from '@/components/ui/ProfileMenu';
 import { Home, BookOpen, CalendarCheck, FileText, Calendar } from 'lucide-react';
 
 const Navbar = () => {
   const { user } = useAuth();
-  const { theme } = useTheme();
   
   // Use the custom hook to update document title
   useDocumentTitle();
   
-  const logoSrc = theme === 'light' 
-    ? "/lovable-uploads/3c2c04b3-4321-4d75-acf9-9ba8a3dda8d5.png" 
-    : "/lovable-uploads/259a2ad1-1ce7-481c-bdf3-3df888799e9d.png";
+  // Always use dark mode logo
+  const logoSrc = "/lovable-uploads/259a2ad1-1ce7-481c-bdf3-3df888799e9d.png";
   
   const currentPath = window.location.pathname;
 
