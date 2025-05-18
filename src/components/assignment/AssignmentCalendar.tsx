@@ -4,8 +4,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Assignment } from '@/types';
 import { 
-  differenceInMonths as differenceInMonthsOriginal,
-  isEqual as isEqualOriginal
+  differenceInMonths,
+  isEqual
 } from 'date-fns';
 
 interface AssignmentCalendarProps {
@@ -48,7 +48,7 @@ const AssignmentCalendar = ({
   const modifiers = {
     assignment: (day: Date) => 
       assignments.some(assignment => 
-        isEqualOriginal(new Date(assignment.deadline), day)
+        isEqual(new Date(assignment.deadline), day)
       )
   };
 
@@ -76,14 +76,14 @@ const AssignmentCalendar = ({
           assignment: assignmentStyles
         }}
         onMonthChange={date => onMonthChange(
-          Math.floor(differenceInMonthsOriginal(date, new Date()) || 0)
+          Math.floor(differenceInMonths(date, new Date()) || 0)
         )}
         onPrevious={handlePreviousMonth}
         onNext={handleNextMonth}
         components={{
           DayContent: (props) => {
             const day = props.date;
-            const assignment = assignments.find(a => isEqualOriginal(new Date(a.deadline), day));
+            const assignment = assignments.find(a => isEqual(new Date(a.deadline), day));
             
             if (!assignment) {
               return <div>{props.date.getDate()}</div>;

@@ -3,7 +3,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { format as formatOriginal } from 'date-fns';
+import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -91,7 +91,7 @@ const NewAssignmentForm = ({ onSubmit, onCancel, subjects = [], initialValues, i
                       )}
                     >
                       {field.value ? (
-                        formatOriginal(field.value, "PPP")
+                        format(field.value, "PPP")
                       ) : (
                         <span>Pick a date</span>
                       )}

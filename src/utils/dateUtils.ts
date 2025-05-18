@@ -1,9 +1,9 @@
 
 import { 
-  differenceInDays as differenceInDaysOriginal, 
-  isEqual as isEqualOriginal, 
-  formatDistance as formatDistanceOriginal, 
-  addDays as addDaysOriginal
+  differenceInDays, 
+  isEqual, 
+  formatDistance, 
+  addDays 
 } from 'date-fns';
 
 export const getAssignmentStatusInfo = (deadline: Date, completed: boolean) => {
@@ -14,7 +14,7 @@ export const getAssignmentStatusInfo = (deadline: Date, completed: boolean) => {
     };
   }
   
-  const daysUntilDeadline = differenceInDaysOriginal(
+  const daysUntilDeadline = differenceInDays(
     deadline,
     new Date()
   );
@@ -38,7 +38,7 @@ export const getAssignmentStatusInfo = (deadline: Date, completed: boolean) => {
 };
 
 export const getDayClassNames = (day: Date, assignments: Array<{ deadline: Date, completed: boolean }>) => {
-  const assignment = assignments.find(a => isEqualOriginal(new Date(a.deadline), day));
+  const assignment = assignments.find(a => isEqual(new Date(a.deadline), day));
   
   if (!assignment) return undefined;
   
@@ -46,7 +46,7 @@ export const getDayClassNames = (day: Date, assignments: Array<{ deadline: Date,
     return "bg-green-500 text-white rounded-full";
   }
   
-  const daysUntilDeadline = differenceInDaysOriginal(
+  const daysUntilDeadline = differenceInDays(
     new Date(assignment.deadline),
     new Date()
   );
