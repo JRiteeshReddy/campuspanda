@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { addMonths } from 'date-fns';
+import addMonths from 'date-fns/addMonths';
 import {
   Card,
   CardContent,
