@@ -39,7 +39,7 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
           <img 
             src="/lovable-uploads/259a2ad1-1ce7-481c-bdf3-3df888799e9d.png" 
             alt="CampusPanda Logo" 
-            className="h-32 w-auto animate-pulse" 
+            className="h-32 w-auto animate-pulse shadow-[0_0_15px_rgba(255,255,255,0.5)]" 
           />
         </div>
         <div className="mt-8 w-64">
