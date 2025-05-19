@@ -43,8 +43,13 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
           />
         </div>
         <div className="mt-8 w-64">
-          <Progress value={progress} className="h-2" />
-          <p className="text-xs text-center mt-2 text-muted-foreground">
+          <Progress value={progress} className="h-2 bg-slate-800 shadow-[0_0_10px_rgba(255,255,255,0.5)]">
+            <div 
+              className="h-full w-full flex-1 bg-white shadow-[0_0_15px_rgba(255,255,255,0.7)] transition-all"
+              style={{ transform: `translateX(-${100 - (progress || 0)}%)` }}
+            ></div>
+          </Progress>
+          <p className="text-xs text-center mt-2 text-white">
             {progress < 100 ? 'Loading...' : 'Ready!'}
           </p>
         </div>
