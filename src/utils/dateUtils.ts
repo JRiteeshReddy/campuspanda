@@ -1,5 +1,5 @@
 
-// Import date-fns functions
+// Import date-fns functions correctly with proper types
 import { differenceInDays, isEqual, format, formatDistance, addDays } from 'date-fns';
 
 export const getAssignmentStatusInfo = (deadline: Date, completed: boolean) => {

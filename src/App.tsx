@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 // Pages
 import Index from "./pages/Index";
@@ -37,6 +38,17 @@ const AppRoutes = () => (
 );
 
 const App = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate app initialization time
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
@@ -44,9 +56,15 @@ const App = () => {
           <ThemeProvider>
             <AuthProvider>
               <TooltipProvider>
-                <AppRoutes />
-                <Toaster />
-                <Sonner position="top-right" closeButton />
+                {/* Loading screen */}
+                <LoadingScreen isLoading={isLoading} />
+                
+                {/* Main app content with fade-in when loading completes */}
+                <div className={`${isLoading ? 'opacity-0' : 'animate-fade-in'} transition-opacity duration-500`}>
+                  <AppRoutes />
+                  <Toaster />
+                  <Sonner position="top-right" closeButton />
+                </div>
               </TooltipProvider>
             </AuthProvider>
           </ThemeProvider>
