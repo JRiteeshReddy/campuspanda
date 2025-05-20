@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -100,6 +99,22 @@ export default {
           '0%': { transform: 'scale(0.95)', opacity: '0' },
           '100%': { transform: 'scale(1)', opacity: '1' },
         },
+        'float': {
+          '0%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-10px)' },
+          '100%': { transform: 'translateY(0px)' },
+        },
+        'glow-pulse': {
+          '0%': { 
+            boxShadow: '0 0 5px 2px rgba(255,255,255,0.7), 0 0 10px 4px rgba(255,255,255,0.5)'
+          },
+          '50%': { 
+            boxShadow: '0 0 15px 5px rgba(255,255,255,0.9), 0 0 30px 15px rgba(255,255,255,0.6)'
+          },
+          '100%': { 
+            boxShadow: '0 0 5px 2px rgba(255,255,255,0.7), 0 0 10px 4px rgba(255,255,255,0.5)'
+          },
+        }
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -110,6 +125,8 @@ export default {
         'slide-down': 'slide-down 0.4s ease-out',
         'slide-in-right': 'slide-in-right 0.5s ease-out',
         'scale-in': 'scale-in 0.3s ease-out',
+        'float': 'float 3s ease-in-out infinite',
+        'glow-pulse': 'glow-pulse 2s ease-in-out infinite',
 			},
       transitionProperty: {
         'height': 'height',

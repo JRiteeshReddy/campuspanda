@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect } from 'react';
-import { Progress } from '@/components/ui/progress';
 
 interface LoadingScreenProps {
   isLoading: boolean;
@@ -11,8 +10,7 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
   
   useEffect(() => {
     if (isLoading) {
-      // Start at 0 and gradually increase to 100 over 2 seconds
-      // Note: We stop at 90% and jump to 100 when actually loaded
+      // Start at 0 and gradually increase to 90 over 2 seconds
       const interval = setInterval(() => {
         setProgress((prevProgress) => {
           if (prevProgress >= 90) {
@@ -37,16 +35,23 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
       <div className="relative flex flex-col items-center">
         <div className="animate-float">
           <img 
-            src="/lovable-uploads/259a2ad1-1ce7-481c-bdf3-3df888799e9d.png" 
+            src="/lovable-uploads/a48eb2f3-2b6f-400e-8ec6-bcaf06948cb8.png" 
             alt="CampusPanda Logo" 
-            className="h-32 w-auto animate-pulse" 
+            className="h-32 w-auto animate-pulse"
+            style={{ 
+              filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.7))', 
+              animation: 'pulse 2s infinite' 
+            }}
           />
         </div>
         <div className="mt-8 w-64">
           <div className="h-2 bg-black/30 rounded-full overflow-hidden shadow-[0_0_10px_rgba(0,0,0,0.3)]">
             <div 
-              className="h-full bg-white shadow-[0_0_15px_rgba(255,255,255,0.7)] transition-all"
-              style={{ width: `${progress}%` }}
+              className="h-full bg-white transition-all"
+              style={{ 
+                width: `${progress}%`,
+                boxShadow: '0 0 15px 5px rgba(255,255,255,0.8), 0 0 30px 8px rgba(255,255,255,0.6), 0 0 45px 12px rgba(255,255,255,0.4)'
+              }}
             ></div>
           </div>
           <p className="text-xs text-center mt-2 text-white">

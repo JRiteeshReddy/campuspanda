@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 
-// Define float animation for loading screen
+// Define animations for loading screen
 const style = document.createElement('style');
 style.textContent = `
 @keyframes float {
@@ -15,6 +15,12 @@ style.textContent = `
 
 .animate-float {
   animation: float 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.8; filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 15px rgba(255,255,255,0.9)); }
+  100% { opacity: 0.8; filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); }
 }
 `;
 document.head.appendChild(style);
