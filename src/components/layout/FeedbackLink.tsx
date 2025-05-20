@@ -10,7 +10,6 @@ const FeedbackLink = () => {
       <Button
         variant="outline"
         size="sm"
-        className="animate-pulse hover:animate-none"
         onClick={() => window.open('https://forms.gle/jJDhNk5WvRuLEKWF6', '_blank')}
       >
         Drop your ideas here!

@@ -39,7 +39,7 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
             alt="CampusPanda Logo" 
             className="h-32 w-auto animate-pulse"
             style={{ 
-              filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.7))', 
+              filter: 'drop-shadow(0 0 5px rgba(255,255,255,0.5))', 
               animation: 'pulse 2s infinite' 
             }}
           />
