@@ -50,7 +50,7 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
               className="h-full bg-white transition-all"
               style={{ 
                 width: `${progress}%`,
-                boxShadow: '0 0 15px 5px rgba(255,255,255,0.8), 0 0 30px 8px rgba(255,255,255,0.6), 0 0 45px 12px rgba(255,255,255,0.4)'
+                boxShadow: '0 0 8px 3px rgba(255,255,255,0.4), 0 0 15px 4px rgba(255,255,255,0.3), 0 0 23px 6px rgba(255,255,255,0.2)'
               }}
             ></div>
           </div>
