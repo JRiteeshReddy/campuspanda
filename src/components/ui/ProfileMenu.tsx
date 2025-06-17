@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { 
@@ -12,7 +11,6 @@ import {
 import { ChevronDown, LogOut, User } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Subject } from '@/types';
-import ThemeToggle from './ThemeToggle';
 import { PieChart, Pie, Cell } from 'recharts';
 
 const ProfileMenu = () => {
@@ -129,15 +127,6 @@ const ProfileMenu = () => {
               No attendance data
             </div>
           )}
-        </div>
-        
-        <DropdownMenuSeparator />
-        
-        <div className="px-2 py-1.5">
-          <div className="flex items-center justify-between">
-            <span className="text-sm">Theme</span>
-            <ThemeToggle />
-          </div>
         </div>
         
         <DropdownMenuSeparator />
