@@ -18,5 +18,14 @@
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/serviceWorker.js')
+          .then(() => console.log('Service Worker Registered'))
+          .catch(err => console.error('SW Error', err));
+      }
+    </script>
   </body>
 </html>
