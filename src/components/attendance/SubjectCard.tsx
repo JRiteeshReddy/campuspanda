@@ -24,13 +24,13 @@ const SubjectCard = ({ subject, onDelete, onUpdate }: SubjectCardProps) => {
     name: z.string().min(1, {
       message: "Subject name is required.",
     }),
-    classes_attended: z.number().min(0, {
+    classes_attended: z.coerce.number().min(0, {
       message: "Classes attended must be a non-negative number.",
     }),
-    classes_conducted: z.number().min(1, {
+    classes_conducted: z.coerce.number().min(1, {
       message: "Classes conducted must be at least 1.",
     }),
-    required_percentage: z.number().min(1, {
+    required_percentage: z.coerce.number().min(1, {
       message: "Required percentage must be at least 1.",
     }).max(100, {
       message: "Required percentage cannot exceed 100.",

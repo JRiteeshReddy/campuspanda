@@ -15,7 +15,7 @@ import NewAssignmentDialog from '@/components/assignment/NewAssignmentDialog';
 import { useAssignments } from '@/hooks/use-assignments';
 
 const AssignmentTracker = () => {
-  useDocumentTitle('Assignment Tracker');
+  useDocumentTitle();
 
   const [date, setDate] = useState<Date>(new Date());
   const [selectedMonthOffset, setSelectedMonthOffset] = useState(0);
