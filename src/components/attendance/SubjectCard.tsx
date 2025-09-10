@@ -35,6 +35,9 @@ const SubjectCard = ({ subject, onDelete, onUpdate }: SubjectCardProps) => {
     }).max(100, {
       message: "Required percentage cannot exceed 100.",
     }),
+  }).refine((data) => data.classes_attended <= data.classes_conducted, {
+    message: "Classes attended cannot exceed classes conducted.",
+    path: ["classes_attended"],
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
