@@ -46,7 +46,7 @@ const ProfileMenu = () => {
         });
         
         const percentage = totalConducted > 0 
-          ? Math.round((totalAttended / totalConducted) * 100) 
+          ? parseFloat(((totalAttended / totalConducted) * 100).toFixed(1))
           : 0;
           
         setTotalAttendance(percentage);

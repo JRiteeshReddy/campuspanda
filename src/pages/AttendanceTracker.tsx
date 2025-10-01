@@ -64,7 +64,7 @@ const AttendanceTracker = () => {
     const totalAttended = subjects.reduce((sum, subject) => sum + subject.classes_attended, 0);
     const totalConducted = subjects.reduce((sum, subject) => sum + subject.classes_conducted, 0);
     
-    return totalConducted > 0 ? Math.round((totalAttended / totalConducted) * 100) : 0;
+    return totalConducted > 0 ? parseFloat(((totalAttended / totalConducted) * 100).toFixed(1)) : 0;
   };
 
   const overallAttendance = calculateOverallAttendance();
