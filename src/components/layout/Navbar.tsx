@@ -27,7 +27,7 @@ const Navbar = () => {
 
       {/* Center - H.I.V.E Logo */}
       <div className="absolute left-1/2 transform -translate-x-1/2">
-        <img src="/lovable-uploads/hive-white-logo.png" alt="H.I.V.E" className="h-12 w-auto object-contain" />
+        <img src="/lovable-uploads/hive-white-logo.png" alt="H.I.V.E" className="h-14 w-auto object-contain" />
       </div>
 
       {/* Right side - user menu and navigation */}
