@@ -81,7 +81,11 @@
   }
   
   body {
-    @apply bg-background text-foreground transition-colors duration-300;
+    @apply text-foreground transition-colors duration-300;
+  }
+  
+  body {
+    @apply bg-gradient-light;
   }
   
   .dark body {
@@ -186,13 +190,30 @@ button:active {
   transform: scale(0.97);
 }
 
+/* Gradient animations */
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 /* Gradient backgrounds */
 .bg-gradient-light {
-  background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
+  background: linear-gradient(135deg, #fdfcfb, #e2d1c3, #f8f3f0, #e8ddd5);
+  background-size: 300% 300%;
+  animation: gradient-shift 15s ease infinite;
 }
 
 .bg-gradient-dark {
-  background: linear-gradient(to bottom, #121212, #1e1e1e);
+  background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e, #0f0f1e);
+  background-size: 300% 300%;
+  animation: gradient-shift 15s ease infinite;
 }
 
 /* Lazy load image animations */
