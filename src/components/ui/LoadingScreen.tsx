@@ -31,7 +31,7 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
   if (!isLoading && progress === 100) return null;
 
   return (
-    <div className="fixed inset-0 bg-background z-50 flex flex-col items-center justify-center animate-fade-in">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center animate-fade-in">
       <div className="relative flex flex-col items-center">
         <div className="animate-float">
           <img 

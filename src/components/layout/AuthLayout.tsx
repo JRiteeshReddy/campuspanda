@@ -27,7 +27,7 @@ const AuthLayout = ({ children, title, subtitle, onBackClick, hideFeedback = fal
   };
   
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background transition-colors duration-300 p-4 sm:p-6">
+    <div className="min-h-screen flex flex-col items-center justify-center transition-colors duration-300 p-4 sm:p-6">
       <div className="w-full max-w-md bg-card rounded-xl shadow-subtle p-6 sm:p-8 animate-scale-in relative">
         <div className="flex flex-col items-center mb-8">
           <img src={logoSrc} alt="Logo" className="h-16 w-auto mb-6" />
