@@ -18,13 +18,20 @@ const Navbar = () => {
 
   return (
     <nav className="w-full h-16 px-6 sm:px-8 flex items-center justify-between border-b border-border bg-background/80 backdrop-blur-md z-50 fixed top-0 left-0 right-0 transition-colors duration-300">
-      <div className="flex items-center">
+      {/* Left side - navigation or empty */}
+      <div className="flex items-center flex-1">
         <Link to="/" className="flex items-center space-x-2">
           <img src={logoSrc} alt="CampusPanda Logo" className="h-10 w-auto object-contain" />
         </Link>
       </div>
 
-      <div className="flex items-center space-x-4">
+      {/* Center - H.I.V.E Logo */}
+      <div className="absolute left-1/2 transform -translate-x-1/2">
+        <img src="/lovable-uploads/hive-white-logo.png" alt="H.I.V.E" className="h-8 w-auto object-contain" />
+      </div>
+
+      {/* Right side - user menu and navigation */}
+      <div className="flex items-center space-x-4 flex-1 justify-end">
         {user ? (
           <>
             {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/notes' || currentPath === '/events') && (
