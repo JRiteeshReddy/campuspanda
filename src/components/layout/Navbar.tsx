@@ -2,11 +2,13 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useDocumentTitle } from '@/hooks/use-document-title';
+import { useIsMobile } from '@/hooks/use-mobile';
 import ProfileMenu from '@/components/ui/ProfileMenu';
 import { Home, BookOpen, CalendarCheck, FileText, Calendar } from 'lucide-react';
 
 const Navbar = () => {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   
   // Use the custom hook to update document title
   useDocumentTitle();
@@ -37,35 +39,35 @@ const Navbar = () => {
             {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/notes' || currentPath === '/events') && (
               <Link to="/" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
                 <Home size={20} />
-                <span className="ml-1 hidden sm:inline-block">Home</span>
+                {isMobile && <span className="ml-1">Home</span>}
               </Link>
             )}
             
             {(currentPath === '/assignments' || currentPath === '/notes' || currentPath === '/events') && (
               <Link to="/attendance" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
                 <BookOpen size={20} />
-                <span className="ml-1 hidden sm:inline-block">Attendance</span>
+                {isMobile && <span className="ml-1">Attendance</span>}
               </Link>
             )}
             
             {(currentPath === '/attendance' || currentPath === '/notes' || currentPath === '/events') && (
               <Link to="/assignments" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
                 <CalendarCheck size={20} />
-                <span className="ml-1 hidden sm:inline-block">Assignments</span>
+                {isMobile && <span className="ml-1">Assignments</span>}
               </Link>
             )}
             
             {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/events') && (
               <Link to="/notes" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
                 <FileText size={20} />
-                <span className="ml-1 hidden sm:inline-block">Notes</span>
+                {isMobile && <span className="ml-1">Notes</span>}
               </Link>
             )}
             
             {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/notes') && (
               <Link to="/events" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
                 <Calendar size={20} />
-                <span className="ml-1 hidden sm:inline-block">Events</span>
+                {isMobile && <span className="ml-1">Events</span>}
               </Link>
             )}
             
