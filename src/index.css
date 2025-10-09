@@ -225,21 +225,13 @@ button:active {
   filter: blur(10px);
 }
 
-/* Custom scrollbar */
+/* Hide scrollbar while keeping scroll functionality */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
 ::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-black/20 dark:bg-white/20;
-  border-radius: 20px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-black/30 dark:bg-white/30;
+  display: none; /* Chrome, Safari, Opera */
 }
 
