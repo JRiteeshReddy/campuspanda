@@ -245,7 +245,7 @@ const SubjectCard = ({ subject, onDelete, onUpdate }: SubjectCardProps) => {
               strokeWidth="3"
               strokeDasharray={`${attendancePercentage}, 100`}
             />
-            <text x="18" y="20.35" textAnchor="middle" className="text-xs font-medium fill-foreground">
+            <text x="18" y="20.35" textAnchor="middle" className="text-[9px] font-medium fill-foreground">
               {attendancePercentage.toFixed(1)}%
             </text>
           </svg>
