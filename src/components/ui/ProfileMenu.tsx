@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Link } from 'react-router-dom';
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -8,13 +10,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ChevronDown, LogOut, User } from 'lucide-react';
+import { ChevronDown, LogOut, User, Home, BookOpen, CalendarCheck, FileText, Calendar } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Subject } from '@/types';
 import { PieChart, Pie, Cell } from 'recharts';
 
 const ProfileMenu = () => {
   const { user, signOut } = useAuth();
+  const isMobile = useIsMobile();
+  const currentPath = window.location.pathname;
   const [totalAttendance, setTotalAttendance] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -77,10 +81,61 @@ const ProfileMenu = () => {
         <ChevronDown size={16} className="text-muted-foreground" />
       </DropdownMenuTrigger>
       
-      <DropdownMenuContent align="end" className="w-64 animate-scale-in">
+      <DropdownMenuContent align="end" className="w-64 animate-scale-in bg-background">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         
         <DropdownMenuSeparator />
+        
+        {isMobile && (
+          <>
+            {currentPath !== '/' && (
+              <DropdownMenuItem asChild>
+                <Link to="/" className="flex items-center cursor-pointer">
+                  <Home size={16} className="mr-2" />
+                  <span>Home</span>
+                </Link>
+              </DropdownMenuItem>
+            )}
+            
+            {currentPath !== '/attendance' && (
+              <DropdownMenuItem asChild>
+                <Link to="/attendance" className="flex items-center cursor-pointer">
+                  <BookOpen size={16} className="mr-2" />
+                  <span>Attendance</span>
+                </Link>
+              </DropdownMenuItem>
+            )}
+            
+            {currentPath !== '/assignments' && (
+              <DropdownMenuItem asChild>
+                <Link to="/assignments" className="flex items-center cursor-pointer">
+                  <CalendarCheck size={16} className="mr-2" />
+                  <span>Assignments</span>
+                </Link>
+              </DropdownMenuItem>
+            )}
+            
+            {currentPath !== '/notes' && (
+              <DropdownMenuItem asChild>
+                <Link to="/notes" className="flex items-center cursor-pointer">
+                  <FileText size={16} className="mr-2" />
+                  <span>Notes</span>
+                </Link>
+              </DropdownMenuItem>
+            )}
+            
+            {currentPath !== '/events' && (
+              <DropdownMenuItem asChild>
+                <Link to="/events" className="flex items-center cursor-pointer">
+                  <Calendar size={16} className="mr-2" />
+                  <span>Events</span>
+                </Link>
+              </DropdownMenuItem>
+            )}
+            
+            <DropdownMenuSeparator />
+          </>
+        )}
         
         <div className="px-2 py-1.5 text-sm">
           <div className="text-muted-foreground">

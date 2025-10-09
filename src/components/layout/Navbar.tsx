@@ -36,39 +36,38 @@ const Navbar = () => {
       <div className="flex items-center space-x-4 flex-1 justify-end">
         {user ? (
           <>
-            {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/notes' || currentPath === '/events') && (
-              <Link to="/" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
-                <Home size={20} />
-                {isMobile && <span className="ml-1">Home</span>}
-              </Link>
-            )}
-            
-            {(currentPath === '/assignments' || currentPath === '/notes' || currentPath === '/events') && (
-              <Link to="/attendance" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
-                <BookOpen size={20} />
-                {isMobile && <span className="ml-1">Attendance</span>}
-              </Link>
-            )}
-            
-            {(currentPath === '/attendance' || currentPath === '/notes' || currentPath === '/events') && (
-              <Link to="/assignments" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
-                <CalendarCheck size={20} />
-                {isMobile && <span className="ml-1">Assignments</span>}
-              </Link>
-            )}
-            
-            {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/events') && (
-              <Link to="/notes" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
-                <FileText size={20} />
-                {isMobile && <span className="ml-1">Notes</span>}
-              </Link>
-            )}
-            
-            {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/notes') && (
-              <Link to="/events" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
-                <Calendar size={20} />
-                {isMobile && <span className="ml-1">Events</span>}
-              </Link>
+            {!isMobile && (
+              <>
+                {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/notes' || currentPath === '/events') && (
+                  <Link to="/" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
+                    <Home size={20} />
+                  </Link>
+                )}
+                
+                {(currentPath === '/assignments' || currentPath === '/notes' || currentPath === '/events') && (
+                  <Link to="/attendance" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
+                    <BookOpen size={20} />
+                  </Link>
+                )}
+                
+                {(currentPath === '/attendance' || currentPath === '/notes' || currentPath === '/events') && (
+                  <Link to="/assignments" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
+                    <CalendarCheck size={20} />
+                  </Link>
+                )}
+                
+                {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/events') && (
+                  <Link to="/notes" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
+                    <FileText size={20} />
+                  </Link>
+                )}
+                
+                {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/notes') && (
+                  <Link to="/events" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
+                    <Calendar size={20} />
+                  </Link>
+                )}
+              </>
             )}
             
             <ProfileMenu />
