@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { supabase, handleError } from '@/lib/supabase';
 import { Subject } from '@/types';
 import Navbar from '@/components/layout/Navbar';
+import AdSection from '@/components/layout/AdSection';
 import SubjectCard from '@/components/attendance/SubjectCard';
 import NewSubjectForm from '@/components/attendance/NewSubjectForm';
 import { Loader2 } from 'lucide-react';
@@ -180,6 +181,8 @@ const AttendanceTracker = () => {
           )}
         </div>
       </main>
+      
+      <AdSection />
       
       <footer className="py-6 border-t border-border">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6">

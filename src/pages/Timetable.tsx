@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { supabase, handleError } from '@/lib/supabase';
 import Navbar from '@/components/layout/Navbar';
+import AdSection from '@/components/layout/AdSection';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import TimetableGrid from '@/components/timetable/TimetableGrid';
@@ -86,6 +87,8 @@ const Timetable = () => {
       </main>
       
       <FeedbackLink />
+      
+      <AdSection />
       
       <footer className="py-6 border-t border-border">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6">

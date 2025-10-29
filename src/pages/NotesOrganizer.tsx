@@ -8,6 +8,7 @@ import { UploadArea } from "@/components/notes/UploadArea";
 import { SubjectCard } from "@/components/notes/SubjectCard";
 import NotesList from "@/components/notes/NotesList";
 import Navbar from "@/components/layout/Navbar";
+import AdSection from "@/components/layout/AdSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileQuestion } from "lucide-react";
 import { toast } from "sonner";
@@ -213,6 +214,8 @@ const NotesOrganizer = () => {
       </main>
 
       <FeedbackLink />
+      
+      <AdSection />
       
       <footer className="py-6 border-t border-border">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6">

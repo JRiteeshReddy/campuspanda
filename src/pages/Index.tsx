@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { BookOpen, CalendarCheck, FileText, ArrowRight, Calendar } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import Navbar from '@/components/layout/Navbar';
+import AdSection from '@/components/layout/AdSection';
 import { useIsMobile } from '@/hooks/use-mobile';
 import FeedbackLink from '@/components/layout/FeedbackLink';
 
@@ -129,6 +130,8 @@ const Index = () => {
       </main>
       
       <FeedbackLink />
+      
+      <AdSection />
       
       <footer className="py-6 border-t border-border dark:border-white/10">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6">

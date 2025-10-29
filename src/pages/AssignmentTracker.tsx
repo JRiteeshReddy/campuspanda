@@ -7,6 +7,7 @@ import {
   CardHeader,
 } from '@/components/ui/card';
 import Navbar from '@/components/layout/Navbar';
+import AdSection from '@/components/layout/AdSection';
 import { useDocumentTitle } from '@/hooks/use-document-title';
 import { useAuth } from '@/context/AuthContext';
 import AssignmentList from '@/components/assignment/AssignmentList';
@@ -88,6 +89,8 @@ const AssignmentTracker = () => {
         subjects={[]}
         onSubmit={handleAddAssignment}
       />
+      
+      <AdSection />
       
       <footer className="py-6 border-t border-border">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6">

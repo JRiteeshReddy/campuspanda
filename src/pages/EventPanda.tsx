@@ -23,6 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import Navbar from '@/components/layout/Navbar';
+import AdSection from '@/components/layout/AdSection';
 import {
   BarChart,
   Bar,
@@ -1031,6 +1032,8 @@ const EventPanda = () => {
           </div>
         </div>
       </main>
+      
+      <AdSection />
       
       <footer className="py-6 border-t border-border dark:border-white/10">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6">
