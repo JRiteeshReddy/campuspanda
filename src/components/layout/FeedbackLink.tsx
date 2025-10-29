@@ -10,7 +10,7 @@ const FeedbackLink = () => {
       <Button
         variant="outline"
         size="sm"
-        onClick={() => window.open('https://forms.gle/jJDhNk5WvRuLEKWF6', '_blank')}
+        onClick={() => window.open('https://forms.gle/cVguzVEHAKXHV5QG8', '_blank')}
       >
         Drop your ideas here!
       </Button>
