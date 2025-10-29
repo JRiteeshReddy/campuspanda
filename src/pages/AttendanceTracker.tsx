@@ -5,9 +5,9 @@ import { useAuth } from '@/context/AuthContext';
 import { supabase, handleError } from '@/lib/supabase';
 import { Subject } from '@/types';
 import Navbar from '@/components/layout/Navbar';
-import AdSection from '@/components/layout/AdSection';
 import SubjectCard from '@/components/attendance/SubjectCard';
 import NewSubjectForm from '@/components/attendance/NewSubjectForm';
+import AdSection from '@/components/layout/AdSection';
 import { Loader2 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import {
