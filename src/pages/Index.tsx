@@ -136,7 +136,7 @@ const Index = () => {
       <footer className="py-6 border-t border-border dark:border-white/10">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6">
           <p className="text-center text-sm text-muted-foreground dark:text-white/60">
-            Developed By J Riteesh Reddy
+            Developed By Neerija da bald
           </p>
         </div>
       </footer>
