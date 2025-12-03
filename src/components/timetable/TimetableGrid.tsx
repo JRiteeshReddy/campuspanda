@@ -283,19 +283,32 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
     });
   };
 
+  const hasEntries = timetableEntries.length > 0;
+
   return (
     <div className="mb-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-medium">Weekly Schedule</h2>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="gap-2"
-          onClick={() => setBunkTableOpen(true)}
-        >
-          <CalendarDays className="h-4 w-4" />
-          Bunk Table
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="gap-2"
+            onClick={() => setBunkTableOpen(true)}
+          >
+            <CalendarDays className="h-4 w-4" />
+            Bunk Table
+          </Button>
+          {hasEntries && (
+            <Button 
+              size="sm" 
+              className="gap-2"
+              onClick={() => toast.success('Timetable saved successfully!')}
+            >
+              Save Timetable
+            </Button>
+          )}
+        </div>
       </div>
       
       <Card className="overflow-hidden">

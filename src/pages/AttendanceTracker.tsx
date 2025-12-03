@@ -9,6 +9,17 @@ import NewSubjectForm from '@/components/attendance/NewSubjectForm';
 import AdSection from '@/components/layout/AdSection';
 import TimetableDialog from '@/components/attendance/TimetableDialog';
 import { Loader2, CalendarPlus } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+
+interface TimetableEntry {
+  id: string;
+  day_of_week: string;
+  start_time: string;
+  end_time: string;
+  subject_id: string;
+  location?: string;
+}
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import {
   Card,
@@ -24,14 +35,60 @@ const AttendanceTracker = () => {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
   const [timetableDialogOpen, setTimetableDialogOpen] = useState(false);
+  const [showTimetableOnly, setShowTimetableOnly] = useState(false);
+  const [timetableEntries, setTimetableEntries] = useState<TimetableEntry[]>([]);
 
   useEffect(() => {
     if (!authLoading && !user) {
       navigate('/login');
     } else if (user) {
       fetchSubjects();
+      fetchTimetableEntries();
     }
   }, [user, authLoading, navigate]);
+
+  const fetchTimetableEntries = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('timetable')
+        .select('*')
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+      setTimetableEntries(data || []);
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
+  // Get current day of the week
+  const getCurrentDay = (): string => {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return days[new Date().getDay()];
+  };
+
+  // Get today's subject IDs from timetable
+  const getTodaySubjectIds = (): string[] => {
+    const currentDay = getCurrentDay();
+    const todayEntries = timetableEntries.filter(entry => entry.day_of_week === currentDay);
+    return [...new Set(todayEntries.map(entry => entry.subject_id))];
+  };
+
+  // Get location for a subject from today's timetable
+  const getSubjectLocation = (subjectId: string): string | undefined => {
+    const currentDay = getCurrentDay();
+    const entry = timetableEntries.find(
+      e => e.day_of_week === currentDay && e.subject_id === subjectId
+    );
+    return entry?.location;
+  };
+
+  // Filter subjects based on toggle
+  const filteredSubjects = showTimetableOnly
+    ? subjects.filter(subject => getTodaySubjectIds().includes(subject.id))
+    : subjects;
 
   const fetchSubjects = async () => {
     if (!user) return;
@@ -169,26 +226,42 @@ const AttendanceTracker = () => {
             </div>
           </div>
           
+          <div className="flex items-center space-x-3 mb-4">
+            <Switch
+              id="timetable-toggle"
+              checked={showTimetableOnly}
+              onCheckedChange={setShowTimetableOnly}
+            />
+            <Label htmlFor="timetable-toggle" className="text-sm font-medium">
+              {showTimetableOnly ? "Today's Timetable" : "All Subjects"}
+            </Label>
+          </div>
+
           {loading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 size={30} className="animate-spin text-muted-foreground" />
             </div>
-          ) : subjects.length > 0 ? (
+          ) : filteredSubjects.length > 0 ? (
             <div className="space-y-4">
-              {subjects.map((subject) => (
+              {filteredSubjects.map((subject) => (
                 <SubjectCard
                   key={subject.id}
                   subject={subject}
                   onDelete={handleDeleteSubject}
                   onUpdate={fetchSubjects}
+                  location={getSubjectLocation(subject.id)}
                 />
               ))}
             </div>
           ) : (
             <div className="text-center py-10 border border-dashed border-muted rounded-lg">
-              <h3 className="text-xl font-medium mb-2 text-foreground">No subjects yet</h3>
+              <h3 className="text-xl font-medium mb-2 text-foreground">
+                {showTimetableOnly ? "No classes today" : "No subjects yet"}
+              </h3>
               <p className="text-muted-foreground mb-6">
-                Add your first subject to start tracking attendance
+                {showTimetableOnly 
+                  ? "You have no classes scheduled for today"
+                  : "Add your first subject to start tracking attendance"}
               </p>
             </div>
           )}
