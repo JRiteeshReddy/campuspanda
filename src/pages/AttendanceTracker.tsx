@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -8,7 +7,8 @@ import Navbar from '@/components/layout/Navbar';
 import SubjectCard from '@/components/attendance/SubjectCard';
 import NewSubjectForm from '@/components/attendance/NewSubjectForm';
 import AdSection from '@/components/layout/AdSection';
-import { Loader2 } from 'lucide-react';
+import TimetableDialog from '@/components/attendance/TimetableDialog';
+import { Loader2, CalendarPlus } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import {
   Card,
@@ -16,12 +16,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from '@/components/ui/button';
 
 const AttendanceTracker = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
+  const [timetableDialogOpen, setTimetableDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -93,12 +95,23 @@ const AttendanceTracker = () => {
       <main className="flex-1 pt-24 pb-12">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 animate-fade-in">
           <header className="mb-8">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground mb-4">
-              Attendance Tracker
-            </h1>
-            <p className="text-muted-foreground max-w-3xl">
-              Track your attendance for all subjects. Add new subjects and keep track of your attendance percentage.
-            </p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">
+                  Attendance Tracker
+                </h1>
+                <p className="text-muted-foreground max-w-3xl">
+                  Track your attendance for all subjects. Add new subjects and keep track of your attendance percentage.
+                </p>
+              </div>
+              <Button 
+                onClick={() => setTimetableDialogOpen(true)}
+                className="gap-2 shrink-0"
+              >
+                <CalendarPlus className="h-4 w-4" />
+                Add Timetable
+              </Button>
+            </div>
           </header>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-6">
@@ -191,6 +204,12 @@ const AttendanceTracker = () => {
           </p>
         </div>
       </footer>
+
+      <TimetableDialog
+        open={timetableDialogOpen}
+        onOpenChange={setTimetableDialogOpen}
+        subjects={subjects}
+      />
     </div>
   );
 };
