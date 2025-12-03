@@ -80,7 +80,9 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
 
   const handleOpenDialog = (day: string, startTime: string, endTime: string) => {
     const existingEntry = timetableEntries.find(
-      entry => entry.day_of_week === day && entry.start_time === startTime && entry.end_time === endTime
+      entry => entry.day_of_week === day && 
+               normalizeTime(entry.start_time) === normalizeTime(startTime) && 
+               normalizeTime(entry.end_time) === normalizeTime(endTime)
     );
     
     setSelectedSlot({ 
@@ -167,10 +169,17 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
     return subject ? subject.name : 'Unknown Subject';
   };
 
+  // Function to normalize time format for comparison (handles "08:00" vs "08:00:00")
+  const normalizeTime = (time: string): string => {
+    return time.substring(0, 5); // Get only HH:MM
+  };
+
   // Function to determine if a slot has an entry
   const getSlotEntry = (day: string, startTime: string, endTime: string): TimetableEntry | undefined => {
     return timetableEntries.find(
-      entry => entry.day_of_week === day && entry.start_time === startTime && entry.end_time === endTime
+      entry => entry.day_of_week === day && 
+               normalizeTime(entry.start_time) === normalizeTime(startTime) && 
+               normalizeTime(entry.end_time) === normalizeTime(endTime)
     );
   };
 
