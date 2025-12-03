@@ -76,6 +76,14 @@ const AttendanceTracker = () => {
     return [...new Set(todayEntries.map(entry => entry.subject_id))];
   };
 
+  // Get today's timetable entries sorted by time
+  const getTodaySortedEntries = () => {
+    const currentDay = getCurrentDay();
+    return timetableEntries
+      .filter(entry => entry.day_of_week === currentDay)
+      .sort((a, b) => a.start_time.localeCompare(b.start_time));
+  };
+
   // Get location for a subject from today's timetable
   const getSubjectLocation = (subjectId: string): string | undefined => {
     const currentDay = getCurrentDay();
@@ -85,9 +93,28 @@ const AttendanceTracker = () => {
     return entry?.location;
   };
 
-  // Filter subjects based on toggle
+  // Get timing for a subject from today's timetable
+  const getSubjectTiming = (subjectId: string): string | undefined => {
+    const currentDay = getCurrentDay();
+    const entry = timetableEntries.find(
+      e => e.day_of_week === currentDay && e.subject_id === subjectId
+    );
+    if (!entry) return undefined;
+    
+    const formatTime = (time: string): string => {
+      const [hour] = time.split(':');
+      const hourNum = parseInt(hour, 10);
+      return hourNum > 12 ? `${hourNum - 12} PM` : `${hourNum} ${hourNum === 12 ? 'PM' : 'AM'}`;
+    };
+    
+    return `${formatTime(entry.start_time)} - ${formatTime(entry.end_time)}`;
+  };
+
+  // Filter and sort subjects based on toggle
   const filteredSubjects = showTimetableOnly
-    ? subjects.filter(subject => getTodaySubjectIds().includes(subject.id))
+    ? getTodaySortedEntries()
+        .map(entry => subjects.find(s => s.id === entry.subject_id))
+        .filter((s): s is Subject => s !== undefined)
     : subjects;
 
   const fetchSubjects = async () => {
@@ -249,7 +276,8 @@ const AttendanceTracker = () => {
                   subject={subject}
                   onDelete={handleDeleteSubject}
                   onUpdate={fetchSubjects}
-                  location={getSubjectLocation(subject.id)}
+                  location={showTimetableOnly ? getSubjectLocation(subject.id) : undefined}
+                  timing={showTimetableOnly ? getSubjectTiming(subject.id) : undefined}
                 />
               ))}
             </div>

@@ -15,9 +15,10 @@ interface SubjectCardProps {
   onDelete: (id: string) => void;
   onUpdate: (subject: Subject) => void;
   location?: string;
+  timing?: string;
 }
 
-const SubjectCard = ({ subject, onDelete, onUpdate, location }: SubjectCardProps) => {
+const SubjectCard = ({ subject, onDelete, onUpdate, location, timing }: SubjectCardProps) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
@@ -228,14 +229,26 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location }: SubjectCardProps
     <div className="group relative flex flex-row justify-between items-start p-4 rounded-lg border border-border bg-background/50 hover:bg-background/80 transition-colors mb-3">
       <div className="flex flex-col max-w-[65%]">
         <h3 className="text-base sm:text-lg font-bold text-foreground mb-1">{subject.name.toLowerCase()}</h3>
-        {location && (
-          <p className="text-xs text-primary mb-1 flex items-center gap-1">
-            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            {location}
-          </p>
+        {(location || timing) && (
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
+            {timing && (
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {timing}
+              </p>
+            )}
+            {location && (
+              <p className="text-xs text-primary flex items-center gap-1">
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                {location}
+              </p>
+            )}
+          </div>
         )}
         <p className="text-base font-bold text-foreground/90">{subject.classes_attended}/{subject.classes_conducted}</p>
         <p className="text-xs text-muted-foreground mt-1">
