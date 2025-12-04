@@ -29,17 +29,17 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing }: SubjectC
     classes_attended: z.coerce.number().min(0, {
       message: "Classes attended must be a non-negative number.",
     }),
-    classes_conducted: z.coerce.number().min(1, {
-      message: "Classes conducted must be at least 1.",
+    classes_conducted: z.coerce.number().min(0, {
+      message: "Classes conducted must be a non-negative number.",
     }),
     required_percentage: z.coerce.number().min(1, {
       message: "Required percentage must be at least 1.",
     }).max(100, {
       message: "Required percentage cannot exceed 100.",
     }),
-  }).refine((data) => data.classes_attended <= data.classes_conducted, {
-    message: "Classes attended cannot exceed classes conducted.",
-    path: ["classes_attended"],
+  }).refine((data) => data.classes_conducted >= data.classes_attended, {
+    message: "Classes conducted cannot be less than classes attended.",
+    path: ["classes_conducted"],
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
