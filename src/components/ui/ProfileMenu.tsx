@@ -10,10 +10,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ChevronDown, LogOut, User, Home, BookOpen, CalendarCheck, FileText, Calendar } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { ChevronDown, LogOut, User, Home, BookOpen, CalendarCheck, FileText, Calendar, Trash2, RotateCcw } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Subject } from '@/types';
 import { PieChart, Pie, Cell } from 'recharts';
+import { toast } from 'sonner';
 
 const ProfileMenu = () => {
   const { user, signOut } = useAuth();
@@ -21,6 +32,8 @@ const ProfileMenu = () => {
   const currentPath = window.location.pathname;
   const [totalAttendance, setTotalAttendance] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showResetSubjectsDialog, setShowResetSubjectsDialog] = useState(false);
+  const [showResetAttendanceDialog, setShowResetAttendanceDialog] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -72,7 +85,48 @@ const ProfileMenu = () => {
   
   const COLORS = ['#4ade80', '#f87171'];
 
+  const handleResetSubjects = async () => {
+    if (!user) return;
+    try {
+      const { error } = await supabase
+        .from('subjects')
+        .delete()
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+      
+      setTotalAttendance(null);
+      toast.success('All subjects have been deleted');
+      setShowResetSubjectsDialog(false);
+      window.location.reload();
+    } catch (error) {
+      console.error('Error resetting subjects:', error);
+      toast.error('Failed to reset subjects');
+    }
+  };
+
+  const handleResetAttendance = async () => {
+    if (!user) return;
+    try {
+      const { error } = await supabase
+        .from('subjects')
+        .update({ classes_attended: 0, classes_conducted: 0 })
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+      
+      setTotalAttendance(0);
+      toast.success('All attendance has been reset');
+      setShowResetAttendanceDialog(false);
+      window.location.reload();
+    } catch (error) {
+      console.error('Error resetting attendance:', error);
+      toast.error('Failed to reset attendance');
+    }
+  };
+
   return (
+    <>
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center space-x-1 outline-none">
         <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
@@ -186,6 +240,25 @@ const ProfileMenu = () => {
         
         <DropdownMenuSeparator />
         
+        <div className="px-2 py-1.5 flex gap-2">
+          <button
+            onClick={() => setShowResetSubjectsDialog(true)}
+            className="flex-1 text-xs px-2 py-1.5 rounded bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors flex items-center justify-center gap-1"
+          >
+            <Trash2 size={12} />
+            Reset Subjects
+          </button>
+          <button
+            onClick={() => setShowResetAttendanceDialog(true)}
+            className="flex-1 text-xs px-2 py-1.5 rounded bg-muted hover:bg-muted/80 transition-colors flex items-center justify-center gap-1"
+          >
+            <RotateCcw size={12} />
+            Reset Attendance
+          </button>
+        </div>
+        
+        <DropdownMenuSeparator />
+        
         <DropdownMenuItem 
           className="cursor-pointer flex items-center text-destructive focus:text-destructive"
           onClick={() => signOut()}
@@ -195,6 +268,41 @@ const ProfileMenu = () => {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+
+    <AlertDialog open={showResetSubjectsDialog} onOpenChange={setShowResetSubjectsDialog}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Reset All Subjects?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action will permanently delete all your subjects and their attendance data. This cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={handleResetSubjects} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            Delete All Subjects
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+    <AlertDialog open={showResetAttendanceDialog} onOpenChange={setShowResetAttendanceDialog}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Reset All Attendance?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This will reset all attendance data (classes attended and conducted) to 0 for all subjects. Your subjects will remain intact.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={handleResetAttendance}>
+            Reset Attendance
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 };
 
