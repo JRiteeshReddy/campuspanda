@@ -110,11 +110,55 @@ const AttendanceTracker = () => {
     return `${formatTime(entry.start_time)} - ${formatTime(entry.end_time)}`;
   };
 
+  // Get consecutive class count for a subject (how many times it appears in a row)
+  const getConsecutiveClassCount = (subjectId: string): number => {
+    const sortedEntries = getTodaySortedEntries();
+    let count = 0;
+    let foundFirst = false;
+    
+    for (let i = 0; i < sortedEntries.length; i++) {
+      if (sortedEntries[i].subject_id === subjectId) {
+        if (!foundFirst) {
+          foundFirst = true;
+          count = 1;
+        } else {
+          // Check if this entry is consecutive (previous entry was same subject)
+          if (i > 0 && sortedEntries[i - 1].subject_id === subjectId) {
+            count++;
+          } else {
+            // Not consecutive, reset count
+            count = 1;
+          }
+        }
+      }
+    }
+    
+    // Actually count all occurrences of this subject today for simplicity
+    return sortedEntries.filter(e => e.subject_id === subjectId).length;
+  };
+
+  // Get unique subjects for today (deduplicated) while preserving order
+  const getUniqueTodaySubjects = (): Subject[] => {
+    const sortedEntries = getTodaySortedEntries();
+    const seen = new Set<string>();
+    const result: Subject[] = [];
+    
+    for (const entry of sortedEntries) {
+      if (!seen.has(entry.subject_id)) {
+        seen.add(entry.subject_id);
+        const subject = subjects.find(s => s.id === entry.subject_id);
+        if (subject) {
+          result.push(subject);
+        }
+      }
+    }
+    
+    return result;
+  };
+
   // Filter and sort subjects based on toggle
   const filteredSubjects = showTimetableOnly
-    ? getTodaySortedEntries()
-        .map(entry => subjects.find(s => s.id === entry.subject_id))
-        .filter((s): s is Subject => s !== undefined)
+    ? getUniqueTodaySubjects()
     : subjects;
 
   const fetchSubjects = async () => {
@@ -278,6 +322,7 @@ const AttendanceTracker = () => {
                   onUpdate={fetchSubjects}
                   location={showTimetableOnly ? getSubjectLocation(subject.id) : undefined}
                   timing={showTimetableOnly ? getSubjectTiming(subject.id) : undefined}
+                  consecutiveClasses={showTimetableOnly ? getConsecutiveClassCount(subject.id) : undefined}
                 />
               ))}
             </div>

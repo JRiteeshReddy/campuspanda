@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -16,11 +17,13 @@ interface SubjectCardProps {
   onUpdate: (subject: Subject) => void;
   location?: string;
   timing?: string;
+  consecutiveClasses?: number;
 }
 
-const SubjectCard = ({ subject, onDelete, onUpdate, location, timing }: SubjectCardProps) => {
+const SubjectCard = ({ subject, onDelete, onUpdate, location, timing, consecutiveClasses }: SubjectCardProps) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [classesToMark, setClassesToMark] = useState(1);
 
   const formSchema = z.object({
     name: z.string().min(1, {
@@ -119,11 +122,14 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing }: SubjectC
     deleteSubject();
   };
 
-  async function markPresent() {
+  async function markPresent(count: number = 1) {
     try {
       const { data, error } = await supabase
         .from('subjects')
-        .update({ classes_attended: subject.classes_attended + 1, classes_conducted: subject.classes_conducted + 1 })
+        .update({ 
+          classes_attended: subject.classes_attended + count, 
+          classes_conducted: subject.classes_conducted + count 
+        })
         .eq('id', subject.id)
         .select();
 
@@ -135,10 +141,10 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing }: SubjectC
       if (data && data.length > 0) {
         onUpdate({
           ...subject,
-          classes_attended: subject.classes_attended + 1,
-          classes_conducted: subject.classes_conducted + 1,
+          classes_attended: subject.classes_attended + count,
+          classes_conducted: subject.classes_conducted + count,
         });
-        toast.success("Attendance marked successfully!");
+        toast.success(`${count} class${count > 1 ? 'es' : ''} marked as attended!`);
       } else {
         toast.error("Failed to mark attendance.");
       }
@@ -147,11 +153,11 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing }: SubjectC
     }
   }
 
-  async function markAbsent() {
+  async function markAbsent(count: number = 1) {
     try {
       const { data, error } = await supabase
         .from('subjects')
-        .update({ classes_conducted: subject.classes_conducted + 1 })
+        .update({ classes_conducted: subject.classes_conducted + count })
         .eq('id', subject.id)
         .select();
 
@@ -163,9 +169,9 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing }: SubjectC
       if (data && data.length > 0) {
         onUpdate({
           ...subject,
-          classes_conducted: subject.classes_conducted + 1,
+          classes_conducted: subject.classes_conducted + count,
         });
-        toast.success("Absence marked successfully!");
+        toast.success(`${count} class${count > 1 ? 'es' : ''} marked as absent!`);
       } else {
         toast.error("Failed to mark absence.");
       }
@@ -175,12 +181,15 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing }: SubjectC
   }
 
   const markAttendance = async (isPresent: boolean) => {
+    const count = consecutiveClasses && consecutiveClasses > 1 ? classesToMark : 1;
     if (isPresent) {
-      await markPresent();
+      await markPresent(count);
     } else {
-      await markAbsent();
+      await markAbsent(count);
     }
   };
+
+  const hasMultipleClasses = consecutiveClasses && consecutiveClasses > 1;
 
   const attendancePercentage = subject.classes_attended > 0
     ? (subject.classes_attended / subject.classes_conducted) * 100
@@ -274,7 +283,40 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing }: SubjectC
           </svg>
         </div>
         
-        <div className="flex space-x-2 mt-2">
+        {hasMultipleClasses && (
+          <div className="mb-2">
+            {consecutiveClasses === 2 ? (
+              <div className="flex items-center gap-2">
+                <Switch
+                  id={`class-toggle-${subject.id}`}
+                  checked={classesToMark === 2}
+                  onCheckedChange={(checked) => setClassesToMark(checked ? 2 : 1)}
+                />
+                <span className="text-xs text-muted-foreground">
+                  {classesToMark === 1 ? '1 class' : '2 classes'}
+                </span>
+              </div>
+            ) : (
+              <div className="flex gap-1 flex-wrap">
+                {Array.from({ length: consecutiveClasses }, (_, i) => i + 1).map((num) => (
+                  <button
+                    key={num}
+                    onClick={() => setClassesToMark(num)}
+                    className={`px-2 py-0.5 text-xs rounded ${
+                      classesToMark === num 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                    }`}
+                  >
+                    {num}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+        
+        <div className="flex space-x-2">
           <button
             onClick={() => markAttendance(true)}
             className="p-1 rounded-full bg-green-500/10 text-green-500 hover:bg-green-500/20 transition-colors"
