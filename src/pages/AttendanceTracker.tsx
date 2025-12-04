@@ -76,11 +76,11 @@ const AttendanceTracker = () => {
     return [...new Set(todayEntries.map(entry => entry.subject_id))];
   };
 
-  // Get today's timetable entries sorted by time
+  // Get today's timetable entries sorted by time (excluding null subject_ids)
   const getTodaySortedEntries = () => {
     const currentDay = getCurrentDay();
     return timetableEntries
-      .filter(entry => entry.day_of_week === currentDay)
+      .filter(entry => entry.day_of_week === currentDay && entry.subject_id)
       .sort((a, b) => a.start_time.localeCompare(b.start_time));
   };
 
@@ -93,21 +93,23 @@ const AttendanceTracker = () => {
     return entry?.location;
   };
 
-  // Get timing for a subject from today's timetable
+  const formatTime = (time: string): string => {
+    const [hour] = time.split(':');
+    const hourNum = parseInt(hour, 10);
+    return hourNum > 12 ? `${hourNum - 12} PM` : `${hourNum} ${hourNum === 12 ? 'PM' : 'AM'}`;
+  };
+
+  // Get timing for a subject - shows full range if multiple consecutive classes
   const getSubjectTiming = (subjectId: string): string | undefined => {
-    const currentDay = getCurrentDay();
-    const entry = timetableEntries.find(
-      e => e.day_of_week === currentDay && e.subject_id === subjectId
-    );
-    if (!entry) return undefined;
+    const sortedEntries = getTodaySortedEntries();
+    const subjectEntries = sortedEntries.filter(e => e.subject_id === subjectId);
     
-    const formatTime = (time: string): string => {
-      const [hour] = time.split(':');
-      const hourNum = parseInt(hour, 10);
-      return hourNum > 12 ? `${hourNum - 12} PM` : `${hourNum} ${hourNum === 12 ? 'PM' : 'AM'}`;
-    };
+    if (subjectEntries.length === 0) return undefined;
     
-    return `${formatTime(entry.start_time)} - ${formatTime(entry.end_time)}`;
+    const firstEntry = subjectEntries[0];
+    const lastEntry = subjectEntries[subjectEntries.length - 1];
+    
+    return `${formatTime(firstEntry.start_time)} - ${formatTime(lastEntry.end_time)}`;
   };
 
   // Get consecutive class count for a subject (how many times it appears in a row)
