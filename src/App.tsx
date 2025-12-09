@@ -32,7 +32,7 @@ const AppRoutes = () => (
     <Route path="/assignments" element={<AssignmentTracker />} />
     <Route path="/notes" element={<NotesOrganizer />} />
     <Route path="/events" element={<EventPanda />} />
-    <Route path="/ai" element={<AI />} />
+    <Route path="/ai" element={<NotFound />} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
