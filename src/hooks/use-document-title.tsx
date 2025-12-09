@@ -37,6 +37,9 @@ export const useDocumentTitle = () => {
         case 'signup':
           formattedPageName = 'Sign Up';
           break;
+        case 'settings':
+          formattedPageName = 'Settings';
+          break;
         default:
           // Capitalize first letter of each word
           formattedPageName = pageName.split('-')

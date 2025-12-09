@@ -20,7 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { ChevronDown, LogOut, User, Home, BookOpen, CalendarCheck, FileText, Calendar, Trash2, RotateCcw } from 'lucide-react';
+import { ChevronDown, LogOut, User, Home, BookOpen, CalendarCheck, FileText, Calendar, Trash2, RotateCcw, Settings } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Subject } from '@/types';
 import { PieChart, Pie, Cell } from 'recharts';
@@ -258,6 +258,13 @@ const ProfileMenu = () => {
         </div>
         
         <DropdownMenuSeparator />
+        
+        <DropdownMenuItem asChild>
+          <Link to="/settings" className="flex items-center cursor-pointer">
+            <Settings size={16} className="mr-2" />
+            <span>Settings</span>
+          </Link>
+        </DropdownMenuItem>
         
         <DropdownMenuItem 
           className="cursor-pointer flex items-center text-destructive focus:text-destructive"
