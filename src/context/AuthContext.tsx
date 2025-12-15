@@ -38,13 +38,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Session error:', error);
+        // Clear any corrupted session data
+        setUser(null);
+        setLoading(false);
+        return;
+      }
       if (session?.user) {
         setUser({
           id: session.user.id,
           email: session.user.email || '',
         });
       }
+      setLoading(false);
+    }).catch((err) => {
+      console.error('Auth initialization error:', err);
+      setUser(null);
       setLoading(false);
     });
 
