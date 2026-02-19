@@ -45,12 +45,21 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate app initialization time
+    // Catch unhandled promise rejections to prevent blank screen in Chrome
+    const handleRejection = (event: PromiseRejectionEvent) => {
+      console.error("Unhandled rejection caught:", event.reason);
+      event.preventDefault();
+    };
+    window.addEventListener("unhandledrejection", handleRejection);
+
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 2000);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("unhandledrejection", handleRejection);
+    };
   }, []);
 
   return (

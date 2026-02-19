@@ -22,9 +22,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Set up auth state listener
+    let mounted = true;
+
+    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (!mounted) return;
         if (session?.user) {
           setUser({
             id: session.user.id,
@@ -37,29 +40,40 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     );
 
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      if (error) {
-        console.error('Session error:', error);
-        // Clear any corrupted session data
+    // Get initial session with robust error handling
+    const initSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (!mounted) return;
+        if (error) {
+          console.error('Session error:', error);
+          // Sign out to clear corrupted tokens
+          try { await supabase.auth.signOut(); } catch (_) {}
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+        if (session?.user) {
+          setUser({
+            id: session.user.id,
+            email: session.user.email || '',
+          });
+        }
+        setLoading(false);
+      } catch (err) {
+        console.error('Auth initialization error:', err);
+        if (!mounted) return;
+        // Clear corrupted session
+        try { await supabase.auth.signOut(); } catch (_) {}
         setUser(null);
         setLoading(false);
-        return;
       }
-      if (session?.user) {
-        setUser({
-          id: session.user.id,
-          email: session.user.email || '',
-        });
-      }
-      setLoading(false);
-    }).catch((err) => {
-      console.error('Auth initialization error:', err);
-      setUser(null);
-      setLoading(false);
-    });
+    };
+
+    initSession();
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, []);
