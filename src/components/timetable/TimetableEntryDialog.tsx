@@ -34,6 +34,7 @@ interface TimetableEntryDialogProps {
   onSave: (data: { subject_id: string; location?: string; notes?: string }) => void;
   onDelete?: () => void;
   existingLocations?: Record<string, string>;
+  subjectClassrooms?: Record<string, string>;
 }
 
 const TimetableEntryDialog: React.FC<TimetableEntryDialogProps> = ({
