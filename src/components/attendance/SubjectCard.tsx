@@ -67,6 +67,7 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing, consecutiv
           classes_attended: values.classes_attended,
           classes_conducted: values.classes_conducted,
           required_percentage: values.required_percentage,
+          classroom: values.classroom?.trim() || null,
         })
         .eq('id', subject.id)
         .select();
