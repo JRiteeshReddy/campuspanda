@@ -40,6 +40,7 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing, consecutiv
     }).max(100, {
       message: "Required percentage cannot exceed 100.",
     }),
+    classroom: z.string().optional(),
   }).refine((data) => data.classes_conducted >= data.classes_attended, {
     message: "Classes conducted cannot be less than classes attended.",
     path: ["classes_conducted"],
@@ -52,6 +53,7 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing, consecutiv
       classes_attended: subject.classes_attended,
       classes_conducted: subject.classes_conducted,
       required_percentage: subject.required_percentage,
+      classroom: subject.classroom || '',
     },
     mode: "onChange",
   });
@@ -65,6 +67,7 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing, consecutiv
           classes_attended: values.classes_attended,
           classes_conducted: values.classes_conducted,
           required_percentage: values.required_percentage,
+          classroom: values.classroom?.trim() || null,
         })
         .eq('id', subject.id)
         .select();
@@ -81,6 +84,7 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing, consecutiv
           classes_attended: values.classes_attended,
           classes_conducted: values.classes_conducted,
           required_percentage: values.required_percentage,
+          classroom: values.classroom?.trim() || null,
         });
         toast.success("Subject updated successfully!");
       } else {
@@ -412,6 +416,21 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing, consecutiv
                           placeholder="Required percentage"
                           {...field}
                         />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="classroom"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center">
+                        Classroom Number <span className="text-xs text-muted-foreground ml-1">(optional)</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. Room 334" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
