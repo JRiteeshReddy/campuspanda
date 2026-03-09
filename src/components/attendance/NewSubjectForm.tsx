@@ -39,7 +39,7 @@ const NewSubjectForm = ({ onSuccess }: NewSubjectFormProps) => {
     
     setFormData({
       ...formData,
-      [name]: name === 'name' ? value : parseInt(value) || 0,
+      [name]: name === 'name' || name === 'classroom' ? value : parseInt(value) || 0,
     });
   };
 
