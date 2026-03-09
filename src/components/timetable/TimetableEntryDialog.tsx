@@ -63,6 +63,14 @@ const TimetableEntryDialog: React.FC<TimetableEntryDialogProps> = ({
     }
   }, [open, currentSubjectId, currentLocation, currentNotes]);
 
+  // Auto-fill location when subject changes and no location is set yet
+  const handleSubjectChange = (newSubjectId: string) => {
+    setSubjectId(newSubjectId);
+    if (!location && existingLocations[newSubjectId]) {
+      setLocation(existingLocations[newSubjectId]);
+    }
+  };
+
   const handleSave = () => {
     if (!subjectId) {
       return;
