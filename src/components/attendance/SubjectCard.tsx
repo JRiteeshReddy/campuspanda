@@ -84,6 +84,7 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing, consecutiv
           classes_attended: values.classes_attended,
           classes_conducted: values.classes_conducted,
           required_percentage: values.required_percentage,
+          classroom: values.classroom?.trim() || null,
         });
         toast.success("Subject updated successfully!");
       } else {
