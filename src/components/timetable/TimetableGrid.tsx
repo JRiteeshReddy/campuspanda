@@ -414,7 +414,42 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
         todayClasses={getTodayClasses()}
         currentDay={getCurrentDay()}
       />
+
+      {hasEntries && (
+        <div className="flex justify-center mt-4">
+          <Button
+            variant="destructive"
+            size="sm"
+            className="gap-2"
+            onClick={() => setClearDialogOpen(true)}
+          >
+            <Trash2 className="h-4 w-4" />
+            Clear Timetable
+          </Button>
+        </div>
+      )}
+
+      <AlertDialog open={clearDialogOpen} onOpenChange={setClearDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Clear entire timetable?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove all entries from your timetable. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleClearTimetable} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Clear All
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
+  );
+};
+
+export default TimetableGrid;
   );
 };
 
