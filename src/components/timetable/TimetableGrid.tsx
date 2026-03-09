@@ -450,7 +450,3 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
 };
 
 export default TimetableGrid;
-  );
-};
-
-export default TimetableGrid;
