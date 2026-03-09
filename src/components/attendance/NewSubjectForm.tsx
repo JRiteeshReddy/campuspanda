@@ -85,6 +85,7 @@ const NewSubjectForm = ({ onSuccess }: NewSubjectFormProps) => {
         classes_attended: 0,
         classes_conducted: 0,
         required_percentage: 75,
+        classroom: '',
       });
       setOpen(false);
       onSuccess();
