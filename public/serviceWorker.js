@@ -1,49 +1,19 @@
+// This service worker intentionally clears old buggy caches and unregisters itself.
+// A previous version cached source files like /src/main.tsx, which can cause blank screens in production.
 
-const CACHE_NAME = 'campuspanda-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/src/main.tsx',
-  '/src/index.css',
-  '/manifest.json'
-];
-
-// Install event - cache files
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
-  );
+  event.waitUntil(self.skipWaiting());
 });
 
-// Fetch event - serve cached files when offline
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Return cached version or fetch from network
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      })
-  );
-});
-
-// Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
+  event.waitUntil((async () => {
+    const cacheNames = await caches.keys();
+    await Promise.all(cacheNames.map((name) => caches.delete(name)));
+
+    // Unregister to avoid stale cache behavior going forward.
+    await self.registration.unregister();
+
+    const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    clients.forEach((client) => client.navigate(client.url));
+  })());
 });
