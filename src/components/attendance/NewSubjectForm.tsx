@@ -74,6 +74,7 @@ const NewSubjectForm = ({ onSuccess }: NewSubjectFormProps) => {
           classes_attended: formData.classes_attended,
           classes_conducted: formData.classes_conducted,
           required_percentage: formData.required_percentage,
+          classroom: formData.classroom?.trim() || null,
         });
       
       if (error) throw error;
