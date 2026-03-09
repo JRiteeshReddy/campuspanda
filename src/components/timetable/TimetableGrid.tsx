@@ -9,7 +9,8 @@ import TimetableEntryDialog from './TimetableEntryDialog';
 import BunkTableDialog from './BunkTableDialog';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CalendarDays } from 'lucide-react';
+import { CalendarDays, Trash2 } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 interface TimetableEntry {
   id: string;
@@ -37,6 +38,7 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
   } | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [bunkTableOpen, setBunkTableOpen] = useState(false);
+  const [clearDialogOpen, setClearDialogOpen] = useState(false);
 
   const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const timeSlots = [
@@ -158,6 +160,25 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
       toast.success('Timetable entry removed');
       await fetchTimetableEntries();
       setDialogOpen(false);
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
+  const handleClearTimetable = async () => {
+    if (!user) return;
+    
+    try {
+      const { error } = await supabase
+        .from('timetable')
+        .delete()
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+      
+      toast.success('Timetable cleared successfully');
+      await fetchTimetableEntries();
+      setClearDialogOpen(false);
     } catch (error) {
       handleError(error);
     }
@@ -393,6 +414,37 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
         todayClasses={getTodayClasses()}
         currentDay={getCurrentDay()}
       />
+
+      {hasEntries && (
+        <div className="flex justify-center mt-4">
+          <Button
+            variant="destructive"
+            size="sm"
+            className="gap-2"
+            onClick={() => setClearDialogOpen(true)}
+          >
+            <Trash2 className="h-4 w-4" />
+            Clear Timetable
+          </Button>
+        </div>
+      )}
+
+      <AlertDialog open={clearDialogOpen} onOpenChange={setClearDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Clear entire timetable?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove all entries from your timetable. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleClearTimetable} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Clear All
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
