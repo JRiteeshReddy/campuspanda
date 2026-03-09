@@ -173,6 +173,20 @@ const NewSubjectForm = ({ onSuccess }: NewSubjectFormProps) => {
               className="form-input"
             />
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="classroom" className="flex items-center">
+              Classroom Number <span className="text-xs text-muted-foreground ml-1">(optional)</span>
+            </Label>
+            <Input
+              id="classroom"
+              name="classroom"
+              value={formData.classroom || ''}
+              onChange={handleChange}
+              placeholder="e.g. Room 334"
+              className="form-input"
+            />
+          </div>
           
           <DialogFooter className="mt-6">
             <Button 
