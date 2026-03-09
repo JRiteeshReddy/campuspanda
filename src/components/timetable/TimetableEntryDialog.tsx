@@ -117,7 +117,7 @@ const TimetableEntryDialog: React.FC<TimetableEntryDialogProps> = ({
               <Label htmlFor="subject">Subject *</Label>
               <Select 
                 value={subjectId} 
-                onValueChange={setSubjectId}
+                onValueChange={handleSubjectChange}
               >
                 <SelectTrigger id="subject">
                   <SelectValue placeholder="Select a subject" />
