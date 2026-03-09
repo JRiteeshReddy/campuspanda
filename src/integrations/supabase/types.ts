@@ -236,6 +236,7 @@ export type Database = {
         Row: {
           classes_attended: number
           classes_conducted: number
+          classroom: string | null
           created_at: string
           id: string
           name: string
@@ -245,6 +246,7 @@ export type Database = {
         Insert: {
           classes_attended?: number
           classes_conducted?: number
+          classroom?: string | null
           created_at?: string
           id?: string
           name: string
@@ -254,6 +256,7 @@ export type Database = {
         Update: {
           classes_attended?: number
           classes_conducted?: number
+          classroom?: string | null
           created_at?: string
           id?: string
           name?: string
