@@ -31,6 +31,7 @@ const NewSubjectForm = ({ onSuccess }: NewSubjectFormProps) => {
     classes_attended: 0,
     classes_conducted: 0,
     required_percentage: 75,
+    classroom: '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,7 +39,7 @@ const NewSubjectForm = ({ onSuccess }: NewSubjectFormProps) => {
     
     setFormData({
       ...formData,
-      [name]: name === 'name' ? value : parseInt(value) || 0,
+      [name]: name === 'name' || name === 'classroom' ? value : parseInt(value) || 0,
     });
   };
 
@@ -73,6 +74,7 @@ const NewSubjectForm = ({ onSuccess }: NewSubjectFormProps) => {
           classes_attended: formData.classes_attended,
           classes_conducted: formData.classes_conducted,
           required_percentage: formData.required_percentage,
+          classroom: formData.classroom?.trim() || null,
         });
       
       if (error) throw error;
@@ -83,6 +85,7 @@ const NewSubjectForm = ({ onSuccess }: NewSubjectFormProps) => {
         classes_attended: 0,
         classes_conducted: 0,
         required_percentage: 75,
+        classroom: '',
       });
       setOpen(false);
       onSuccess();
@@ -167,6 +170,20 @@ const NewSubjectForm = ({ onSuccess }: NewSubjectFormProps) => {
               max="100"
               value={formData.required_percentage}
               onChange={handleChange}
+              className="form-input"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="classroom" className="flex items-center">
+              Classroom Number <span className="text-xs text-muted-foreground ml-1">(optional)</span>
+            </Label>
+            <Input
+              id="classroom"
+              name="classroom"
+              value={formData.classroom || ''}
+              onChange={handleChange}
+              placeholder="e.g. Room 334"
               className="form-input"
             />
           </div>

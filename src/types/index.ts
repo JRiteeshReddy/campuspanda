@@ -11,6 +11,7 @@ export interface Subject {
   classes_attended: number;
   classes_conducted: number;
   required_percentage: number;
+  classroom?: string | null;
   created_at: string;
 }
 
@@ -19,6 +20,7 @@ export interface SubjectForm {
   classes_attended: number;
   classes_conducted: number;
   required_percentage: number;
+  classroom?: string;
 }
 
 export interface AuthFormData {
