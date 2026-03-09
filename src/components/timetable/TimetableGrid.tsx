@@ -38,6 +38,7 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
   } | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [bunkTableOpen, setBunkTableOpen] = useState(false);
+  const [clearDialogOpen, setClearDialogOpen] = useState(false);
 
   const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const timeSlots = [
