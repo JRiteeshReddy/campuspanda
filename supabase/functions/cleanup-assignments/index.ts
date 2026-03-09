@@ -21,6 +21,17 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+
+  // Validate authorization - require service role key or a shared secret
+  const authHeader = req.headers.get('Authorization');
+  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+  const expectedBearer = `Bearer ${serviceRoleKey}`;
+  if (authHeader !== expectedBearer) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
   
   try {
     console.log('Starting cleanup of old completed assignments');
@@ -68,7 +79,7 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: false,
-        error: error.message,
+        error: 'An internal error occurred',
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

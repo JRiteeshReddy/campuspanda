@@ -61,3 +61,6 @@ verify_jwt = false
 [functions.deepseek-chat]
 verify_jwt = false
 
+[functions.gemini-proxy]
+verify_jwt = false
+
