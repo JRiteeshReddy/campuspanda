@@ -49,6 +49,7 @@ const TimetableEntryDialog: React.FC<TimetableEntryDialogProps> = ({
   onSave,
   onDelete,
   existingLocations = {},
+  subjectClassrooms = {},
 }) => {
   const [subjectId, setSubjectId] = useState(currentSubjectId || '');
   const [location, setLocation] = useState(currentLocation || '');
