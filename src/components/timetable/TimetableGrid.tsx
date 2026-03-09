@@ -165,6 +165,25 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
     }
   };
 
+  const handleClearTimetable = async () => {
+    if (!user) return;
+    
+    try {
+      const { error } = await supabase
+        .from('timetable')
+        .delete()
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+      
+      toast.success('Timetable cleared successfully');
+      await fetchTimetableEntries();
+      setClearDialogOpen(false);
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
   // Function to get the subject name by ID
   const getSubjectName = (subjectId: string): string => {
     const subject = subjects.find(s => s.id === subjectId);
