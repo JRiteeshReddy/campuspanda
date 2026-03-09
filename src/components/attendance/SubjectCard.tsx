@@ -40,6 +40,7 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing, consecutiv
     }).max(100, {
       message: "Required percentage cannot exceed 100.",
     }),
+    classroom: z.string().optional(),
   }).refine((data) => data.classes_conducted >= data.classes_attended, {
     message: "Classes conducted cannot be less than classes attended.",
     path: ["classes_conducted"],
