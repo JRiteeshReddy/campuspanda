@@ -404,6 +404,14 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
               return acc;
             }, {})
           }
+          subjectClassrooms={
+            subjects.reduce<Record<string, string>>((acc, subject) => {
+              if (subject.classroom) {
+                acc[subject.id] = subject.classroom;
+              }
+              return acc;
+            }, {})
+          }
         />
       )}
 
