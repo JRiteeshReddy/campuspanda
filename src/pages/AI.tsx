@@ -25,64 +25,35 @@ const AI = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Gemini API integration
+  // Gemini API integration via secure edge function proxy
   const sendMessageToGemini = async (message: string) => {
     setIsLoading(true);
     try {
-      console.log('Sending message to Gemini API');
-      
-      // Using the correct Gemini API version (v1beta)
-      const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyBTE3kGyjn_YBZEkhjWbwYVYyi7jB44ky0', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              role: 'user',
-              parts: [
-                {
-                  text: message
-                }
-              ]
-            }
-          ],
-          generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 1024,
-          }
-        }),
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        toast({
+          title: 'Authentication Required',
+          description: 'Please log in to use the AI assistant.',
+          variant: 'destructive',
+        });
+        return null;
+      }
+
+      const response = await supabase.functions.invoke('gemini-proxy', {
+        body: { message },
       });
 
-      if (!response.ok) {
-        throw new Error(`Gemini API error: ${response.status} ${response.statusText}`);
+      if (response.error) {
+        throw new Error(response.error.message || 'Failed to get AI response');
       }
 
-      const data = await response.json();
-      console.log('Gemini response:', data);
-      
-      // Extract the response text from the Gemini API response
-      let aiResponse = '';
-      if (data.candidates && 
-          data.candidates[0] && 
-          data.candidates[0].content && 
-          data.candidates[0].content.parts && 
-          data.candidates[0].content.parts[0]) {
-        aiResponse = data.candidates[0].content.parts[0].text;
-      } else {
-        throw new Error('Invalid response format from Gemini API');
-      }
-      
-      return aiResponse;
+      return response.data?.response || null;
     } catch (error: any) {
-      console.error('Error calling Gemini API:', error);
+      console.error('Error calling AI:', error);
       
       toast({
         title: 'AI Error',
-        description: `Failed to get response: ${error.message}`,
+        description: 'Failed to get response. Please try again.',
         variant: 'destructive',
       });
       
