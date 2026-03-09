@@ -375,6 +375,14 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
           currentNotes={selectedSlot.entry?.notes}
           onSave={handleSaveEntry}
           onDelete={selectedSlot.entry ? handleDeleteEntry : undefined}
+          existingLocations={
+            timetableEntries.reduce<Record<string, string>>((acc, entry) => {
+              if (entry.location && !acc[entry.subject_id]) {
+                acc[entry.subject_id] = entry.location;
+              }
+              return acc;
+            }, {})
+          }
         />
       )}
 
