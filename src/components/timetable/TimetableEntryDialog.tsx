@@ -33,6 +33,7 @@ interface TimetableEntryDialogProps {
   currentNotes?: string;
   onSave: (data: { subject_id: string; location?: string; notes?: string }) => void;
   onDelete?: () => void;
+  existingLocations?: Record<string, string>;
 }
 
 const TimetableEntryDialog: React.FC<TimetableEntryDialogProps> = ({
@@ -46,6 +47,7 @@ const TimetableEntryDialog: React.FC<TimetableEntryDialogProps> = ({
   currentNotes,
   onSave,
   onDelete,
+  existingLocations = {},
 }) => {
   const [subjectId, setSubjectId] = useState(currentSubjectId || '');
   const [location, setLocation] = useState(currentLocation || '');
@@ -60,6 +62,14 @@ const TimetableEntryDialog: React.FC<TimetableEntryDialogProps> = ({
       setNotes(currentNotes || '');
     }
   }, [open, currentSubjectId, currentLocation, currentNotes]);
+
+  // Auto-fill location when subject changes and no location is set yet
+  const handleSubjectChange = (newSubjectId: string) => {
+    setSubjectId(newSubjectId);
+    if (!location && existingLocations[newSubjectId]) {
+      setLocation(existingLocations[newSubjectId]);
+    }
+  };
 
   const handleSave = () => {
     if (!subjectId) {
@@ -107,7 +117,7 @@ const TimetableEntryDialog: React.FC<TimetableEntryDialogProps> = ({
               <Label htmlFor="subject">Subject *</Label>
               <Select 
                 value={subjectId} 
-                onValueChange={setSubjectId}
+                onValueChange={handleSubjectChange}
               >
                 <SelectTrigger id="subject">
                   <SelectValue placeholder="Select a subject" />
