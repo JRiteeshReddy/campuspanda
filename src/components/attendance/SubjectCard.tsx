@@ -421,6 +421,21 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing, consecutiv
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={form.control}
+                  name="classroom"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center">
+                        Classroom Number <span className="text-xs text-muted-foreground ml-1">(optional)</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. Room 334" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <DialogFooter>
                   <Button type="submit" disabled={!form.formState.isValid}>Save changes</Button>
                 </DialogFooter>
