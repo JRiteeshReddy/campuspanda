@@ -25,6 +25,27 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing, consecutiv
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [classesToMark, setClassesToMark] = useState(1);
 
+  const todayKey = `attendance-marked-${new Date().toISOString().slice(0, 10)}`;
+  
+  const isMarkedToday = (): boolean => {
+    try {
+      const marked = JSON.parse(localStorage.getItem(todayKey) || '[]');
+      return marked.includes(subject.id);
+    } catch { return false; }
+  };
+
+  const markTodayInStorage = () => {
+    try {
+      const marked = JSON.parse(localStorage.getItem(todayKey) || '[]');
+      if (!marked.includes(subject.id)) {
+        marked.push(subject.id);
+        localStorage.setItem(todayKey, JSON.stringify(marked));
+      }
+    } catch {}
+  };
+
+  const [markedToday, setMarkedToday] = useState(isMarkedToday);
+
   const formSchema = z.object({
     name: z.string().min(1, {
       message: "Subject name is required.",
@@ -148,6 +169,8 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing, consecutiv
           classes_attended: subject.classes_attended + count,
           classes_conducted: subject.classes_conducted + count,
         });
+        markTodayInStorage();
+        setMarkedToday(true);
         toast.success(`${count} class${count > 1 ? 'es' : ''} marked as attended!`);
       } else {
         toast.error("Failed to mark attendance.");
@@ -175,6 +198,8 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing, consecutiv
           ...subject,
           classes_conducted: subject.classes_conducted + count,
         });
+        markTodayInStorage();
+        setMarkedToday(true);
         toast.success(`${count} class${count > 1 ? 'es' : ''} marked as absent!`);
       } else {
         toast.error("Failed to mark absence.");
@@ -239,8 +264,16 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing, consecutiv
   }
 
   return (
-    <div className="group relative flex flex-row justify-between items-start p-4 rounded-lg border border-border bg-background/50 hover:bg-background/80 transition-colors mb-3">
-      <div className="flex flex-col max-w-[65%]">
+    <div className={`group relative flex flex-row justify-between items-start p-4 rounded-lg border bg-background/50 hover:bg-background/80 transition-colors mb-3 ${markedToday ? 'border-green-500/40' : 'border-border'}`}>
+      {markedToday && (
+        <span className="absolute top-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-green-500/10 text-green-500 text-[10px] font-medium">
+          <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+          Marked
+        </span>
+      )}
+      <div className={`flex flex-col max-w-[65%] ${markedToday ? 'mt-4' : ''}`}>
         <h3 className="text-base sm:text-lg font-bold text-foreground mb-1">{subject.name.toLowerCase()}</h3>
         {(location || timing) && (
           <div className="flex items-center gap-2 mb-1 flex-wrap">
