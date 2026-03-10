@@ -239,7 +239,7 @@ const AttendanceTracker = () => {
                 className="gap-2 shrink-0"
               >
                 <CalendarPlus className="h-4 w-4" />
-                Add Timetable
+                Timetable
               </Button>
             </div>
           </header>
