@@ -25,6 +25,27 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing, consecutiv
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [classesToMark, setClassesToMark] = useState(1);
 
+  const todayKey = `attendance-marked-${new Date().toISOString().slice(0, 10)}`;
+  
+  const isMarkedToday = (): boolean => {
+    try {
+      const marked = JSON.parse(localStorage.getItem(todayKey) || '[]');
+      return marked.includes(subject.id);
+    } catch { return false; }
+  };
+
+  const markTodayInStorage = () => {
+    try {
+      const marked = JSON.parse(localStorage.getItem(todayKey) || '[]');
+      if (!marked.includes(subject.id)) {
+        marked.push(subject.id);
+        localStorage.setItem(todayKey, JSON.stringify(marked));
+      }
+    } catch {}
+  };
+
+  const [markedToday, setMarkedToday] = useState(isMarkedToday);
+
   const formSchema = z.object({
     name: z.string().min(1, {
       message: "Subject name is required.",
