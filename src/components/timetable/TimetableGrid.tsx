@@ -337,13 +337,13 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
       <Card className="overflow-hidden">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
+            <table className="w-full border-collapse table-fixed">
               <thead>
                 <tr className="bg-muted/50 dark:bg-muted/20">
-                  <th className="border border-border p-2 text-left font-medium text-muted-foreground w-20">Day</th>
+                  <th className={`border border-border font-medium text-muted-foreground ${isMobile ? 'p-0.5 text-[10px] w-10' : 'p-2 text-sm w-20'}`}>Day</th>
                   {timeSlots.map(slot => (
-                    <th key={slot.start} className="border border-border p-2 text-center font-medium text-muted-foreground w-16">
-                      {slot.label}
+                    <th key={slot.start} className={`border border-border text-center font-medium text-muted-foreground ${isMobile ? 'p-0.5 text-[10px]' : 'p-2 text-sm'}`}>
+                      {isMobile ? slot.label.replace(' AM', 'A').replace(' PM', 'P') : slot.label}
                     </th>
                   ))}
                 </tr>
@@ -351,8 +351,8 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
               <tbody>
                 {daysOfWeek.map(day => (
                   <tr key={day} className="hover:bg-muted/30 dark:hover:bg-muted/10">
-                    <td className="border border-border p-2 text-sm font-medium">
-                      {day}
+                    <td className={`border border-border font-medium ${isMobile ? 'p-0.5 text-[10px]' : 'p-2 text-sm'}`}>
+                      {isMobile ? day.substring(0, 3) : day}
                     </td>
                     {timeSlots.map(slot => {
                       const entry = getSlotEntry(day, slot.start, slot.end);
@@ -366,7 +366,7 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
                       return (
                         <td 
                           key={`${day}-${slot.start}`} 
-                          className="border border-border p-0 h-16 w-16"
+                          className={`border border-border p-0 ${isMobile ? 'h-10' : 'h-16'}`}
                           onClick={() => handleOpenDialog(day, slot.start, slot.end)}
                         >
                           <TimetableSlot
@@ -374,6 +374,7 @@ const TimetableGrid = ({ subjects }: TimetableGridProps) => {
                             subjectName={subjectName}
                             location={entry?.location}
                             attendanceStatus={attendanceStatus}
+                            compact={isMobile}
                           />
                         </td>
                       );
