@@ -29,6 +29,7 @@ interface TimetableGridProps {
 
 const TimetableGrid = ({ subjects }: TimetableGridProps) => {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [timetableEntries, setTimetableEntries] = useState<TimetableEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSlot, setSelectedSlot] = useState<{
