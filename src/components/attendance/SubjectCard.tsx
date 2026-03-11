@@ -179,7 +179,7 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing, consecutiv
           classes_attended: subject.classes_attended + count,
           classes_conducted: subject.classes_conducted + count,
         });
-        markTodayInStorage();
+        markTodayInDb();
         setMarkedToday(true);
         toast.success(`${count} class${count > 1 ? 'es' : ''} marked as attended!`);
       } else {
