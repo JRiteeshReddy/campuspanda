@@ -1,5 +1,5 @@
 
-import { differenceInDays, isEqual, format, formatDistance, addDays } from 'date-fns';
+import { differenceInDays, isEqual, format, formatDistance, addDays, startOfDay } from 'date-fns';
 
 export const getAssignmentStatusInfo = (deadline: Date, completed: boolean) => {
   if (completed) {
