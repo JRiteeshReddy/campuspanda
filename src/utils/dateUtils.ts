@@ -1,5 +1,5 @@
 
-import { differenceInDays, isEqual, format, formatDistance, addDays } from 'date-fns';
+import { differenceInDays, isEqual, format, formatDistance, addDays, startOfDay } from 'date-fns';
 
 export const getAssignmentStatusInfo = (deadline: Date, completed: boolean) => {
   if (completed) {
@@ -10,8 +10,8 @@ export const getAssignmentStatusInfo = (deadline: Date, completed: boolean) => {
   }
   
   const daysUntilDeadline = differenceInDays(
-    deadline,
-    new Date()
+    startOfDay(deadline),
+    startOfDay(new Date())
   );
   
   if (daysUntilDeadline <= 0) {
@@ -42,8 +42,8 @@ export const getDayClassNames = (day: Date, assignments: Array<{ deadline: Date,
   }
   
   const daysUntilDeadline = differenceInDays(
-    new Date(assignment.deadline),
-    new Date()
+    startOfDay(new Date(assignment.deadline)),
+    startOfDay(new Date())
   );
   
   if (daysUntilDeadline <= 1) {
