@@ -35,12 +35,37 @@ const ProfileMenu = () => {
   const [loading, setLoading] = useState(false);
   const [showResetSubjectsDialog, setShowResetSubjectsDialog] = useState(false);
   const [showResetAttendanceDialog, setShowResetAttendanceDialog] = useState(false);
+  const [friendCode, setFriendCode] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
       fetchTotalAttendance();
+      fetchOrCreateFriendCode();
     }
   }, [user]);
+
+  const fetchOrCreateFriendCode = async () => {
+    if (!user) return;
+    // Try to get existing code
+    let { data, error } = await supabase
+      .from('friend_codes')
+      .select('code')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (!data && !error) {
+      // Create one
+      const { data: newData, error: insertError } = await supabase
+        .from('friend_codes')
+        .insert({ user_id: user.id })
+        .select('code')
+        .single();
+      if (!insertError && newData) {
+        data = newData;
+      }
+    }
+    if (data) setFriendCode(data.code);
+  };
 
   const fetchTotalAttendance = async () => {
     if (!user) return;
