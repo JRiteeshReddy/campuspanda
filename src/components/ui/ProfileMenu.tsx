@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { supabase } from '@/lib/supabase';
 import { Link } from 'react-router-dom';
 import { 
   DropdownMenu,
