@@ -22,30 +22,39 @@ interface SubjectCardProps {
 }
 
 const SubjectCard = ({ subject, onDelete, onUpdate, location, timing, consecutiveClasses }: SubjectCardProps) => {
+  const { user } = useAuth();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [classesToMark, setClassesToMark] = useState(1);
+  const [markedToday, setMarkedToday] = useState(false);
 
-  const todayKey = `attendance-marked-${new Date().toISOString().slice(0, 10)}`;
-  
-  const isMarkedToday = (): boolean => {
-    try {
-      const marked = JSON.parse(localStorage.getItem(todayKey) || '[]');
-      return marked.includes(subject.id);
-    } catch { return false; }
+  useEffect(() => {
+    if (user) {
+      checkIfMarkedToday();
+    }
+  }, [user, subject.id]);
+
+  const checkIfMarkedToday = async () => {
+    if (!user) return;
+    const today = new Date().toISOString().slice(0, 10);
+    const { data } = await supabase
+      .from('attendance_marks')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('subject_id', subject.id)
+      .eq('marked_date', today)
+      .maybeSingle();
+    setMarkedToday(!!data);
   };
 
-  const markTodayInStorage = () => {
-    try {
-      const marked = JSON.parse(localStorage.getItem(todayKey) || '[]');
-      if (!marked.includes(subject.id)) {
-        marked.push(subject.id);
-        localStorage.setItem(todayKey, JSON.stringify(marked));
-      }
-    } catch {}
+  const markTodayInDb = async () => {
+    if (!user) return;
+    const today = new Date().toISOString().slice(0, 10);
+    await supabase
+      .from('attendance_marks')
+      .upsert({ user_id: user.id, subject_id: subject.id, marked_date: today }, { onConflict: 'user_id,subject_id,marked_date' });
+    setMarkedToday(true);
   };
-
-  const [markedToday, setMarkedToday] = useState(isMarkedToday);
 
   const formSchema = z.object({
     name: z.string().min(1, {
