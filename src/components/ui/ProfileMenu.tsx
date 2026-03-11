@@ -273,6 +273,24 @@ const ProfileMenu = () => {
           )}
         </div>
         
+        {friendCode && (
+          <div className="px-2 py-1.5">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Friend Code:</span>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(friendCode);
+                  toast.success('Friend code copied!');
+                }}
+                className="flex items-center gap-1 font-mono font-semibold text-foreground hover:text-primary transition-colors"
+              >
+                {friendCode}
+                <Copy size={12} />
+              </button>
+            </div>
+          </div>
+        )}
+        
         <DropdownMenuSeparator />
         
         <div className="px-2 py-1.5 flex gap-2">
