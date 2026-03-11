@@ -10,8 +10,8 @@ export const getAssignmentStatusInfo = (deadline: Date, completed: boolean) => {
   }
   
   const daysUntilDeadline = differenceInDays(
-    deadline,
-    new Date()
+    startOfDay(deadline),
+    startOfDay(new Date())
   );
   
   if (daysUntilDeadline <= 0) {
