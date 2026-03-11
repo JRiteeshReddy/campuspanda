@@ -42,8 +42,8 @@ export const getDayClassNames = (day: Date, assignments: Array<{ deadline: Date,
   }
   
   const daysUntilDeadline = differenceInDays(
-    new Date(assignment.deadline),
-    new Date()
+    startOfDay(new Date(assignment.deadline)),
+    startOfDay(new Date())
   );
   
   if (daysUntilDeadline <= 1) {
