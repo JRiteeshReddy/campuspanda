@@ -21,6 +21,7 @@ import AI from "./pages/AI";
 import NotFound from "./pages/NotFound";
 import Settings from "./pages/Settings";
 import ResetPassword from "./pages/ResetPassword";
+import Friends from "./pages/Friends";
 
 // Create a client for React Query
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const AppRoutes = () => (
     <Route path="/ai" element={<NotFound />} />
     <Route path="/settings" element={<Settings />} />
     <Route path="/reset-password" element={<ResetPassword />} />
+    <Route path="/friends" element={<Friends />} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );

@@ -4,7 +4,8 @@ import { useAuth } from '@/context/AuthContext';
 import { useDocumentTitle } from '@/hooks/use-document-title';
 import { useIsMobile } from '@/hooks/use-mobile';
 import ProfileMenu from '@/components/ui/ProfileMenu';
-import { Home, BookOpen, CalendarCheck, FileText, Calendar } from 'lucide-react';
+import InboxButton from '@/components/ui/InboxButton';
+import { Home, BookOpen, CalendarCheck, FileText, Calendar, Users } from 'lucide-react';
 
 const Navbar = () => {
   const { user } = useAuth();
@@ -38,38 +39,45 @@ const Navbar = () => {
           <>
             {!isMobile && (
               <>
-                {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/notes' || currentPath === '/events') && (
+                {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/notes' || currentPath === '/events' || currentPath === '/friends') && (
                   <Link to="/" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
                     <Home size={20} />
                   </Link>
                 )}
                 
-                {(currentPath === '/assignments' || currentPath === '/notes' || currentPath === '/events') && (
+                {(currentPath === '/assignments' || currentPath === '/notes' || currentPath === '/events' || currentPath === '/friends') && (
                   <Link to="/attendance" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
                     <BookOpen size={20} />
                   </Link>
                 )}
                 
-                {(currentPath === '/attendance' || currentPath === '/notes' || currentPath === '/events') && (
+                {(currentPath === '/attendance' || currentPath === '/notes' || currentPath === '/events' || currentPath === '/friends') && (
                   <Link to="/assignments" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
                     <CalendarCheck size={20} />
                   </Link>
                 )}
                 
-                {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/events') && (
+                {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/events' || currentPath === '/friends') && (
                   <Link to="/notes" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
                     <FileText size={20} />
                   </Link>
                 )}
                 
-                {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/notes') && (
+                {(currentPath === '/attendance' || currentPath === '/assignments' || currentPath === '/notes' || currentPath === '/friends') && (
                   <Link to="/events" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
                     <Calendar size={20} />
+                  </Link>
+                )}
+
+                {currentPath !== '/friends' && (
+                  <Link to="/friends" className="flex items-center text-foreground hover:text-primary transition-colors mr-2">
+                    <Users size={20} />
                   </Link>
                 )}
               </>
             )}
             
+            <InboxButton />
             <ProfileMenu />
           </>
         ) : (

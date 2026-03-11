@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { supabase } from '@/lib/supabase';
 import { Link } from 'react-router-dom';
 import { 
   DropdownMenu,
@@ -20,8 +21,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { ChevronDown, LogOut, User, Home, BookOpen, CalendarCheck, FileText, Calendar, Trash2, RotateCcw, Settings } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { ChevronDown, LogOut, User, Home, BookOpen, CalendarCheck, FileText, Calendar, Trash2, RotateCcw, Settings, Users, Copy } from 'lucide-react';
+// supabase already imported above
 import { Subject } from '@/types';
 import { PieChart, Pie, Cell } from 'recharts';
 import { toast } from 'sonner';
@@ -34,12 +35,37 @@ const ProfileMenu = () => {
   const [loading, setLoading] = useState(false);
   const [showResetSubjectsDialog, setShowResetSubjectsDialog] = useState(false);
   const [showResetAttendanceDialog, setShowResetAttendanceDialog] = useState(false);
+  const [friendCode, setFriendCode] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
       fetchTotalAttendance();
+      fetchOrCreateFriendCode();
     }
   }, [user]);
+
+  const fetchOrCreateFriendCode = async () => {
+    if (!user) return;
+    // Try to get existing code
+    let { data, error } = await supabase
+      .from('friend_codes')
+      .select('code')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (!data && !error) {
+      // Create one
+      const { data: newData, error: insertError } = await supabase
+        .from('friend_codes')
+        .insert({ user_id: user.id })
+        .select('code')
+        .single();
+      if (!insertError && newData) {
+        data = newData;
+      }
+    }
+    if (data) setFriendCode(data.code);
+  };
 
   const fetchTotalAttendance = async () => {
     if (!user) return;
@@ -184,6 +210,15 @@ const ProfileMenu = () => {
                   <Calendar size={16} className="mr-2" />
                   <span>Events</span>
                 </Link>
+            </DropdownMenuItem>
+            )}
+            
+            {currentPath !== '/friends' && (
+              <DropdownMenuItem asChild>
+                <Link to="/friends" className="flex items-center cursor-pointer">
+                  <Users size={16} className="mr-2" />
+                  <span>Friends</span>
+                </Link>
               </DropdownMenuItem>
             )}
             
@@ -237,6 +272,24 @@ const ProfileMenu = () => {
             </div>
           )}
         </div>
+        
+        {friendCode && (
+          <div className="px-2 py-1.5">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Friend Code:</span>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(friendCode);
+                  toast.success('Friend code copied!');
+                }}
+                className="flex items-center gap-1 font-mono font-semibold text-foreground hover:text-primary transition-colors"
+              >
+                {friendCode}
+                <Copy size={12} />
+              </button>
+            </div>
+          </div>
+        )}
         
         <DropdownMenuSeparator />
         
