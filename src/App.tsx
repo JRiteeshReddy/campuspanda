@@ -38,6 +38,7 @@ const AppRoutes = () => (
     <Route path="/ai" element={<NotFound />} />
     <Route path="/settings" element={<Settings />} />
     <Route path="/reset-password" element={<ResetPassword />} />
+    <Route path="/friends" element={<Friends />} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
