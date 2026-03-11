@@ -21,8 +21,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { ChevronDown, LogOut, User, Home, BookOpen, CalendarCheck, FileText, Calendar, Trash2, RotateCcw, Settings } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { ChevronDown, LogOut, User, Home, BookOpen, CalendarCheck, FileText, Calendar, Trash2, RotateCcw, Settings, Users, Copy } from 'lucide-react';
+import { supabase as supabaseClient } from '@/lib/supabase';
 import { Subject } from '@/types';
 import { PieChart, Pie, Cell } from 'recharts';
 import { toast } from 'sonner';
