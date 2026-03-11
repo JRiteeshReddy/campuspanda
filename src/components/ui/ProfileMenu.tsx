@@ -210,6 +210,15 @@ const ProfileMenu = () => {
                   <Calendar size={16} className="mr-2" />
                   <span>Events</span>
                 </Link>
+            </DropdownMenuItem>
+            )}
+            
+            {currentPath !== '/friends' && (
+              <DropdownMenuItem asChild>
+                <Link to="/friends" className="flex items-center cursor-pointer">
+                  <Users size={16} className="mr-2" />
+                  <span>Friends</span>
+                </Link>
               </DropdownMenuItem>
             )}
             
