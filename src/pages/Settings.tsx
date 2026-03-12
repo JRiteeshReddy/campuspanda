@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Mail, Key, Shield, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Mail, Key, Shield, Eye, EyeOff, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useDocumentTitle } from '@/hooks/use-document-title';
@@ -18,6 +18,64 @@ const Settings = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [username, setUsername] = useState('');
+  const [currentUsername, setCurrentUsername] = useState<string | null>(null);
+  const [usernameLoading, setUsernameLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      fetchUsername();
+    }
+  }, [user]);
+
+  const fetchUsername = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('user_id', user.id)
+      .maybeSingle();
+    if (data?.username) {
+      setCurrentUsername(data.username);
+      setUsername(data.username);
+    }
+  };
+
+  const handleUpdateUsername = async () => {
+    if (!user || !username.trim()) {
+      toast.error('Please enter a username');
+      return;
+    }
+    try {
+      setUsernameLoading(true);
+      // Check uniqueness
+      const { data: existing } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('username', username.trim())
+        .neq('user_id', user.id)
+        .maybeSingle();
+
+      if (existing) {
+        toast.error('Username is already taken');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ username: username.trim(), updated_at: new Date().toISOString() })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      setCurrentUsername(username.trim());
+      toast.success('Username updated successfully');
+    } catch (error: any) {
+      console.error('Error updating username:', error);
+      toast.error(error.message || 'Failed to update username');
+    } finally {
+      setUsernameLoading(false);
+    }
+  };
 
   const handleChangePassword = async () => {
     if (!newPassword || !confirmPassword) {
@@ -92,7 +150,36 @@ const Settings = () => {
           </CardContent>
         </Card>
 
-        {/* Change Password */}
+        {/* Username */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <User size={20} />
+              Username
+            </CardTitle>
+            <CardDescription>Set a unique username visible to your friends</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter a unique username"
+                maxLength={30}
+              />
+            </div>
+            <Button
+              onClick={handleUpdateUsername}
+              disabled={usernameLoading || !username.trim() || username.trim() === currentUsername}
+              className="w-full"
+            >
+              {usernameLoading ? 'Updating...' : 'Update Username'}
+            </Button>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">

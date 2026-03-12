@@ -10,7 +10,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, username?: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -96,12 +96,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, username?: string) => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signUp({ email, password });
+      const { data: signUpData, error } = await supabase.auth.signUp({ email, password });
       
       if (error) throw error;
+
+      // If username provided and user created, update profile
+      if (username && signUpData.user) {
+        await supabase
+          .from('profiles')
+          .update({ username })
+          .eq('user_id', signUpData.user.id);
+      }
       
       toast.success('Account created successfully. Please check your email for verification.');
       navigate('/login');

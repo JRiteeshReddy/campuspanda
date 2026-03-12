@@ -9,10 +9,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, UserPlus, Users, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
-interface FriendWithEmail {
+interface FriendWithInfo {
   id: string;
   friend_id: string;
-  friend_email: string;
+  display_name: string;
+  friend_code: string;
   created_at: string;
 }
 
@@ -20,7 +21,7 @@ const Friends = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [friendCode, setFriendCode] = useState('');
-  const [friends, setFriends] = useState<FriendWithEmail[]>([]);
+  const [friends, setFriends] = useState<FriendWithInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
 
@@ -72,14 +73,25 @@ const Friends = () => {
         .select('user_id, code')
         .in('user_id', friendUserIds);
 
-      const codeMap = new Map((codes || []).map(c => [c.user_id, c.code]));
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, username')
+        .in('user_id', friendUserIds);
 
-      setFriends(allFriendIds.map(f => ({
-        id: f.id,
-        friend_id: f.friendUserId,
-        friend_email: codeMap.get(f.friendUserId) || 'Unknown',
-        created_at: f.created_at,
-      })));
+      const codeMap = new Map((codes || []).map(c => [c.user_id, c.code]));
+      const usernameMap = new Map((profiles || []).map(p => [p.user_id, p.username]));
+
+      setFriends(allFriendIds.map(f => {
+        const uname = usernameMap.get(f.friendUserId);
+        const code = codeMap.get(f.friendUserId) || 'Unknown';
+        return {
+          id: f.id,
+          friend_id: f.friendUserId,
+          display_name: uname || `Friend Code: ${code}`,
+          friend_code: code,
+          created_at: f.created_at,
+        };
+      }));
     } catch (error) {
       handleError(error);
     } finally {
@@ -235,7 +247,7 @@ const Friends = () => {
                           <Users size={14} className="text-muted-foreground" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-foreground">Friend Code: {friend.friend_email}</p>
+                          <p className="text-sm font-medium text-foreground">{friend.display_name}</p>
                           <p className="text-xs text-muted-foreground">
                             Added {new Date(friend.created_at).toLocaleDateString()}
                           </p>
