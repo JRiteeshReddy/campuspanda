@@ -21,7 +21,7 @@ const Friends = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [friendCode, setFriendCode] = useState('');
-  const [friends, setFriends] = useState<FriendWithEmail[]>([]);
+  const [friends, setFriends] = useState<FriendWithInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
 
