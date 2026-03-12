@@ -136,17 +136,19 @@ const Friends = () => {
         return;
       }
 
-      // Check for existing pending request
+      // Check for any existing request (pending, accepted, or rejected) in either direction
       const { data: existingReq } = await supabase
         .from('friend_requests')
-        .select('id')
-        .eq('sender_id', user.id)
-        .eq('receiver_id', codeData.user_id)
-        .eq('status', 'pending')
+        .select('id, status')
+        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${codeData.user_id}),and(sender_id.eq.${codeData.user_id},receiver_id.eq.${user.id})`)
         .maybeSingle();
 
       if (existingReq) {
-        toast.error('Friend request already sent!');
+        if (existingReq.status === 'pending') {
+          toast.error('Friend request already sent!');
+        } else {
+          toast.error('A friend request already exists between you two.');
+        }
         return;
       }
 
