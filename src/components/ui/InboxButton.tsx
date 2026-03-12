@@ -75,16 +75,24 @@ const InboxButton = () => {
 
       if (updateError) throw updateError;
 
-      // Create friendship (both directions)
-      const { error: friendError } = await supabase
+      // Check if already friends
+      const { data: existing } = await supabase
         .from('friends')
-        .insert([
-          { user_id: user.id, friend_id: senderId },
-        ]);
+        .select('id')
+        .or(`and(user_id.eq.${user.id},friend_id.eq.${senderId}),and(user_id.eq.${senderId},friend_id.eq.${user.id})`)
+        .maybeSingle();
 
-      if (friendError) throw friendError;
+      if (existing) {
+        toast.info('The friend request is already accepted');
+      } else {
+        const { error: friendError } = await supabase
+          .from('friends')
+          .insert([{ user_id: user.id, friend_id: senderId }]);
 
-      toast.success('Friend request accepted!');
+        if (friendError) throw friendError;
+        toast.success('The friend request successfully accepted');
+      }
+
       setRequests(prev => prev.filter(r => r.id !== requestId));
     } catch (error) {
       console.error('Error accepting request:', error);
