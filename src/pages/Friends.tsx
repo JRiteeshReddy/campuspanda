@@ -247,7 +247,7 @@ const Friends = () => {
                           <Users size={14} className="text-muted-foreground" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-foreground">Friend Code: {friend.friend_email}</p>
+                          <p className="text-sm font-medium text-foreground">{friend.display_name}</p>
                           <p className="text-xs text-muted-foreground">
                             Added {new Date(friend.created_at).toLocaleDateString()}
                           </p>
