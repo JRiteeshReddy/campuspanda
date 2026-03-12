@@ -9,10 +9,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, UserPlus, Users, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
-interface FriendWithEmail {
+interface FriendWithInfo {
   id: string;
   friend_id: string;
-  friend_email: string;
+  display_name: string;
+  friend_code: string;
   created_at: string;
 }
 
