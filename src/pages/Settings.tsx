@@ -150,7 +150,36 @@ const Settings = () => {
           </CardContent>
         </Card>
 
-        {/* Change Password */}
+        {/* Username */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <User size={20} />
+              Username
+            </CardTitle>
+            <CardDescription>Set a unique username visible to your friends</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter a unique username"
+                maxLength={30}
+              />
+            </div>
+            <Button
+              onClick={handleUpdateUsername}
+              disabled={usernameLoading || !username.trim() || username.trim() === currentUsername}
+              className="w-full"
+            >
+              {usernameLoading ? 'Updating...' : 'Update Username'}
+            </Button>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
