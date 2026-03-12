@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 const SignupForm = () => {
   const { signUp, loading } = useAuth();
@@ -14,6 +15,7 @@ const SignupForm = () => {
     email: '',
     password: '',
   });
+  const [username, setUsername] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,9 +33,23 @@ const SignupForm = () => {
       setError('Password must be at least 6 characters');
       return;
     }
+
+    if (username.trim()) {
+      // Check username uniqueness
+      const { data: existing } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('username', username.trim())
+        .maybeSingle();
+
+      if (existing) {
+        setError('Username is already taken');
+        return;
+      }
+    }
     
     try {
-      await signUp(formData.email, formData.password);
+      await signUp(formData.email, formData.password, username.trim() || undefined);
     } catch (error) {
       // Error is already handled in the auth context
     }
@@ -41,6 +57,24 @@ const SignupForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="username">Username</Label>
+        <Input
+          id="username"
+          name="username"
+          type="text"
+          placeholder="Choose a username"
+          value={username}
+          onChange={(e) => { setUsername(e.target.value); setError(null); }}
+          className="form-input"
+          autoComplete="username"
+          maxLength={30}
+        />
+        <p className="text-xs text-muted-foreground">
+          Optional but recommended. Must be unique.
+        </p>
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <Input

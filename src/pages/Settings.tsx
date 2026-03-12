@@ -18,6 +18,64 @@ const Settings = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [username, setUsername] = useState('');
+  const [currentUsername, setCurrentUsername] = useState<string | null>(null);
+  const [usernameLoading, setUsernameLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      fetchUsername();
+    }
+  }, [user]);
+
+  const fetchUsername = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('user_id', user.id)
+      .maybeSingle();
+    if (data?.username) {
+      setCurrentUsername(data.username);
+      setUsername(data.username);
+    }
+  };
+
+  const handleUpdateUsername = async () => {
+    if (!user || !username.trim()) {
+      toast.error('Please enter a username');
+      return;
+    }
+    try {
+      setUsernameLoading(true);
+      // Check uniqueness
+      const { data: existing } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('username', username.trim())
+        .neq('user_id', user.id)
+        .maybeSingle();
+
+      if (existing) {
+        toast.error('Username is already taken');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ username: username.trim(), updated_at: new Date().toISOString() })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      setCurrentUsername(username.trim());
+      toast.success('Username updated successfully');
+    } catch (error: any) {
+      console.error('Error updating username:', error);
+      toast.error(error.message || 'Failed to update username');
+    } finally {
+      setUsernameLoading(false);
+    }
+  };
 
   const handleChangePassword = async () => {
     if (!newPassword || !confirmPassword) {
