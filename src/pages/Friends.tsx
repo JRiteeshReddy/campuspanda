@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, UserPlus, Users, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import FriendTimetableView from '@/components/friends/FriendTimetableView';
 
 interface FriendWithInfo {
   id: string;
