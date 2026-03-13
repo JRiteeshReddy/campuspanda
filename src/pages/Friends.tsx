@@ -281,6 +281,14 @@ const Friends = () => {
               )}
             </CardContent>
           </Card>
+
+          {selectedFriend && (
+            <FriendTimetableView
+              friendUserId={selectedFriend.friend_id}
+              friendName={selectedFriend.display_name}
+              onClose={() => setSelectedFriend(null)}
+            />
+          )}
         </div>
       </main>
     </div>
