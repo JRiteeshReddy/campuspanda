@@ -25,6 +25,7 @@ const Friends = () => {
   const [friends, setFriends] = useState<FriendWithInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [selectedFriend, setSelectedFriend] = useState<FriendWithInfo | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
