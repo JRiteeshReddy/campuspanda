@@ -89,6 +89,16 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing, consecutiv
     mode: "onChange",
   });
 
+  useEffect(() => {
+    form.reset({
+      name: subject.name,
+      classes_attended: subject.classes_attended,
+      classes_conducted: subject.classes_conducted,
+      required_percentage: subject.required_percentage,
+      classroom: subject.classroom || '',
+    });
+  }, [subject, form]);
+
   async function editSubject(values: z.infer<typeof formSchema>) {
     try {
       const { data, error } = await supabase
