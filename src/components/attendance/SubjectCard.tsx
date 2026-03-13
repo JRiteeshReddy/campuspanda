@@ -113,6 +113,16 @@ const SubjectCard = ({ subject, onDelete, onUpdate, location, timing, consecutiv
         .eq('id', subject.id)
         .select();
 
+      // Also update timetable entries' location when classroom changes
+      const newClassroom = values.classroom?.trim() || null;
+      if (newClassroom !== subject.classroom && user) {
+        await supabase
+          .from('timetable')
+          .update({ location: newClassroom })
+          .eq('subject_id', subject.id)
+          .eq('user_id', user.id);
+      }
+
       if (error) {
         handleError(error);
         return;
