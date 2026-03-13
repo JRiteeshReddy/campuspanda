@@ -321,7 +321,10 @@ const AttendanceTracker = () => {
                   key={subject.id}
                   subject={subject}
                   onDelete={handleDeleteSubject}
-                  onUpdate={fetchSubjects}
+                  onUpdate={() => {
+                    fetchSubjects();
+                    fetchTimetableEntries();
+                  }}
                   location={showTimetableOnly ? getSubjectLocation(subject.id) : undefined}
                   timing={showTimetableOnly ? getSubjectTiming(subject.id) : undefined}
                   consecutiveClasses={showTimetableOnly ? getConsecutiveClassCount(subject.id) : undefined}
