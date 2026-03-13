@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, UserPlus, Users, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import FriendTimetableView from '@/components/friends/FriendTimetableView';
 
 interface FriendWithInfo {
   id: string;
@@ -24,6 +25,7 @@ const Friends = () => {
   const [friends, setFriends] = useState<FriendWithInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [selectedFriend, setSelectedFriend] = useState<FriendWithInfo | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -245,7 +247,15 @@ const Friends = () => {
               ) : friends.length > 0 ? (
                 <div className="space-y-3">
                   {friends.map((friend) => (
-                    <div key={friend.id} className="flex items-center justify-between p-3 rounded-lg border border-border bg-background/50">
+                    <div
+                      key={friend.id}
+                      className={`flex items-center justify-between p-3 rounded-lg border bg-background/50 cursor-pointer transition-colors ${
+                        selectedFriend?.id === friend.id
+                          ? 'border-primary bg-primary/5'
+                          : 'border-border hover:border-muted-foreground/30'
+                      }`}
+                      onClick={() => setSelectedFriend(selectedFriend?.id === friend.id ? null : friend)}
+                    >
                       <div className="flex items-center gap-3">
                         <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
                           <Users size={14} className="text-muted-foreground" />
@@ -257,7 +267,7 @@ const Friends = () => {
                           </p>
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm" onClick={() => removeFriend(friend.id)}>
+                      <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); removeFriend(friend.id); }}>
                         <Trash2 size={14} className="text-destructive" />
                       </Button>
                     </div>
@@ -271,6 +281,14 @@ const Friends = () => {
               )}
             </CardContent>
           </Card>
+
+          {selectedFriend && (
+            <FriendTimetableView
+              friendUserId={selectedFriend.friend_id}
+              friendName={selectedFriend.display_name}
+              onClose={() => setSelectedFriend(null)}
+            />
+          )}
         </div>
       </main>
     </div>
