@@ -57,6 +57,25 @@ const FriendTimetableView = ({ friendUserId, friendName, onClose }: FriendTimeta
   const fetchFriendData = async () => {
     try {
       setLoading(true);
+
+      // Check visibility setting
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('timetable_visible, visible_to_friend_ids')
+        .eq('user_id', friendUserId)
+        .maybeSingle();
+
+      if (profile && !profile.timetable_visible) {
+        // Check if current user is in the allowed list
+        const allowedIds: string[] = profile.visible_to_friend_ids || [];
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        if (!currentUser || !allowedIds.includes(currentUser.id)) {
+          setTimetableHidden(true);
+          setLoading(false);
+          return;
+        }
+      }
+
       const [timetableRes, subjectsRes] = await Promise.all([
         supabase.from('timetable').select('*').eq('user_id', friendUserId),
         supabase.from('subjects').select('id, name, classes_attended, classes_conducted, required_percentage').eq('user_id', friendUserId),
