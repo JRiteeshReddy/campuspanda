@@ -47,6 +47,8 @@ const FriendTimetableView = ({ friendUserId, friendName, onClose }: FriendTimeta
   const [loading, setLoading] = useState(true);
   const [entries, setEntries] = useState<TimetableEntry[]>([]);
   const [subjects, setSubjects] = useState<SubjectData[]>([]);
+  const [showBunk, setShowBunk] = useState(false);
+  const [timetableHidden, setTimetableHidden] = useState(false);
 
   useEffect(() => {
     fetchFriendData();
