@@ -127,6 +127,24 @@ const FriendTimetableView = ({ friendUserId, friendName, onClose }: FriendTimeta
     );
   }
 
+  if (timetableHidden) {
+    return (
+      <Card className="mt-6">
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardTitle className="text-lg">{friendName}'s Timetable</CardTitle>
+          <Button variant="ghost" size="sm" onClick={onClose}>
+            <X size={16} />
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground text-center py-4">
+            {friendName} has hidden their timetable from you.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="mt-6">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
