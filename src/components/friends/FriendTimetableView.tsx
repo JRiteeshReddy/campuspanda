@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { supabase, handleError } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, X } from 'lucide-react';
+import { Loader2, X, PartyPopper } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
+import BunkTogetherView from './BunkTogetherView';
 
 interface TimetableEntry {
   id: string;
