@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { supabase, handleError } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, X } from 'lucide-react';
+import { Loader2, X, PartyPopper } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
+import BunkTogetherView from './BunkTogetherView';
 
 interface TimetableEntry {
   id: string;
@@ -46,6 +47,8 @@ const FriendTimetableView = ({ friendUserId, friendName, onClose }: FriendTimeta
   const [loading, setLoading] = useState(true);
   const [entries, setEntries] = useState<TimetableEntry[]>([]);
   const [subjects, setSubjects] = useState<SubjectData[]>([]);
+  const [showBunk, setShowBunk] = useState(false);
+  const [timetableHidden, setTimetableHidden] = useState(false);
 
   useEffect(() => {
     fetchFriendData();
@@ -54,6 +57,25 @@ const FriendTimetableView = ({ friendUserId, friendName, onClose }: FriendTimeta
   const fetchFriendData = async () => {
     try {
       setLoading(true);
+
+      // Check visibility setting
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('timetable_visible, visible_to_friend_ids')
+        .eq('user_id', friendUserId)
+        .maybeSingle();
+
+      if (profile && !profile.timetable_visible) {
+        // Check if current user is in the allowed list
+        const allowedIds: string[] = profile.visible_to_friend_ids || [];
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        if (!currentUser || !allowedIds.includes(currentUser.id)) {
+          setTimetableHidden(true);
+          setLoading(false);
+          return;
+        }
+      }
+
       const [timetableRes, subjectsRes] = await Promise.all([
         supabase.from('timetable').select('*').eq('user_id', friendUserId),
         supabase.from('subjects').select('id, name, classes_attended, classes_conducted, required_percentage').eq('user_id', friendUserId),
@@ -105,7 +127,26 @@ const FriendTimetableView = ({ friendUserId, friendName, onClose }: FriendTimeta
     );
   }
 
+  if (timetableHidden) {
+    return (
+      <Card className="mt-6">
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardTitle className="text-lg">{friendName}'s Timetable</CardTitle>
+          <Button variant="ghost" size="sm" onClick={onClose}>
+            <X size={16} />
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground text-center py-4">
+            {friendName} has hidden their timetable from you.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
+    <>
     <Card className="mt-6">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-lg">{friendName}'s Timetable</CardTitle>
@@ -206,8 +247,30 @@ const FriendTimetableView = ({ friendUserId, friendName, onClose }: FriendTimeta
             </table>
           </div>
         )}
+
+        {/* Bunk Together Button */}
+        <div className="px-4 py-3">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full"
+            onClick={() => setShowBunk(!showBunk)}
+          >
+            <PartyPopper size={16} className="mr-2" />
+            {showBunk ? 'Hide Bunk Together' : "Friend's Bunk Together"}
+          </Button>
+        </div>
       </CardContent>
     </Card>
+
+    {showBunk && (
+      <BunkTogetherView
+        friendUserId={friendUserId}
+        friendName={friendName}
+        onClose={() => setShowBunk(false)}
+      />
+    )}
+    </>
   );
 };
 

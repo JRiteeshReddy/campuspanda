@@ -5,10 +5,18 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Mail, Key, Shield, Eye, EyeOff, User } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ArrowLeft, Mail, Key, Shield, Eye, EyeOff, User, Users, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useDocumentTitle } from '@/hooks/use-document-title';
+
+interface FriendInfo {
+  id: string;
+  friend_id: string;
+  display_name: string;
+}
 
 const Settings = () => {
   useDocumentTitle();
@@ -22,9 +30,18 @@ const Settings = () => {
   const [currentUsername, setCurrentUsername] = useState<string | null>(null);
   const [usernameLoading, setUsernameLoading] = useState(false);
 
+  // Timetable visibility
+  const [timetableVisible, setTimetableVisible] = useState(true);
+  const [visibleToFriendIds, setVisibleToFriendIds] = useState<string[]>([]);
+  const [friends, setFriends] = useState<FriendInfo[]>([]);
+  const [visibilityLoading, setVisibilityLoading] = useState(false);
+  const [friendsLoading, setFriendsLoading] = useState(false);
+
   useEffect(() => {
     if (user) {
       fetchUsername();
+      fetchVisibilitySettings();
+      fetchFriends();
     }
   }, [user]);
 
@@ -41,6 +58,110 @@ const Settings = () => {
     }
   };
 
+  const fetchVisibilitySettings = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('profiles')
+      .select('timetable_visible, visible_to_friend_ids')
+      .eq('user_id', user.id)
+      .maybeSingle();
+    if (data) {
+      setTimetableVisible(data.timetable_visible ?? true);
+      setVisibleToFriendIds(data.visible_to_friend_ids || []);
+    }
+  };
+
+  const fetchFriends = async () => {
+    if (!user) return;
+    try {
+      setFriendsLoading(true);
+      const { data: myFriends } = await supabase
+        .from('friends')
+        .select('id, friend_id')
+        .eq('user_id', user.id);
+
+      const { data: theirFriends } = await supabase
+        .from('friends')
+        .select('id, user_id')
+        .eq('friend_id', user.id);
+
+      const allFriendIds = [
+        ...(myFriends || []).map(f => ({ id: f.id, friendUserId: f.friend_id })),
+        ...(theirFriends || []).map(f => ({ id: f.id, friendUserId: f.user_id })),
+      ];
+
+      const friendUserIds = allFriendIds.map(f => f.friendUserId);
+      if (friendUserIds.length === 0) {
+        setFriends([]);
+        return;
+      }
+
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, username')
+        .in('user_id', friendUserIds);
+
+      const { data: codes } = await supabase
+        .from('friend_codes')
+        .select('user_id, code')
+        .in('user_id', friendUserIds);
+
+      const usernameMap = new Map((profiles || []).map(p => [p.user_id, p.username]));
+      const codeMap = new Map((codes || []).map(c => [c.user_id, c.code]));
+
+      setFriends(allFriendIds.map(f => ({
+        id: f.id,
+        friend_id: f.friendUserId,
+        display_name: usernameMap.get(f.friendUserId) || `Friend: ${codeMap.get(f.friendUserId) || 'Unknown'}`,
+      })));
+    } finally {
+      setFriendsLoading(false);
+    }
+  };
+
+  const handleUpdateVisibility = async (visible: boolean) => {
+    if (!user) return;
+    setTimetableVisible(visible);
+    setVisibilityLoading(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ timetable_visible: visible, updated_at: new Date().toISOString() })
+        .eq('user_id', user.id);
+      if (error) throw error;
+      if (visible) {
+        toast.success('Timetable is now visible to all friends');
+      } else {
+        toast.success('Timetable is now hidden. Select friends below to share with.');
+      }
+    } catch (error: any) {
+      setTimetableVisible(!visible);
+      toast.error(error.message || 'Failed to update visibility');
+    } finally {
+      setVisibilityLoading(false);
+    }
+  };
+
+  const toggleFriendVisibility = async (friendUserId: string, checked: boolean) => {
+    if (!user) return;
+    const updated = checked
+      ? [...visibleToFriendIds, friendUserId]
+      : visibleToFriendIds.filter(id => id !== friendUserId);
+
+    setVisibleToFriendIds(updated);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ visible_to_friend_ids: updated, updated_at: new Date().toISOString() })
+        .eq('user_id', user.id);
+      if (error) throw error;
+    } catch (error: any) {
+      // Revert
+      setVisibleToFriendIds(visibleToFriendIds);
+      toast.error(error.message || 'Failed to update');
+    }
+  };
+
   const handleUpdateUsername = async () => {
     if (!user || !username.trim()) {
       toast.error('Please enter a username');
@@ -48,7 +169,6 @@ const Settings = () => {
     }
     try {
       setUsernameLoading(true);
-      // Check uniqueness
       const { data: existing } = await supabase
         .from('profiles')
         .select('id')
@@ -82,25 +202,18 @@ const Settings = () => {
       toast.error('Please fill in both password fields');
       return;
     }
-
     if (newPassword !== confirmPassword) {
       toast.error('Passwords do not match');
       return;
     }
-
     if (newPassword.length < 6) {
       toast.error('Password must be at least 6 characters');
       return;
     }
-
     try {
       setLoading(true);
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
-      });
-
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) throw error;
-
       toast.success('Password updated successfully');
       setNewPassword('');
       setConfirmPassword('');
@@ -180,6 +293,61 @@ const Settings = () => {
           </CardContent>
         </Card>
 
+        {/* Timetable Visibility */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users size={20} />
+              Timetable Visibility
+            </CardTitle>
+            <CardDescription>Control who can see your timetable and attendance</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Display Timetable to Friends</Label>
+                <p className="text-xs text-muted-foreground">
+                  {timetableVisible ? 'All friends can view your timetable' : 'Only selected friends can view'}
+                </p>
+              </div>
+              <Switch
+                checked={timetableVisible}
+                onCheckedChange={handleUpdateVisibility}
+                disabled={visibilityLoading}
+              />
+            </div>
+
+            {!timetableVisible && (
+              <div className="border border-border rounded-lg p-3 space-y-3">
+                <Label className="text-sm">Share timetable with:</Label>
+                {friendsLoading ? (
+                  <div className="flex justify-center py-3">
+                    <Loader2 size={16} className="animate-spin text-muted-foreground" />
+                  </div>
+                ) : friends.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">No friends added yet.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {friends.map(friend => (
+                      <div key={friend.friend_id} className="flex items-center gap-2">
+                        <Checkbox
+                          id={`friend-${friend.friend_id}`}
+                          checked={visibleToFriendIds.includes(friend.friend_id)}
+                          onCheckedChange={(checked) => toggleFriendVisibility(friend.friend_id, !!checked)}
+                        />
+                        <Label htmlFor={`friend-${friend.friend_id}`} className="text-sm font-normal cursor-pointer">
+                          {friend.display_name}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Change Password */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
