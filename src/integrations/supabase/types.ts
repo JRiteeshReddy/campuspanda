@@ -334,23 +334,29 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          timetable_visible: boolean
           updated_at: string
           user_id: string
           username: string | null
+          visible_to_friend_ids: string[]
         }
         Insert: {
           created_at?: string
           id?: string
+          timetable_visible?: boolean
           updated_at?: string
           user_id: string
           username?: string | null
+          visible_to_friend_ids?: string[]
         }
         Update: {
           created_at?: string
           id?: string
+          timetable_visible?: boolean
           updated_at?: string
           user_id?: string
           username?: string | null
+          visible_to_friend_ids?: string[]
         }
         Relationships: []
       }
