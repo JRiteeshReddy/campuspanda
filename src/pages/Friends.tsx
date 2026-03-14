@@ -289,6 +289,11 @@ const Friends = () => {
               onClose={() => setSelectedFriend(null)}
             />
           )}
+
+          <div className="mt-12 text-center text-xs text-muted-foreground/60">
+            <p>Developed By J Riteesh Reddy</p>
+            <p>Friends Idea suggested by Dhatri Royal Pagadala</p>
+          </div>
         </div>
       </main>
     </div>
