@@ -146,6 +146,7 @@ const FriendTimetableView = ({ friendUserId, friendName, onClose }: FriendTimeta
   }
 
   return (
+    <>
     <Card className="mt-6">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-lg">{friendName}'s Timetable</CardTitle>
