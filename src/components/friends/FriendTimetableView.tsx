@@ -246,8 +246,30 @@ const FriendTimetableView = ({ friendUserId, friendName, onClose }: FriendTimeta
             </table>
           </div>
         )}
+
+        {/* Bunk Together Button */}
+        <div className="px-4 py-3">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full"
+            onClick={() => setShowBunk(!showBunk)}
+          >
+            <PartyPopper size={16} className="mr-2" />
+            {showBunk ? 'Hide Bunk Together' : "Friend's Bunk Together"}
+          </Button>
+        </div>
       </CardContent>
     </Card>
+
+    {showBunk && (
+      <BunkTogetherView
+        friendUserId={friendUserId}
+        friendName={friendName}
+        onClose={() => setShowBunk(false)}
+      />
+    )}
+    </>
   );
 };
 
