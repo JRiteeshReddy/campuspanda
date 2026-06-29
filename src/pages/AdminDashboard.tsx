@@ -285,7 +285,7 @@ const AdminDashboard = () => {
         <div className="flex items-center space-x-2">
           <img src="/lovable-uploads/259a2ad1-1ce7-481c-bdf3-3df888799e9d.png" alt="CampusPanda Logo" className="h-10 w-auto object-contain" />
           <span className="text-white/40">|</span>
-          <span className="font-bold text-sm sm:text-base tracking-wide uppercase text-indigo-400">Admin Control</span>
+          <span className="font-bold text-sm sm:text-base tracking-wide uppercase text-primary">Admin Control</span>
         </div>
 
         <Button 
@@ -316,7 +316,7 @@ const AdminDashboard = () => {
           <div className="lg:col-span-1 space-y-8">
             <Card className="bg-white/5 border-white/10 text-white overflow-hidden shadow-xl">
               <CardHeader className="bg-white/5 border-b border-white/10 pb-4">
-                <CardTitle className="text-lg flex items-center gap-2 text-indigo-400">
+                <CardTitle className="text-lg flex items-center gap-2 text-primary">
                   <Layers size={18} />
                   Current Active Release
                 </CardTitle>
@@ -327,7 +327,7 @@ const AdminDashboard = () => {
               <CardContent className="pt-6 space-y-6">
                 {loadingRelease ? (
                   <div className="flex flex-col items-center justify-center py-12 space-y-3">
-                    <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
                     <span className="text-sm text-white/50">Fetching release metadata...</span>
                   </div>
                 ) : currentRelease ? (
@@ -435,7 +435,7 @@ const AdminDashboard = () => {
           <div className="lg:col-span-2 space-y-8">
             <Card className="bg-white/5 border-white/10 text-white shadow-xl">
               <CardHeader className="bg-white/5 border-b border-white/10 pb-4">
-                <CardTitle className="text-lg flex items-center gap-2 text-indigo-400">
+                <CardTitle className="text-lg flex items-center gap-2 text-primary">
                   <UploadCloud size={18} />
                   Publish New Version
                 </CardTitle>
@@ -459,13 +459,13 @@ const AdminDashboard = () => {
                         onClick={() => fileInputRef.current?.click()}
                         className={`w-full min-h-[160px] border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center space-y-3 cursor-pointer transition-all duration-300 ${
                           isDragActive 
-                            ? 'border-indigo-500 bg-indigo-500/10 scale-[0.99]' 
+                            ? 'border-primary bg-primary/10 scale-[0.99]' 
                             : 'border-white/15 bg-white/5 hover:border-white/30 hover:bg-white/10'
                         }`}
                       >
-                        <UploadCloud size={32} className={`transition-colors duration-300 ${isDragActive ? 'text-indigo-400' : 'text-white/40'}`} />
+                        <UploadCloud size={32} className={`transition-colors duration-300 ${isDragActive ? 'text-primary' : 'text-white/40'}`} />
                         <div className="text-center space-y-1">
-                          <p className="text-sm font-medium">Drag & drop your APK file here or <span className="text-indigo-400 underline">browse</span></p>
+                          <p className="text-sm font-medium">Drag & drop your APK file here or <span className="text-primary underline">browse</span></p>
                           <p className="text-xs text-white/40">Only Android APK files (.apk) up to 50MB</p>
                         </div>
                         <input
@@ -480,7 +480,7 @@ const AdminDashboard = () => {
                     ) : (
                       <div className="w-full p-4 bg-white/5 rounded-lg border border-white/10 flex items-center justify-between animate-fade-in">
                         <div className="flex items-center space-x-3 overflow-hidden">
-                          <div className="p-2.5 bg-indigo-500/15 rounded-lg text-indigo-400 shrink-0">
+                          <div className="p-2.5 bg-primary/15 rounded-lg text-primary shrink-0">
                             <Layers size={22} />
                           </div>
                           <div className="overflow-hidden">
@@ -511,7 +511,7 @@ const AdminDashboard = () => {
                         placeholder="e.g. 1.3.0"
                         value={versionName}
                         onChange={(e) => setVersionName(e.target.value)}
-                        className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-primary focus:ring-1 focus:ring-primary"
                         disabled={publishing}
                         required
                       />
@@ -526,7 +526,7 @@ const AdminDashboard = () => {
                         placeholder="e.g. 7"
                         value={versionCode}
                         onChange={(e) => setVersionCode(e.target.value)}
-                        className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-primary focus:ring-1 focus:ring-primary"
                         disabled={publishing}
                         required
                       />
@@ -541,7 +541,7 @@ const AdminDashboard = () => {
                       placeholder="List changes, enhancements and bug fixes in this version..."
                       value={releaseNotes}
                       onChange={(e) => setReleaseNotes(e.target.value)}
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 min-h-[120px] leading-relaxed"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-primary focus:ring-1 focus:ring-primary min-h-[120px] leading-relaxed"
                       disabled={publishing}
                       required
                     />
@@ -554,7 +554,7 @@ const AdminDashboard = () => {
                       checked={mandatory}
                       onCheckedChange={(checked) => setMandatory(checked)}
                       disabled={publishing}
-                      className="data-[state=checked]:bg-indigo-600 data-[state=unchecked]:bg-white/10"
+                      className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-white/10"
                     />
                     <div className="space-y-0.5">
                       <Label htmlFor="mandatory" className="text-sm font-semibold text-white/90">Force Mandatory Update</Label>
@@ -566,7 +566,7 @@ const AdminDashboard = () => {
                   {publishing && (
                     <div className="space-y-2 border border-white/5 p-4 rounded-lg bg-white/5 animate-fade-in">
                       <div className="flex justify-between text-xs font-semibold">
-                        <span className="text-indigo-400 flex items-center gap-1.5">
+                        <span className="text-primary flex items-center gap-1.5">
                           <Loader2 size={12} className="animate-spin" />
                           {uploadProgress < 100 
                             ? `Uploading APK File: ${uploadProgress}%` 
@@ -575,7 +575,7 @@ const AdminDashboard = () => {
                         <span className="text-white/60">{uploadProgress}%</span>
                       </div>
                       <Progress value={uploadProgress} className="h-1.5 bg-white/10">
-                        <div className="bg-indigo-500 h-full transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
+                        <div className="bg-primary h-full transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
                       </Progress>
                     </div>
                   )}
@@ -583,7 +583,7 @@ const AdminDashboard = () => {
                   {/* Submit Button */}
                   <Button
                     type="submit"
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
+                    className="w-full bg-primary hover:bg-primary/90 text-white transition-colors"
                     disabled={publishing}
                   >
                     {publishing ? (

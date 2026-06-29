@@ -131,14 +131,14 @@ const AdminLogin = () => {
   return (
     <div className="min-h-screen bg-gradient-dark flex items-center justify-center p-4">
       {/* Dynamic background glow */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px] pointer-events-none" />
 
       <Card className="w-full max-w-md bg-white/5 border-white/10 backdrop-blur-md text-white shadow-2xl relative overflow-hidden transition-all duration-300">
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-blue-500 to-indigo-600" />
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-primary to-blue-400" />
         
         <CardHeader className="space-y-2 text-center pt-8">
-          <div className="mx-auto bg-indigo-500/15 w-16 h-16 rounded-full flex items-center justify-center text-indigo-400 mb-2">
+          <div className="mx-auto bg-primary/15 w-16 h-16 rounded-full flex items-center justify-center text-primary mb-2">
             <ShieldCheck size={36} className="animate-pulse" />
           </div>
           <CardTitle className="text-2xl font-bold tracking-tight">CampusPanda Admin</CardTitle>
@@ -159,14 +159,14 @@ const AdminLogin = () => {
                   placeholder="admin@campuspanda.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-primary focus:ring-1 focus:ring-primary"
                   disabled={loading}
                   required
                 />
               </div>
               <Button 
                 type="submit" 
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
+                className="w-full bg-primary hover:bg-primary/90 text-white transition-colors"
                 disabled={loading}
               >
                 {loading ? (
@@ -195,18 +195,18 @@ const AdminLogin = () => {
                 disabled={loading}
               >
                 <InputOTPGroup className="gap-2">
-                  <InputOTPSlot index={0} className="bg-white/5 border-white/10 text-white text-lg focus:ring-indigo-500 w-12 h-12" />
-                  <InputOTPSlot index={1} className="bg-white/5 border-white/10 text-white text-lg focus:ring-indigo-500 w-12 h-12" />
-                  <InputOTPSlot index={2} className="bg-white/5 border-white/10 text-white text-lg focus:ring-indigo-500 w-12 h-12" />
-                  <InputOTPSlot index={3} className="bg-white/5 border-white/10 text-white text-lg focus:ring-indigo-500 w-12 h-12" />
-                  <InputOTPSlot index={4} className="bg-white/5 border-white/10 text-white text-lg focus:ring-indigo-500 w-12 h-12" />
-                  <InputOTPSlot index={5} className="bg-white/5 border-white/10 text-white text-lg focus:ring-indigo-500 w-12 h-12" />
+                  <InputOTPSlot index={0} className="bg-white/5 border-white/10 text-white text-lg focus:ring-primary w-12 h-12" />
+                  <InputOTPSlot index={1} className="bg-white/5 border-white/10 text-white text-lg focus:ring-primary w-12 h-12" />
+                  <InputOTPSlot index={2} className="bg-white/5 border-white/10 text-white text-lg focus:ring-primary w-12 h-12" />
+                  <InputOTPSlot index={3} className="bg-white/5 border-white/10 text-white text-lg focus:ring-primary w-12 h-12" />
+                  <InputOTPSlot index={4} className="bg-white/5 border-white/10 text-white text-lg focus:ring-primary w-12 h-12" />
+                  <InputOTPSlot index={5} className="bg-white/5 border-white/10 text-white text-lg focus:ring-primary w-12 h-12" />
                 </InputOTPGroup>
               </InputOTP>
 
               <Button 
                 type="submit" 
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white transition-colors mt-2"
+                className="w-full bg-primary hover:bg-primary/90 text-white transition-colors mt-2"
                 disabled={loading || otp.length !== 6}
               >
                 {loading ? (
