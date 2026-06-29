@@ -22,6 +22,9 @@ import NotFound from "./pages/NotFound";
 import Settings from "./pages/Settings";
 import ResetPassword from "./pages/ResetPassword";
 import Friends from "./pages/Friends";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminProtectedRoute from "./components/auth/AdminProtectedRoute";
 
 // Create a client for React Query
 const queryClient = new QueryClient();
@@ -39,9 +42,21 @@ const AppRoutes = () => (
     <Route path="/settings" element={<Settings />} />
     <Route path="/reset-password" element={<ResetPassword />} />
     <Route path="/friends" element={<Friends />} />
+    <Route path="/admin" element={<AdminLogin />} />
+    <Route path="/admin/dashboard" element={
+      <AdminProtectedRoute>
+        <AdminDashboard />
+      </AdminProtectedRoute>
+    } />
+    <Route path="/admin/*" element={
+      <AdminProtectedRoute>
+        <AdminDashboard />
+      </AdminProtectedRoute>
+    } />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
+
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
