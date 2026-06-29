@@ -1,6 +1,6 @@
-
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, CalendarCheck, FileText, ArrowRight, Calendar } from 'lucide-react';
+import { BookOpen, CalendarCheck, FileText, ArrowRight, Calendar, Download } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import Navbar from '@/components/layout/Navbar';
 import AdSection from '@/components/layout/AdSection';
@@ -14,6 +14,29 @@ const Index = () => {
   } = useAuth();
   const isMobile = useIsMobile();
   
+  // App Download States
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [versionName, setVersionName] = useState<string | null>(null);
+
+  // Fetch the latest APK metadata from the public storage bucket
+  useEffect(() => {
+    const fetchLatestVersion = async () => {
+      try {
+        const response = await fetch('https://asegblxpnduuagqincnj.supabase.co/storage/v1/object/public/apks/version.json');
+        if (response.ok) {
+          const data = await response.json();
+          if (data && data.downloadUrl) {
+            setDownloadUrl(data.downloadUrl);
+            setVersionName(data.versionName);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch Android app version:', err);
+      }
+    };
+    fetchLatestVersion();
+  }, []);
+
   const handleGetStarted = (path: string) => {
     navigate(path);
   };
@@ -23,12 +46,29 @@ const Index = () => {
       
       <main className="flex-1 pt-24 pb-12">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 animate-fade-in">
-          <div className="text-center mb-8 sm:mb-16">
+          <div className="text-center mb-8 sm:mb-12">
             <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4 text-[#0071e3] dark:text-white">CampusPanda
           </h1>
-            <p className="text-xl text-muted-foreground dark:text-white/80">
+            <p className="text-xl text-muted-foreground dark:text-white/80 mb-6">
               Track. Manage. Succeed.
             </p>
+
+            {/* Now Available on Android badge and download button */}
+            {downloadUrl && (
+              <div className="inline-flex flex-col items-center justify-center bg-white/5 border border-white/10 rounded-2xl p-4 px-6 backdrop-blur-md shadow-lg hover:border-white/20 transition-all duration-300">
+                <span className="text-xs text-primary font-bold uppercase tracking-wider mb-2">
+                  Now Available on Android
+                </span>
+                <a 
+                  href={downloadUrl}
+                  download
+                  className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white rounded-full px-5 py-2 text-sm font-semibold shadow-md hover:shadow-lg active:scale-[0.98] transition-all"
+                >
+                  <Download size={16} />
+                  <span>Download APK {versionName ? `v${versionName}` : ''}</span>
+                </a>
+              </div>
+            )}
           </div>
           
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 max-w-5xl mx-auto">
